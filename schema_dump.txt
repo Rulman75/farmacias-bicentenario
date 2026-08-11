@@ -1,0 +1,2199 @@
+Estructura de Base de Datos: farmacia
+===================================
+
+Tabla: abono_cheques
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- rut_clte (char(10)) | Null: NO | Key: 
+- cod_empleado (mediumint(6) unsigned) | Null: NO | Key: 
+- serie_documento (char(20)) | Null: NO | Key: 
+- nro_documento (bigint(15) unsigned) | Null: YES | Key: 
+- fecha_em (datetime) | Null: YES | Key: 
+- tipo_pago (tinyint(2)) | Null: YES | Key: 
+- serie_doc_abono (char(20)) | Null: YES | Key: 
+- nro_doc_abono (bigint(20)) | Null: YES | Key: 
+- cod_banco (smallint(3) unsigned) | Null: NO | Key: 
+- monto_abono (double(15,4)) | Null: YES | Key: 
+- cod_mon (tinyint(3) unsigned) | Null: NO | Key: 
+- tipo_cambio (double(12,4)) | Null: YES | Key: 
+
+Tabla: act_economicas
+-----------------------------------
+- cod_rubro (tinyint(3) unsigned) | Null: NO | Key: 
+- cod_subrubro (tinyint(3) unsigned) | Null: NO | Key: 
+- cod_actividad (mediumint(7) unsigned) | Null: NO | Key: 
+- descripcion (varchar(120)) | Null: YES | Key: 
+- afecto_iva (enum('SI','NO','ND')) | Null: YES | Key: 
+- cat_tributaria (varchar(2)) | Null: YES | Key: 
+- disp_internet (enum('SI','NO','ND')) | Null: YES | Key: 
+
+Tabla: bancos
+-----------------------------------
+- cod_banco (smallint(3) unsigned) | Null: NO | Key: PRI
+- nombre (char(40)) | Null: YES | Key: 
+
+Tabla: bodegas
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: PRI
+- cod_bodega (smallint(4) unsigned) | Null: NO | Key: PRI
+- nombre (varchar(40)) | Null: YES | Key: 
+- direccion (varchar(40)) | Null: YES | Key: 
+- tipo_periodo (varchar(10)) | Null: YES | Key: 
+
+Tabla: bodegastock
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: PRI
+- cod_bodega (smallint(4) unsigned) | Null: NO | Key: PRI
+- cod_art (int(7) unsigned) | Null: NO | Key: PRI
+- critico (double(15,4)) | Null: YES | Key: 
+- stock (double(15,4)) | Null: YES | Key: 
+- stock_max (double(15,4)) | Null: YES | Key: 
+- periodo (varchar(10)) | Null: YES | Key: 
+- ubicacion (varchar(50)) | Null: YES | Key: 
+- stock_pedido (double(15,4)) | Null: YES | Key: 
+- stock_comprometido (double(15,4)) | Null: YES | Key: 
+
+Tabla: cabezalcartolas
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_banco (smallint(3) unsigned) | Null: NO | Key: PRI
+- nro_cuenta (char(30)) | Null: NO | Key: PRI
+- cod_cartola (smallint(3)) | Null: NO | Key: PRI
+- nombre_cartola (varchar(30)) | Null: YES | Key: 
+- cantidad_chq (int(11)) | Null: YES | Key: 
+- fecha_desde (datetime) | Null: YES | Key: 
+- fecha_hasta (datetime) | Null: YES | Key: 
+- cheque_inicio (int(11)) | Null: YES | Key: 
+- cheque_fin (int(11)) | Null: YES | Key: 
+
+Tabla: cabezalcompras
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (tinyint(3)) | Null: NO | Key: 
+- tipo_cargo (tinyint(2) unsigned) | Null: NO | Key: 
+- nro_cargo (bigint(15) unsigned) | Null: NO | Key: 
+- rut_clte (char(10)) | Null: NO | Key: 
+- cod_sucursal_clte (int(9) unsigned) | Null: NO | Key: 
+- estado (tinyint(1) unsigned) | Null: YES | Key: 
+- fecha_em (datetime) | Null: YES | Key: 
+- fecha_ven (datetime) | Null: YES | Key: 
+- fecha_can (datetime) | Null: YES | Key: 
+- fecha_reg (datetime) | Null: YES | Key: 
+- nro_ingreso (mediumint(7) unsigned) | Null: NO | Key: 
+- cod_empleado (mediumint(6) unsigned) | Null: YES | Key: 
+- autorizada (enum('S','N')) | Null: YES | Key: 
+- usuario (varchar(40)) | Null: YES | Key: 
+- cod_sucursal_abono (smallint(4) unsigned) | Null: NO | Key: 
+- tipo_abono (tinyint(2) unsigned) | Null: YES | Key: 
+- nro_abono (bigint(15) unsigned) | Null: NO | Key: 
+- nro_comprobante (bigint(15) unsigned) | Null: NO | Key: 
+- monto (double(15,4)) | Null: YES | Key: 
+- montorealdocto (double(15,4)) | Null: YES | Key: 
+- monto_descuento (double(15,4)) | Null: YES | Key: 
+- monto_impuesto (double(15,4)) | Null: YES | Key: 
+- monto_pendiente (double(15,4)) | Null: YES | Key: 
+- orden_compra (char(20)) | Null: YES | Key: 
+- cod_mon (smallint(3) unsigned) | Null: NO | Key: 
+- cod_mon_ab (tinyint(3) unsigned) | Null: NO | Key: 
+- num_items (smallint(4) unsigned) | Null: YES | Key: 
+- descuentos (varchar(60)) | Null: YES | Key: 
+- por_descuento (double(10,4)) | Null: YES | Key: 
+- anulada (enum('S','N')) | Null: YES | Key: 
+- impresa (enum('S','N')) | Null: YES | Key: 
+- num_pedido (int(11)) | Null: YES | Key: 
+- pendiente (enum('S','N')) | Null: YES | Key: 
+- cod_cobranza (smallint(3) unsigned) | Null: NO | Key: 
+- cod_cpago (smallint(3) unsigned) | Null: NO | Key: 
+- tipo_cambio (double(15,4)) | Null: YES | Key: 
+- tipodefactura (tinyint(1) unsigned) | Null: YES | Key: 
+- cambiofactura (double(15,4)) | Null: YES | Key: 
+- sobregasto (double(15,4)) | Null: YES | Key: 
+- impto_adicional1 (varchar(10)) | Null: YES | Key: 
+- impto_adicional2 (varchar(10)) | Null: YES | Key: 
+- impto_adicional3 (varchar(10)) | Null: YES | Key: 
+- impto_adicional4 (varchar(10)) | Null: YES | Key: 
+- impto_adicional5 (varchar(10)) | Null: YES | Key: 
+- impto_adicional6 (varchar(10)) | Null: YES | Key: 
+- impto_adicional7 (varchar(10)) | Null: YES | Key: 
+- impto_adicional8 (varchar(10)) | Null: YES | Key: 
+- impto_adicional9 (varchar(10)) | Null: YES | Key: 
+- impto_adicional10 (varchar(10)) | Null: YES | Key: 
+- monto_adicional1 (double(15,4)) | Null: YES | Key: 
+- monto_adicional2 (double(15,4)) | Null: YES | Key: 
+- monto_adicional3 (double(15,4)) | Null: YES | Key: 
+- monto_adicional4 (double(15,4)) | Null: YES | Key: 
+- monto_adicional5 (double(15,4)) | Null: YES | Key: 
+- monto_adicional6 (double(15,4)) | Null: YES | Key: 
+- monto_adicional7 (double(15,4)) | Null: YES | Key: 
+- monto_adicional8 (double(15,4)) | Null: YES | Key: 
+- monto_adicional9 (double(15,4)) | Null: YES | Key: 
+- monto_adicional10 (double(15,4)) | Null: YES | Key: 
+- neto_afecto (double(15,4)) | Null: YES | Key: 
+- neto_exento (double(15,4)) | Null: YES | Key: 
+- neto_flete (double(15,4)) | Null: YES | Key: 
+- margen (double(10,4)) | Null: YES | Key: 
+- recargo (double(15,4)) | Null: YES | Key: 
+- imp_num_despacho (bigint(15)) | Null: YES | Key: 
+- imp_kardex (datetime) | Null: YES | Key: 
+- imp_valor_mon_ext (double(15,4)) | Null: YES | Key: 
+- imp_factor (double(15,4)) | Null: YES | Key: 
+- imp_total_mon_ext (double(15,4)) | Null: YES | Key: 
+- imp_total_pesos (double(15,4)) | Null: YES | Key: 
+- imp_flete (double(15,4)) | Null: YES | Key: 
+- imp_aduana (double(15,4)) | Null: YES | Key: 
+- imp_otros (double(15,4)) | Null: YES | Key: 
+- imp_observaciones (varchar(40)) | Null: YES | Key: 
+- observaciones (text) | Null: YES | Key: 
+- validez (char(80)) | Null: YES | Key: 
+- plazo_entrega (char(80)) | Null: YES | Key: 
+- fecha_cierre (datetime) | Null: YES | Key: 
+
+Tabla: cabezalcotizaciones
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: 
+- tipo_cargo (tinyint(2) unsigned) | Null: NO | Key: 
+- nro_cargo (bigint(15) unsigned) | Null: NO | Key: 
+- cod_sucursal_despacho (smallint(4) unsigned) | Null: NO | Key: 
+- nro_despacho (bigint(15) unsigned) | Null: YES | Key: 
+- rut_clte (char(10)) | Null: NO | Key: 
+- cod_sucursal_clte (int(9) unsigned) | Null: NO | Key: 
+- cod_empleado (mediumint(6) unsigned) | Null: NO | Key: 
+- cod_cajero (mediumint(6) unsigned) | Null: YES | Key: 
+- caja (tinyint(3) unsigned) | Null: YES | Key: 
+- fecha_em (datetime) | Null: YES | Key: 
+- fecha_ven (datetime) | Null: YES | Key: 
+- fecha_can (datetime) | Null: YES | Key: 
+- monto (double(15,4)) | Null: YES | Key: 
+- monto_descuento (double(15,4)) | Null: YES | Key: 
+- monto_impuesto (double(15,4)) | Null: YES | Key: 
+- monto_pendiente (double(15,4)) | Null: YES | Key: 
+- cod_mon (smallint(3) unsigned) | Null: YES | Key: 
+- num_items (smallint(4) unsigned) | Null: YES | Key: 
+- descuentos (varchar(20)) | Null: YES | Key: 
+- por_descuento (double(10,4)) | Null: YES | Key: 
+- anulada (enum('S','N')) | Null: YES | Key: 
+- impresa (enum('S','N')) | Null: YES | Key: 
+- orden_compra (varchar(20)) | Null: YES | Key: 
+- num_pedido (varchar(20)) | Null: YES | Key: 
+- pendiente (enum('S','N')) | Null: YES | Key: 
+- tipo_cambio (double(15,4)) | Null: YES | Key: 
+- cod_envio (smallint(3) unsigned) | Null: YES | Key: 
+- cod_cpago (smallint(3) unsigned) | Null: YES | Key: 
+- cambiofactura (double(15,4)) | Null: YES | Key: 
+- tipodefactura (tinyint(1) unsigned) | Null: YES | Key: 
+- clientealpaso (varchar(40)) | Null: YES | Key: 
+- direccionalpaso (varchar(40)) | Null: YES | Key: 
+- rutalpaso (varchar(15)) | Null: YES | Key: 
+- comunaalpaso (varchar(40)) | Null: YES | Key: 
+- direccion_entrega (varchar(40)) | Null: YES | Key: 
+- cod_cobranza (smallint(3) unsigned) | Null: YES | Key: 
+- fechaingreso (datetime) | Null: YES | Key: 
+- impto_adicional1 (varchar(10)) | Null: YES | Key: 
+- impto_adicional2 (varchar(10)) | Null: YES | Key: 
+- impto_adicional3 (varchar(10)) | Null: YES | Key: 
+- impto_adicional4 (varchar(10)) | Null: YES | Key: 
+- impto_adicional5 (varchar(10)) | Null: YES | Key: 
+- impto_adicional6 (varchar(10)) | Null: YES | Key: 
+- impto_adicional7 (varchar(10)) | Null: YES | Key: 
+- impto_adicional8 (varchar(10)) | Null: YES | Key: 
+- impto_adicional9 (varchar(10)) | Null: YES | Key: 
+- impto_adicional10 (varchar(10)) | Null: YES | Key: 
+- monto_adicional1 (double(15,4)) | Null: YES | Key: 
+- monto_adicional2 (double(15,4)) | Null: YES | Key: 
+- monto_adicional3 (double(15,4)) | Null: YES | Key: 
+- monto_adicional4 (double(15,4)) | Null: YES | Key: 
+- monto_adicional5 (double(15,4)) | Null: YES | Key: 
+- monto_adicional6 (double(15,4)) | Null: YES | Key: 
+- monto_adicional7 (double(15,4)) | Null: YES | Key: 
+- monto_adicional8 (double(15,4)) | Null: YES | Key: 
+- monto_adicional9 (double(15,4)) | Null: YES | Key: 
+- monto_adicional10 (double(15,4)) | Null: YES | Key: 
+- neto_afecto (double(15,4)) | Null: YES | Key: 
+- neto_exento (double(15,4)) | Null: YES | Key: 
+- neto_flete (double(15,4)) | Null: YES | Key: 
+- observaciones (text) | Null: YES | Key: 
+- con_glosa (enum('S','N')) | Null: YES | Key: 
+- fecha_cierre (datetime) | Null: YES | Key: 
+- validez (char(80)) | Null: YES | Key: 
+- plazo_entrega (char(80)) | Null: YES | Key: 
+- estado (tinyint(1) unsigned) | Null: NO | Key: 
+
+Tabla: cabezalencuestas
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: PRI
+- cod_encuesta (smallint(5) unsigned) | Null: NO | Key: PRI
+- estado (tinyint(1)) | Null: NO | Key: 
+- nro_items (smallint(4) unsigned) | Null: YES | Key: 
+- descripcion (varchar(40)) | Null: YES | Key: 
+- modificado (tinyint(1) unsigned) | Null: YES | Key: 
+
+Tabla: cabezalpopup
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: PRI
+- cod_popup (smallint(5) unsigned) | Null: NO | Key: PRI
+- estado (tinyint(1)) | Null: NO | Key: 
+- nro_items (smallint(4) unsigned) | Null: YES | Key: 
+- descripcion (varchar(40)) | Null: YES | Key: 
+- seleccionmultiple (tinyint(1)) | Null: YES | Key: 
+- modificado (tinyint(1) unsigned) | Null: YES | Key: 
+
+Tabla: cabezaltransbalanza
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: 
+- id_transaccion (bigint(15) unsigned) | Null: NO | Key: 
+- nro_balanza (smallint(3) unsigned) | Null: NO | Key: 
+- nro_transaccion (mediumint(6) unsigned) | Null: NO | Key: 
+- cod_vendedor (mediumint(6) unsigned) | Null: NO | Key: 
+- fecha_trans (datetime) | Null: NO | Key: 
+- nro_items (smallint(3) unsigned) | Null: YES | Key: 
+- monto (double(15,4)) | Null: YES | Key: 
+- estado (enum('N','S')) | Null: NO | Key: 
+
+Tabla: cabezalventas
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: 
+- cod_sucursal_destino (smallint(4) unsigned) | Null: NO | Key: 
+- cod_bodega_destino (smallint(4) unsigned) | Null: NO | Key: 
+- tipo_cargo (tinyint(2) unsigned) | Null: NO | Key: 
+- nro_cargo (bigint(15) unsigned) | Null: NO | Key: 
+- nro_fiscal (bigint(15) unsigned) | Null: NO | Key: 
+- cod_sucursal_despacho (smallint(4) unsigned) | Null: NO | Key: 
+- nro_despacho (bigint(15) unsigned) | Null: YES | Key: 
+- rut_clte (char(10)) | Null: NO | Key: 
+- cod_sucursal_clte (int(9) unsigned) | Null: NO | Key: 
+- cod_cajero (mediumint(6) unsigned) | Null: NO | Key: 
+- cod_empleado (mediumint(6) unsigned) | Null: NO | Key: 
+- caja (tinyint(3) unsigned) | Null: YES | Key: 
+- fecha_em (datetime) | Null: YES | Key: 
+- fecha_ven (datetime) | Null: YES | Key: 
+- fecha_can (datetime) | Null: YES | Key: 
+- cod_sucursal_abono (smallint(4) unsigned) | Null: NO | Key: 
+- tipo_abono (tinyint(2)) | Null: YES | Key: 
+- nro_abono (bigint(15)) | Null: YES | Key: 
+- nro_comprobante (bigint(15) unsigned) | Null: NO | Key: 
+- monto (double(15,4)) | Null: YES | Key: 
+- monto_descuento (double(15,4)) | Null: YES | Key: 
+- monto_impuesto (double(15,4)) | Null: YES | Key: 
+- monto_pendiente (double(15,4)) | Null: YES | Key: 
+- cod_mon (smallint(3) unsigned) | Null: YES | Key: 
+- cod_mon_ab (smallint(3) unsigned) | Null: YES | Key: 
+- num_items (smallint(4) unsigned) | Null: YES | Key: 
+- descuentos (varchar(20)) | Null: YES | Key: 
+- por_descuento (double(10,4)) | Null: YES | Key: 
+- anulada (enum('S','N')) | Null: YES | Key: 
+- impresa (enum('S','N')) | Null: YES | Key: 
+- orden_compra (varchar(30)) | Null: YES | Key: 
+- num_pedido (varchar(20)) | Null: YES | Key: 
+- pendiente (enum('S','N')) | Null: YES | Key: 
+- tipo_cambio (double(15,4)) | Null: YES | Key: 
+- cod_envio (smallint(3) unsigned) | Null: YES | Key: 
+- cod_cpago (smallint(3) unsigned) | Null: YES | Key: 
+- cambiofactura (double(15,4)) | Null: YES | Key: 
+- tipodefactura (tinyint(1) unsigned) | Null: YES | Key: 
+- clientealpaso (varchar(40)) | Null: YES | Key: 
+- direccionalpaso (varchar(40)) | Null: YES | Key: 
+- rutalpaso (varchar(15)) | Null: YES | Key: 
+- comunaalpaso (varchar(40)) | Null: YES | Key: 
+- direccion_entrega (varchar(60)) | Null: YES | Key: 
+- cod_cobranza (smallint(3) unsigned) | Null: YES | Key: 
+- fechaingreso (datetime) | Null: YES | Key: 
+- impto_adicional1 (varchar(10)) | Null: YES | Key: 
+- impto_adicional2 (varchar(10)) | Null: YES | Key: 
+- impto_adicional3 (varchar(10)) | Null: YES | Key: 
+- impto_adicional4 (varchar(10)) | Null: YES | Key: 
+- impto_adicional5 (varchar(10)) | Null: YES | Key: 
+- impto_adicional6 (varchar(10)) | Null: YES | Key: 
+- impto_adicional7 (varchar(10)) | Null: YES | Key: 
+- impto_adicional8 (varchar(10)) | Null: YES | Key: 
+- impto_adicional9 (varchar(10)) | Null: YES | Key: 
+- impto_adicional10 (varchar(10)) | Null: YES | Key: 
+- monto_adicional1 (double(15,4)) | Null: YES | Key: 
+- monto_adicional2 (double(15,4)) | Null: YES | Key: 
+- monto_adicional3 (double(15,4)) | Null: YES | Key: 
+- monto_adicional4 (double(15,4)) | Null: YES | Key: 
+- monto_adicional5 (double(15,4)) | Null: YES | Key: 
+- monto_adicional6 (double(15,4)) | Null: YES | Key: 
+- monto_adicional7 (double(15,4)) | Null: YES | Key: 
+- monto_adicional8 (double(15,4)) | Null: YES | Key: 
+- monto_adicional9 (double(15,4)) | Null: YES | Key: 
+- monto_adicional10 (double(15,4)) | Null: YES | Key: 
+- neto_afecto (double(15,4)) | Null: YES | Key: 
+- neto_exento (double(15,4)) | Null: YES | Key: 
+- neto_flete (double(15,4)) | Null: YES | Key: 
+- observaciones (text) | Null: YES | Key: 
+- fecha_cierre (datetime) | Null: YES | Key: 
+- con_glosa (enum('S','N')) | Null: YES | Key: 
+- nro_z (bigint(15) unsigned) | Null: NO | Key: 
+- nro_hes (char(30)) | Null: YES | Key: 
+- id_febos (char(64)) | Null: YES | Key: 
+- id_sap (char(30)) | Null: YES | Key: 
+- cod_ref (tinyint(1) unsigned) | Null: YES | Key: 
+- razon_ref (char(90)) | Null: YES | Key: 
+- tipofactura (tinyint(1) unsigned) | Null: YES | Key: 
+- nro_contrato (char(30)) | Null: YES | Key: 
+- ajuste_efectivo (tinyint(3)) | Null: YES | Key: 
+- cod_sucursal_hoja (smallint(4) unsigned) | Null: NO | Key: 
+- id_hoja (int(11)) | Null: NO | Key: 
+
+Tabla: cambiosest
+-----------------------------------
+- cod_mon (mediumint(8) unsigned) | Null: NO | Key: PRI
+- mes (datetime) | Null: NO | Key: PRI
+- tipo_cambio (double(10,4)) | Null: YES | Key: 
+
+Tabla: camiones
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_camion (smallint(4) unsigned) | Null: NO | Key: PRI
+- patente (varchar(15)) | Null: YES | Key: 
+- modelo (varchar(40)) | Null: YES | Key: 
+- ano (smallint(4)) | Null: YES | Key: 
+- cod_empleado (mediumint(6) unsigned) | Null: NO | Key: 
+
+Tabla: ccc_abonos
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: 
+- cod_sucursal_abono (smallint(4) unsigned) | Null: NO | Key: 
+- cod_sucursal_clte (int(9) unsigned) | Null: NO | Key: 
+- caja (tinyint(3) unsigned) | Null: YES | Key: 
+- tipo_cargo (tinyint(2) unsigned) | Null: NO | Key: 
+- nro_cargo (bigint(15) unsigned) | Null: NO | Key: 
+- tipo_abono (tinyint(2)) | Null: YES | Key: 
+- nro_abono (bigint(15)) | Null: YES | Key: 
+- fecha_em (datetime) | Null: YES | Key: 
+- fecha_ven (datetime) | Null: YES | Key: 
+- monto (double(15,4)) | Null: YES | Key: 
+- monto_pendiente (double(15,4)) | Null: YES | Key: 
+- por_descuento (double(10,4)) | Null: YES | Key: 
+- tipo_cambio (double(15,4)) | Null: YES | Key: 
+- cod_mon (smallint(3) unsigned) | Null: YES | Key: 
+- cod_mon_ab (smallint(3) unsigned) | Null: YES | Key: 
+- rut_clte (char(10)) | Null: NO | Key: 
+- anulada (enum('S','N')) | Null: YES | Key: 
+- pendiente (enum('S','N')) | Null: YES | Key: 
+- tipodefactura (tinyint(1) unsigned) | Null: YES | Key: 
+- r_social (varchar(60)) | Null: YES | Key: 
+- nombre (char(40)) | Null: YES | Key: 
+- cod_empleado (mediumint(6) unsigned) | Null: NO | Key: 
+- vendedor (varchar(40)) | Null: YES | Key: 
+
+Tabla: ccc_cargos
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: 
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: 
+- cod_sucursal_clte (int(9) unsigned) | Null: NO | Key: 
+- cod_sucursal_destino (smallint(4) unsigned) | Null: NO | Key: 
+- caja (tinyint(3) unsigned) | Null: YES | Key: 
+- tipo_cargo (tinyint(2) unsigned) | Null: NO | Key: 
+- nro_cargo (bigint(15) unsigned) | Null: NO | Key: 
+- fecha_em (datetime) | Null: YES | Key: 
+- fecha_ven (datetime) | Null: YES | Key: 
+- fecha_can (datetime) | Null: YES | Key: 
+- monto (double(15,4)) | Null: YES | Key: 
+- tipo_abono (tinyint(2)) | Null: YES | Key: 
+- nro_abono (bigint(15)) | Null: YES | Key: 
+- monto_pendiente (double(15,4)) | Null: YES | Key: 
+- por_descuento (double(10,4)) | Null: YES | Key: 
+- tipo_cambio (double(15,4)) | Null: YES | Key: 
+- cod_mon (smallint(3) unsigned) | Null: YES | Key: 
+- cod_mon_ab (smallint(3) unsigned) | Null: YES | Key: 
+- rut_clte (char(10)) | Null: NO | Key: 
+- anulada (enum('S','N')) | Null: YES | Key: 
+- pendiente (enum('S','N')) | Null: YES | Key: 
+- cod_empleado (mediumint(6) unsigned) | Null: NO | Key: 
+- tipodefactura (tinyint(1) unsigned) | Null: YES | Key: 
+- tipofactura (tinyint(1) unsigned) | Null: YES | Key: 
+- r_social (varchar(60)) | Null: YES | Key: 
+- nombre (char(40)) | Null: YES | Key: 
+- destino (char(40)) | Null: YES | Key: 
+- vendedor (varchar(40)) | Null: YES | Key: 
+- pais (varchar(30)) | Null: YES | Key: 
+- ciudad (varchar(40)) | Null: YES | Key: 
+- comuna (varchar(30)) | Null: YES | Key: 
+- direccion (varchar(80)) | Null: YES | Key: 
+
+Tabla: ccc_cotizaciones
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: 
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: 
+- cod_sucursal_clte (int(9) unsigned) | Null: NO | Key: 
+- caja (tinyint(3) unsigned) | Null: YES | Key: 
+- tipo_cargo (tinyint(2) unsigned) | Null: NO | Key: 
+- nro_cargo (bigint(15) unsigned) | Null: NO | Key: 
+- fecha_em (datetime) | Null: YES | Key: 
+- fecha_ven (datetime) | Null: YES | Key: 
+- monto (double(15,4)) | Null: YES | Key: 
+- monto_pendiente (double(15,4)) | Null: YES | Key: 
+- por_descuento (double(10,4)) | Null: YES | Key: 
+- tipo_cambio (double(15,4)) | Null: YES | Key: 
+- cod_mon (smallint(3) unsigned) | Null: YES | Key: 
+- rut_clte (char(10)) | Null: NO | Key: 
+- anulada (enum('S','N')) | Null: YES | Key: 
+- pendiente (enum('S','N')) | Null: YES | Key: 
+- cod_empleado (mediumint(6) unsigned) | Null: NO | Key: 
+- tipodefactura (tinyint(1) unsigned) | Null: YES | Key: 
+- r_social (varchar(60)) | Null: YES | Key: 
+- nombre (char(40)) | Null: YES | Key: 
+- pais (varchar(30)) | Null: YES | Key: 
+- ciudad (varchar(40)) | Null: YES | Key: 
+- comuna (varchar(30)) | Null: YES | Key: 
+- direccion (varchar(80)) | Null: YES | Key: 
+
+Tabla: ccp_abonos
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: 
+- cod_sucursal_abono (smallint(4) unsigned) | Null: NO | Key: 
+- cod_sucursal_clte (int(9) unsigned) | Null: NO | Key: 
+- tipo_cargo (tinyint(2) unsigned) | Null: NO | Key: 
+- nro_cargo (bigint(15) unsigned) | Null: NO | Key: 
+- tipo_abono (tinyint(2) unsigned) | Null: YES | Key: 
+- nro_abono (bigint(15) unsigned) | Null: NO | Key: 
+- fecha_em (datetime) | Null: YES | Key: 
+- fecha_ven (datetime) | Null: YES | Key: 
+- monto (double(15,4)) | Null: YES | Key: 
+- monto_pendiente (double(15,4)) | Null: YES | Key: 
+- por_descuento (double(10,4)) | Null: YES | Key: 
+- tipo_cambio (double(15,4)) | Null: YES | Key: 
+- cod_mon (smallint(3) unsigned) | Null: NO | Key: 
+- cod_mon_ab (tinyint(3) unsigned) | Null: NO | Key: 
+- rut_clte (char(10)) | Null: NO | Key: 
+- anulada (enum('S','N')) | Null: YES | Key: 
+- pendiente (enum('S','N')) | Null: YES | Key: 
+- tipodefactura (tinyint(1) unsigned) | Null: YES | Key: 
+- r_social (varchar(60)) | Null: YES | Key: 
+- nombre (char(40)) | Null: YES | Key: 
+
+Tabla: ccp_cargos
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: 
+- cod_sucursal (tinyint(3)) | Null: NO | Key: 
+- cod_sucursal_clte (int(9) unsigned) | Null: NO | Key: 
+- tipo_cargo (tinyint(2) unsigned) | Null: NO | Key: 
+- nro_cargo (bigint(15) unsigned) | Null: NO | Key: 
+- fecha_em (datetime) | Null: YES | Key: 
+- fecha_ven (datetime) | Null: YES | Key: 
+- fecha_can (datetime) | Null: YES | Key: 
+- monto (double(15,4)) | Null: YES | Key: 
+- tipo_abono (tinyint(2) unsigned) | Null: YES | Key: 
+- nro_abono (bigint(15) unsigned) | Null: NO | Key: 
+- monto_pendiente (double(15,4)) | Null: YES | Key: 
+- por_descuento (double(10,4)) | Null: YES | Key: 
+- tipo_cambio (double(15,4)) | Null: YES | Key: 
+- cod_mon (smallint(3) unsigned) | Null: NO | Key: 
+- cod_mon_ab (tinyint(3) unsigned) | Null: NO | Key: 
+- rut_clte (char(10)) | Null: NO | Key: 
+- anulada (enum('S','N')) | Null: YES | Key: 
+- pendiente (enum('S','N')) | Null: YES | Key: 
+- autorizada (enum('S','N')) | Null: YES | Key: 
+- estado (tinyint(1) unsigned) | Null: YES | Key: 
+- tipodefactura (tinyint(1) unsigned) | Null: YES | Key: 
+- r_social (varchar(60)) | Null: YES | Key: 
+- nombre (char(40)) | Null: YES | Key: 
+
+Tabla: cierres_mensuales
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- ano_cierre (smallint(4) unsigned) | Null: NO | Key: PRI
+- mes_cierre (tinyint(2)) | Null: NO | Key: PRI
+- estado (tinyint(1)) | Null: YES | Key: 
+
+Tabla: ciudades
+-----------------------------------
+- cod_pais (smallint(4) unsigned) | Null: NO | Key: MUL
+- cod_ciudad (smallint(6) unsigned) | Null: NO | Key: PRI
+- ciudad (varchar(40)) | Null: YES | Key: 
+
+Tabla: clientes
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- rut (char(10)) | Null: NO | Key: PRI
+- cod_clte (char(10)) | Null: YES | Key: 
+- cliente (enum('S','N')) | Null: YES | Key: 
+- proveedor (enum('S','N')) | Null: YES | Key: 
+- retenedor_ila (enum('S','N')) | Null: YES | Key: 
+- retenedor_ica (enum('S','N')) | Null: YES | Key: 
+- retenedor_iha (enum('S','N')) | Null: YES | Key: 
+- retenedor_bat (enum('S','N')) | Null: YES | Key: 
+- tipo_clte (tinyint(1) unsigned) | Null: YES | Key: 
+- cod_pos (varchar(10)) | Null: YES | Key: 
+- n_fantasia (varchar(60)) | Null: YES | Key: 
+- r_social (varchar(60)) | Null: YES | Key: 
+- email (varchar(40)) | Null: YES | Key: 
+- DIRECCION (varchar(80)) | Null: YES | Key: 
+- telefono1 (char(20)) | Null: YES | Key: 
+- telefono2 (char(20)) | Null: YES | Key: 
+- fax (char(20)) | Null: YES | Key: 
+- D_ENTREGA (varchar(80)) | Null: YES | Key: 
+- m_envio (smallint(6) unsigned) | Null: NO | Key: 
+- cod_empleado (mediumint(6) unsigned) | Null: NO | Key: 
+- cod_pais (smallint(4) unsigned) | Null: NO | Key: MUL
+- cod_ciudad (smallint(5) unsigned) | Null: NO | Key: 
+- cod_comuna (smallint(5) unsigned) | Null: YES | Key: 
+- descuento (double(8,4)) | Null: YES | Key: 
+- notas (longtext) | Null: YES | Key: 
+- cod_lista (smallint(4) unsigned) | Null: YES | Key: 
+- espersona (enum('S','N')) | Null: YES | Key: 
+- contacto (varchar(40)) | Null: YES | Key: 
+- giro (varchar(80)) | Null: YES | Key: 
+- cond_pago (smallint(3) unsigned) | Null: NO | Key: 
+- cond_pagoprov (smallint(3) unsigned) | Null: NO | Key: 
+- credito_maximo (double(15,4)) | Null: YES | Key: 
+- monto_utilizado (double(15,4)) | Null: YES | Key: 
+- bloqueo (tinyint(1) unsigned) | Null: YES | Key: 
+- monto_max_bloq_prov (double(15,4)) | Null: YES | Key: 
+- nro_max_fac_bloq_prov (smallint(3) unsigned) | Null: YES | Key: 
+- cod_cobranza (smallint(3)) | Null: YES | Key: 
+- cod_mon_credito (smallint(3)) | Null: YES | Key: 
+- estado (tinyint(1) unsigned) | Null: YES | Key: 
+- monto_max_pedidos (double(15,4)) | Null: YES | Key: 
+- fechaingreso (date) | Null: YES | Key: 
+- dia_atencion (tinyint(1) unsigned zerofill) | Null: YES | Key: 
+
+Tabla: clientes_convenios
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (tinyint(3)) | Null: NO | Key: 
+- cod_convenio (mediumint(6) unsigned) | Null: NO | Key: 
+- rut (char(10)) | Null: NO | Key: 
+- rut_convenio (char(10)) | Null: NO | Key: 
+- nombre (varchar(60)) | Null: YES | Key: 
+- estado (enum('S','N')) | Null: YES | Key: 
+- estado_clteconv (tinyint(1) unsigned) | Null: YES | Key: 
+
+Tabla: clientes_huellas
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- id (int(8)) | Null: NO | Key: PRI
+- rut_clte (char(10)) | Null: NO | Key: 
+- id_template (text) | Null: YES | Key: 
+
+Tabla: clientes_prod
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- rut_clte (varchar(10)) | Null: NO | Key: PRI
+- cod_art (int(7) unsigned) | Null: NO | Key: PRI
+- precio (double(15,4)) | Null: YES | Key: 
+
+Tabla: clientes_sucursales
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- rut (varchar(10)) | Null: NO | Key: PRI
+- cod_sucursal_clte (mediumint(6) unsigned) | Null: NO | Key: PRI
+- nombre (varchar(40)) | Null: YES | Key: 
+- direccion (varchar(80)) | Null: YES | Key: 
+- telefono (char(30)) | Null: YES | Key: 
+- fax (char(30)) | Null: YES | Key: 
+- cod_pais (smallint(5) unsigned) | Null: NO | Key: 
+- cod_ciudad (smallint(5) unsigned) | Null: NO | Key: 
+- cod_comuna (smallint(5) unsigned) | Null: NO | Key: 
+- cod_walmart (varchar(20)) | Null: YES | Key: 
+- dir_postal (varchar(80)) | Null: YES | Key: 
+- comuna_postal (varchar(20)) | Null: YES | Key: 
+- ciudad_postal (varchar(20)) | Null: YES | Key: 
+
+Tabla: cobranzas
+-----------------------------------
+- cod_cobranza (smallint(3) unsigned) | Null: NO | Key: PRI
+- descripcion (varchar(30)) | Null: YES | Key: 
+
+Tabla: codbarraenvases
+-----------------------------------
+- Id (tinyint(11) unsigned) | Null: NO | Key: 
+- cod_barra (varchar(20)) | Null: YES | Key: 
+- fechaingreso (datetime) | Null: YES | Key: 
+
+Tabla: codigosdebarra
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_art (int(7) unsigned) | Null: NO | Key: 
+- cod_barra (varchar(20)) | Null: NO | Key: 
+- cod_barrareg (varchar(20)) | Null: YES | Key: 
+- cod_consultor (varchar(20)) | Null: YES | Key: 
+- cod_unidad (smallint(4) unsigned) | Null: NO | Key: 
+
+Tabla: comprobantes
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (tinyint(3) unsigned) | Null: NO | Key: 
+- nro_comprobante (bigint(15) unsigned) | Null: NO | Key: 
+- rut_clte (char(10)) | Null: NO | Key: 
+- cod_sucursal_clte (int(9) unsigned) | Null: NO | Key: 
+- cod_sucursal_cargo (tinyint(3)) | Null: NO | Key: 
+- tipo_cargo (tinyint(2) unsigned) | Null: NO | Key: 
+- nro_cargo (bigint(15) unsigned) | Null: NO | Key: 
+- fecha_em (datetime) | Null: YES | Key: 
+- cod_empleado (mediumint(6) unsigned) | Null: YES | Key: 
+- cod_sucursal_abono (smallint(4) unsigned) | Null: NO | Key: 
+- tipo_abono (tinyint(2) unsigned) | Null: YES | Key: 
+- nro_abono (bigint(15) unsigned) | Null: NO | Key: 
+- monto (double(15,4)) | Null: YES | Key: 
+- cod_mon (smallint(3) unsigned) | Null: NO | Key: 
+- cod_mon_ab (smallint(3) unsigned) | Null: NO | Key: 
+- tipo_cambio (double(15,4)) | Null: YES | Key: 
+- fecha_cierre (datetime) | Null: YES | Key: 
+
+Tabla: comprobantes_prov
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (tinyint(3) unsigned) | Null: NO | Key: 
+- nro_comprobante (bigint(15) unsigned) | Null: NO | Key: 
+- rut_clte (char(10)) | Null: NO | Key: 
+- cod_sucursal_clte (int(9) unsigned) | Null: NO | Key: 
+- cod_sucursal_cargo (tinyint(3)) | Null: NO | Key: 
+- tipo_cargo (tinyint(2) unsigned) | Null: NO | Key: 
+- nro_cargo (bigint(15) unsigned) | Null: NO | Key: 
+- fecha_em (datetime) | Null: YES | Key: 
+- cod_empleado (mediumint(6) unsigned) | Null: YES | Key: 
+- cod_sucursal_abono (smallint(4) unsigned) | Null: NO | Key: 
+- tipo_abono (tinyint(2) unsigned) | Null: YES | Key: 
+- nro_abono (bigint(15) unsigned) | Null: NO | Key: 
+- monto (double(15,4)) | Null: YES | Key: 
+- cod_mon (smallint(3) unsigned) | Null: NO | Key: 
+- cod_mon_ab (smallint(3) unsigned) | Null: NO | Key: 
+- tipo_cambio (double(15,4)) | Null: YES | Key: 
+
+Tabla: comunas
+-----------------------------------
+- cod_pais (smallint(6) unsigned) | Null: NO | Key: 
+- cod_ciudad (smallint(6) unsigned) | Null: NO | Key: MUL
+- cod_comuna (smallint(6)) | Null: NO | Key: PRI
+- comuna (varchar(30)) | Null: YES | Key: 
+
+Tabla: condicionesdepago
+-----------------------------------
+- codigo (smallint(3) unsigned) | Null: NO | Key: PRI
+- descripcion (varchar(30)) | Null: YES | Key: 
+- dias (tinyint(3) unsigned) | Null: YES | Key: 
+- tipo (tinyint(1) unsigned) | Null: NO | Key: 
+
+Tabla: configuracion_pos
+-----------------------------------
+- COD_EMPRESA (tinyint(3) unsigned) | Null: NO | Key: 
+- COD_SUCURSAL (smallint(4) unsigned) | Null: NO | Key: 
+- COD_BODEGA (smallint(4) unsigned) | Null: NO | Key: 
+- COD_LISTA (smallint(4) unsigned) | Null: NO | Key: 
+- CAJA (tinyint(3) unsigned) | Null: YES | Key: 
+- TIPO_VENTA (tinyint(1)) | Null: YES | Key: 
+- FLAG_TICKET (int(3)) | Null: YES | Key: 
+- INF_TICKET_PENDIENTES (int(3)) | Null: YES | Key: 
+- VERIFICA_EMISION_TICKET (tinyint(1)) | Null: YES | Key: 
+- ENVIAR_TICKET_CENTRAL (tinyint(1)) | Null: YES | Key: 
+- MAXIMO_LINEAS (tinyint(1)) | Null: YES | Key: 
+- CANTIDAD_LINEAS (tinyint(3)) | Null: YES | Key: 
+- GRABAR_TICKET_COMO (tinyint(1)) | Null: YES | Key: 
+- ACTUALIZAR_STOCK (tinyint(1)) | Null: YES | Key: 
+- TIPO_GRILLA (tinyint(3)) | Null: YES | Key: 
+- VERIFICA_MONTO_X_PRODUCTO (tinyint(3)) | Null: YES | Key: 
+- MONTO_POR_PRODUCTO (int(11)) | Null: YES | Key: 
+- DOCUMENTO_POR_DEFECTO (tinyint(1)) | Null: YES | Key: 
+- FONDO_DE_CAJA (varchar(11)) | Null: YES | Key: 
+- TIPO_NUMERACION (tinyint(1)) | Null: YES | Key: 
+- FOLIO_BOLETA (varchar(30)) | Null: YES | Key: 
+- FOLIO_BOLETAFORMULARIO (varchar(30)) | Null: YES | Key: 
+- FOLIO_FACTURA (varchar(30)) | Null: YES | Key: 
+- FOLIO_FACTELECTRONICA (varchar(30)) | Null: YES | Key: 
+- FOLIO_BOLELECTRONICA (varchar(30)) | Null: YES | Key: 
+- FOLIO_BOLEXENTAELECTRONICA (varchar(30)) | Null: YES | Key: 
+- MAXIMO_DINERO_CAJA (int(11)) | Null: YES | Key: 
+- DETENER_VENTA (tinyint(3)) | Null: YES | Key: 
+- TIPO_PANTALLA (tinyint(1)) | Null: YES | Key: 
+- MINIMO_BOLETA (int(11)) | Null: YES | Key: 
+- ACUMULAR_PROD_POR_CODIGO (tinyint(1)) | Null: YES | Key: 
+- FORMULARIO_CANTIDAD (tinyint(1)) | Null: YES | Key: 
+- VERIFICAR_SIEMPRE (tinyint(1)) | Null: YES | Key: 
+- DESCUENTO_MAXIMO (tinyint(3)) | Null: YES | Key: 
+- COMPROBANTE_DESCUENTO (tinyint(1)) | Null: YES | Key: 
+- DESCRIPCION_LARGA (tinyint(1)) | Null: YES | Key: 
+- TICKET_EXENTOS (tinyint(1)) | Null: YES | Key: 
+- EXENTOS (varchar(30)) | Null: YES | Key: 
+- TIPO_PUBLICIDAD (tinyint(1)) | Null: YES | Key: 
+- PUBLICIDAD (longtext) | Null: YES | Key: 
+- MULTIMONEDA (tinyint(1)) | Null: YES | Key: 
+- FLAG_ENVASE (tinyint(1)) | Null: YES | Key: 
+- NUMERO_ENVASE (tinyint(1)) | Null: YES | Key: 
+- VERIFICA_HUELLA (tinyint(1)) | Null: YES | Key: 
+- CONVENIOS (tinyint(1)) | Null: YES | Key: 
+- PERSONAL (tinyint(3)) | Null: YES | Key: 
+- FLAG_INGRESO_POS (tinyint(1)) | Null: YES | Key: 
+- FLAG_USUARIO (tinyint(1)) | Null: YES | Key: 
+- CON_CLAVE (tinyint(1)) | Null: YES | Key: 
+- VER_IMAGEN_PRODUCTO (tinyint(1)) | Null: YES | Key: 
+- BUSCAR_IMG_DEL_SERVIDOR (tinyint(1)) | Null: YES | Key: 
+- DIRECCION_IMAGEN_PRODUCTO (varchar(255)) | Null: YES | Key: 
+- VERIFICA_VENDEDOR (tinyint(1)) | Null: YES | Key: 
+- SIEMPRE (tinyint(1)) | Null: YES | Key: 
+- CALCULAR_PRECIO_POR_UNIDAD (tinyint(1)) | Null: YES | Key: 
+- TIPO_PRECIO_POR_UNIDAD (tinyint(1)) | Null: YES | Key: 
+- VALIDA_TRAMO (tinyint(1)) | Null: YES | Key: 
+- SIN_DESCUENTO_P1P2 (tinyint(3)) | Null: YES | Key: 
+- CALCULAR_A_PARTIR_DE (tinyint(1)) | Null: YES | Key: 
+- PAGOS (varchar(30)) | Null: YES | Key: 
+- ORIENTACION_PANTALLA (tinyint(1)) | Null: YES | Key: 
+- RECUPERAR_VENDEDOR_DEL_CLTE (tinyint(1)) | Null: YES | Key: 
+- VER_PERSONAL_INGEGR (tinyint(1)) | Null: YES | Key: 
+- POS_CON_PROMOCIONES (tinyint(1)) | Null: YES | Key: 
+- AGREGAR_IMPTO_IHA (tinyint(1)) | Null: YES | Key: 
+- AGREGAR_IMPTO_ICA (tinyint(1)) | Null: YES | Key: 
+- GRUPO_EN_CUADRATURA (varchar(30)) | Null: YES | Key: 
+- VALIDAR_CLTE_CON_CHEQUE (tinyint(1)) | Null: YES | Key: 
+- MONTO_MAXIMO_POR_CHEQUE (int(11)) | Null: YES | Key: 
+- TRANSBANK (tinyint(1)) | Null: YES | Key: 
+- SIN_TARJETAS_TRANSBANK (tinyint(1)) | Null: YES | Key: 
+- TRANSBANK_PUERTOS (tinyint(1)) | Null: YES | Key: 
+- TRANSBANK_BAUDIOS (int(3)) | Null: YES | Key: 
+- TRANSBANK_MODELO (tinyint(1)) | Null: YES | Key: 
+- AMIPASS (tinyint(1)) | Null: YES | Key: 
+- CODIGO_LOCAL (varchar(30)) | Null: YES | Key: 
+- VALOR (varchar(30)) | Null: YES | Key: 
+- TIPO_AMBIENTE (tinyint(1)) | Null: YES | Key: 
+- CONTRASEÑA_AL_IMPRIMIR (tinyint(1)) | Null: YES | Key: 
+- INFORME_Z (tinyint(1)) | Null: YES | Key: 
+- INFORME_X (tinyint(1)) | Null: YES | Key: 
+- VUELTO (tinyint(1)) | Null: YES | Key: 
+- DONACION (tinyint(1)) | Null: YES | Key: 
+- DESCRIPCION_DONACION (varchar(20)) | Null: YES | Key: 
+- VALIDAR_CHQ_RESTAURANT (tinyint(1)) | Null: YES | Key: 
+- VER_IMG_AL_BUSCAR (tinyint(1)) | Null: YES | Key: 
+- RAPIDA_PRODUCTO (tinyint(1)) | Null: YES | Key: 
+- GRUPO_FAMILIA_SUBFAMILIA (tinyint(1)) | Null: YES | Key: 
+- buscar_clte_nrotelefono (tinyint(11) unsigned zerofill) | Null: NO | Key: 
+- VER_STOCK (tinyint(1)) | Null: YES | Key: 
+- SUCURSAL_STOCK (varchar(255)) | Null: YES | Key: 
+- BODEGAS_STOCK (varchar(255)) | Null: YES | Key: 
+- VERIFICA_STOCK_CERO (tinyint(1)) | Null: YES | Key: 
+- CLIENTE_ADM (tinyint(1)) | Null: YES | Key: 
+- direccion_cliente_adm (varchar(80)) | Null: NO | Key: 
+- CIERRE_CAJA_JEFE (tinyint(1)) | Null: YES | Key: 
+- direccion_cierre_caja_jefe (varchar(80)) | Null: NO | Key: 
+- DIBAL_COM (tinyint(1)) | Null: YES | Key: 
+- direccion_dibal_com (varchar(80)) | Null: NO | Key: 
+- LECTOR_TRANSBALANZA (tinyint(1)) | Null: YES | Key: 
+- direccion_lector_transbalanza (varchar(80)) | Null: NO | Key: 
+- FUNCIONES_WINDOWS (tinyint(1)) | Null: YES | Key: 
+- VER_ADMINISTRADOR_TAREAS (tinyint(1)) | Null: YES | Key: 
+- VER_BARRA_TAREAS (tinyint(1)) | Null: YES | Key: 
+- CERRAR_POS_SESION (tinyint(1)) | Null: YES | Key: 
+- MULTIPLES_INSTANCIAS_DE_VENTA (tinyint(1)) | Null: YES | Key: 
+- VER_INF_CIERRE (tinyint(1)) | Null: YES | Key: 
+- ENVIAR_INF_Z (tinyint(1)) | Null: YES | Key: 
+- VER_INF_CUADRATURA (tinyint(1)) | Null: YES | Key: 
+- POS_PRECIOS_MAYORISTAS (tinyint(1) unsigned zerofill) | Null: NO | Key: 
+- IMPRIME_BOLETAS_CON_TARJETA (tinyint(1) unsigned zerofill) | Null: NO | Key: 
+- ARCHIVO_CIERRE (tinyint(1)) | Null: YES | Key: 
+- TIPO_CIERRE_CAJA (tinyint(1)) | Null: YES | Key: 
+- MINUTOS_CIERRE_CAJA (tinyint(1)) | Null: YES | Key: 
+- REGISTRAR_LOGOPERACIONES (tinyint(1)) | Null: YES | Key: 
+- VALIDAR_CREDITO_CLTES (tinyint(1)) | Null: YES | Key: 
+- cliente_Delivery (varchar(9)) | Null: NO | Key: 
+- CLIENTE_POR_DEFECTO (varchar(255)) | Null: YES | Key: 
+- RECUPERAR_CONTENIDO_TICKET (tinyint(1)) | Null: YES | Key: 
+- UNA_ACCION_POR_USUARIO (tinyint(1)) | Null: YES | Key: 
+- VER_ULTIMA_ACTUALIZACION (tinyint(1)) | Null: YES | Key: 
+- MOSTRAR_ACTUALIZACION_POS (tinyint(1)) | Null: YES | Key: 
+- DIR_ARCHIVO_ACTUALIZACIONES_POS (varchar(255)) | Null: YES | Key: 
+- CURSOR_BUSQUEDA (tinyint(1)) | Null: YES | Key: 
+- CAMBIO_PRECIO (tinyint(1)) | Null: YES | Key: 
+- alto_fila (varchar(6)) | Null: NO | Key: 
+- tamaño_letra (varchar(6)) | Null: NO | Key: 
+- cierre_concambio_usuario (tinyint(1) unsigned zerofill) | Null: NO | Key: 
+- MAXIMO_CUOTAS_TARJETAS (tinyint(1)) | Null: YES | Key: 
+- NRO_CUOTAS (int(11)) | Null: YES | Key: 
+- SEGURIDAD_BUSQUEDA_PROD (tinyint(1)) | Null: YES | Key: 
+- inf_gaveta_cuadratura (tinyint(1) unsigned zerofill) | Null: NO | Key: 
+- USAR_SOLO_CODBARRA (tinyint(1)) | Null: YES | Key: 
+- PANTALLA_PUBLICIDAD (tinyint(1)) | Null: YES | Key: 
+- PUBLICIDAD_TOP (double(4,3)) | Null: YES | Key: 
+- PUBLICIDAD_LEFT (double(4,2)) | Null: YES | Key: 
+- INGRESAR_CHQ_TAR (tinyint(1)) | Null: YES | Key: 
+- BUSQUEDA_CLTE_POR_TARJETA (tinyint(1)) | Null: YES | Key: 
+- POSICION_INICIAL (tinyint(2)) | Null: YES | Key: 
+- LARGO (tinyint(2)) | Null: YES | Key: 
+- TRASPASAR_LOGOPERACIONES (tinyint(1)) | Null: YES | Key: 
+- OPCIONES_DINACAR (tinyint(1)) | Null: YES | Key: 
+- VALIDAR_UVENTAS (tinyint(1)) | Null: YES | Key: 
+- CONFIRMAR_ABERTURA_GAVETA (tinyint(1)) | Null: YES | Key: 
+- EJECUTAR_ACTUALIZACIONES_POS (tinyint(1)) | Null: YES | Key: 
+- BASE_MYSQL (varchar(50)) | Null: YES | Key: 
+- DIRECCION_ORIGEN (varchar(255)) | Null: YES | Key: 
+- DIRECCION_DESTINO (varchar(255)) | Null: YES | Key: 
+- CARPETA_SISTEMA (varchar(255)) | Null: YES | Key: 
+- TRABAJAR_CON_SERVIDOR_REMOTO (tinyint(1)) | Null: YES | Key: 
+- DIRECCION_CAJA (varchar(255)) | Null: YES | Key: 
+- SERVIDOR_PREPAGOS (tinyint(1)) | Null: YES | Key: 
+- NOMBRE_SERVIDOR_PREPAGOS (varchar(255)) | Null: YES | Key: 
+- DIR_PROGRAMA_VERIFICA (varchar(255)) | Null: YES | Key: 
+- VERIFICA_RED (tinyint(1)) | Null: YES | Key: 
+- IP_RED (varchar(20)) | Null: YES | Key: 
+- VERIFICA_INTERNET (tinyint(1)) | Null: YES | Key: 
+- TRABAJAR_SERVIDOR_REMOTO (tinyint(1)) | Null: YES | Key: 
+- NOMBRE_SERVIDOR_REMOTO (varchar(255)) | Null: YES | Key: 
+- CLIENTE (tinyint(1)) | Null: YES | Key: 
+- NRO (tinyint(1)) | Null: YES | Key: 
+- TIPO_SCANNER (tinyint(1)) | Null: YES | Key: 
+- BUSCA_SCANNER (tinyint(1)) | Null: YES | Key: 
+- CODIGO_PESABLE (tinyint(1)) | Null: YES | Key: 
+- PUERTO_SCANNER (tinyint(1)) | Null: YES | Key: 
+- BAUDIOS_SCANNER (int(4)) | Null: YES | Key: 
+- PARIDAD_SCANNER (tinyint(1)) | Null: YES | Key: 
+- BITPARADA_SCANNER (tinyint(1)) | Null: YES | Key: 
+- BITDATOS_SCANNER (tinyint(1)) | Null: YES | Key: 
+- TIPO_VISOR (tinyint(1)) | Null: YES | Key: 
+- PUERTO_VISOR (tinyint(1)) | Null: YES | Key: 
+- OPCIONES_IMPRESORAS (tinyint(1)) | Null: YES | Key: 
+- CANTIDAD_IMPRESORAS (tinyint(1)) | Null: YES | Key: 
+- GAVETA (tinyint(1)) | Null: YES | Key: 
+- PUERTO_IMPRESORA (tinyint(1)) | Null: YES | Key: 
+- TIPO_IMPRESORA1 (tinyint(1)) | Null: YES | Key: 
+- IMPRESORA_CHEQUES (tinyint(1)) | Null: YES | Key: 
+- CARGAR_IMAGEN (tinyint(1)) | Null: YES | Key: 
+- TIPO_IMPRESORA2 (tinyint(1)) | Null: YES | Key: 
+- NOMBRE_IMPRESORA2 (varchar(100)) | Null: YES | Key: 
+- BAUDIOS_IMPRESORAEPSON (int(4)) | Null: YES | Key: 
+- TICKET_CAMBIO (tinyint(1)) | Null: YES | Key: 
+- SEGUNDA_COPIA (tinyint(1)) | Null: YES | Key: 
+- DESCRIPCION (tinyint(1)) | Null: YES | Key: 
+- NRO_Z (tinyint(1)) | Null: YES | Key: 
+- ABRE_GAVETA (tinyint(1)) | Null: YES | Key: 
+- TICKET_SIN_CORTE (tinyint(1)) | Null: YES | Key: 
+- TICKET_DE_ATENCION (tinyint(1)) | Null: YES | Key: 
+- LETRA_ATENCION (tinyint(1)) | Null: YES | Key: 
+- EN_BOLETA (tinyint(1)) | Null: YES | Key: 
+- VERIFICA_GAVETA (tinyint(1)) | Null: YES | Key: 
+- IMPRIMIR_BOLETA (tinyint(1)) | Null: YES | Key: 
+- ESTADO_GAVETA (int(11)) | Null: YES | Key: 
+- BAUDIOS_IMPRESORA (int(4)) | Null: YES | Key: 
+- PARIDAD_IMPRESORA (tinyint(1)) | Null: YES | Key: 
+- BITPARADA_IMPRESORA (tinyint(1)) | Null: YES | Key: 
+- BITDATOS_IMPRESORA (tinyint(1)) | Null: YES | Key: 
+- VERIFICA_GAVETAABIERTA (tinyint(1)) | Null: YES | Key: 
+- TIPO_IMPRESORA3 (tinyint(1)) | Null: YES | Key: 
+- TIPO_IMPRESORA4 (tinyint(1)) | Null: YES | Key: 
+- NOMBRE_IMPRESORA4 (varchar(100)) | Null: YES | Key: 
+- IMPRIMIR_SEGUNDA_COPIA (tinyint(1)) | Null: YES | Key: 
+- IMPRIMIR_CODIGOBARRA (tinyint(1)) | Null: YES | Key: 
+- IMPRIMIR_DESCRIPCION (tinyint(1)) | Null: YES | Key: 
+- PUERTO_GAVETA (tinyint(1)) | Null: YES | Key: 
+- PAGO_IMPRESORA_EFECTIVO (tinyint(1)) | Null: YES | Key: 
+- PAGO_IMPRESORA_CHEQUE (tinyint(1)) | Null: YES | Key: 
+- PAGO_IMPRESORA_TARJETA (tinyint(1)) | Null: YES | Key: 
+- PAGO_IMPRESORA_LETRA (tinyint(1)) | Null: YES | Key: 
+- PAGO_IMPRESORA_CHQ_RESTAURANT (tinyint(1)) | Null: YES | Key: 
+- PAGO_IMPRESORA_DEPOSITO (tinyint(1)) | Null: YES | Key: 
+- LINEAS_CABEZAL (tinyint(1)) | Null: YES | Key: 
+- CANT_LINEAS_CABEZAL (tinyint(1)) | Null: YES | Key: 
+- LINEAS_PIES (tinyint(1)) | Null: YES | Key: 
+- CANT_LINEAS_PIES (tinyint(1)) | Null: YES | Key: 
+- IMPRIMIR_CODART_CODCAT (tinyint(1)) | Null: YES | Key: 
+- IMPRIMIR_DATOS_CLTES (tinyint(1)) | Null: YES | Key: 
+- IMPRIMIR_LINEAS_EN_BLANCO (tinyint(1)) | Null: YES | Key: 
+- IMPRIMIR_DESC_DOS_LINEAS (tinyint(1)) | Null: YES | Key: 
+- IMPRIMIR_CANT_DESC_TOTAL (tinyint(1)) | Null: YES | Key: 
+- IMPRIMIR_CODBARRA_DETALLE (tinyint(1)) | Null: YES | Key: 
+- TIPO_BALANZA1 (tinyint(1)) | Null: YES | Key: 
+- MANTENER_PRECIO_BALANZAS1 (tinyint(1)) | Null: YES | Key: 
+- PESABLE_POR_PIEZA (tinyint(1)) | Null: YES | Key: 
+- CON_DECIMAL (tinyint(3)) | Null: YES | Key: 
+- PESABLE_POR_PESO (tinyint(1)) | Null: YES | Key: 
+- PUERTO_BALANZAS (tinyint(1)) | Null: YES | Key: 
+- BAUDIOS_BALANZAS (int(4)) | Null: YES | Key: 
+- PARIDAD_BALANZAS (tinyint(1)) | Null: YES | Key: 
+- BITPARADA_BALANZAS (tinyint(1)) | Null: YES | Key: 
+- BITDATOS_BALANZAS (tinyint(1)) | Null: YES | Key: 
+- TIPO_BALANZA2 (tinyint(1)) | Null: YES | Key: 
+- SOLO_TICKET_EMITIDOS (tinyint(1)) | Null: YES | Key: 
+- TICKET_PENDIENTES (tinyint(1)) | Null: YES | Key: 
+- MANTENER_PRECIO_BALANZAS2 (tinyint(1)) | Null: YES | Key: 
+- BUSQUEDA_CURSOR (tinyint(1)) | Null: YES | Key: 
+- DIR_ARCHIVO_VENDEDORES (varchar(255)) | Null: YES | Key: 
+- FLAG_BALANZAS (varchar(20)) | Null: YES | Key: 
+- DIR_ARCHIVO_BALANZAS (varchar(255)) | Null: YES | Key: 
+- FLAG_TRANSACCION (varchar(20)) | Null: YES | Key: 
+- FLAG_PESABLE_POR_PESO (tinyint(2)) | Null: YES | Key: 
+- FLAG_PESABLE_POR_PIEZA (tinyint(2)) | Null: YES | Key: 
+- FLAG_PROD_NORMAL (tinyint(2)) | Null: YES | Key: 
+- MULTICAJA (tinyint(1)) | Null: YES | Key: 
+- ID_COMERCIO (varchar(20)) | Null: YES | Key: 
+- ID_LOCAL (varchar(20)) | Null: YES | Key: 
+- ID_TERMINAL (varchar(20)) | Null: YES | Key: 
+- SECUENCIA_COMERCIO (varchar(20)) | Null: YES | Key: 
+- DIRECCION_MULTICAJA (varchar(255)) | Null: YES | Key: 
+- TARJETAS_MULTICAJA (varchar(255)) | Null: YES | Key: 
+- CARGAS_MULTICAJA (varchar(255)) | Null: YES | Key: 
+- INGRESO_MANUAL (tinyint(1)) | Null: YES | Key: 
+- RUT_SODEXO (tinyint(1)) | Null: YES | Key: 
+- NRO_TARJETA_SODEXO (tinyint(1)) | Null: YES | Key: 
+- NRO_TARJETA_EDENRED (tinyint(1)) | Null: YES | Key: 
+- COD_AUTORIZACION_EDENRED (tinyint(1)) | Null: YES | Key: 
+- NRO_CELULAR_CARGA (tinyint(1)) | Null: YES | Key: 
+- COD_AUTORIZACION_CARGA (tinyint(1)) | Null: YES | Key: 
+- ID_TRANSACCION_CARGA (tinyint(1)) | Null: YES | Key: 
+- CUADRATURA_PRODUCTOS (tinyint(1)) | Null: YES | Key: 
+- OBLIGATORIA (tinyint(1)) | Null: YES | Key: 
+- GRUPO_CON_CUADRATURA (varchar(255)) | Null: YES | Key: 
+- PRODUCTOS_CON_CUADRATURA (varchar(255)) | Null: YES | Key: 
+- COD_PROD_CON_TICKET (varchar(255)) | Null: YES | Key: 
+- ACTIVAR_CASHDRO (tinyint(1)) | Null: YES | Key: 
+- IP_CASHDRO (varchar(20)) | Null: YES | Key: 
+- USUARIO_CASHDRO (varchar(20)) | Null: YES | Key: 
+- CLAVE_CASHDRO (varchar(20)) | Null: YES | Key: 
+- ACTIVAR_TRANSBANK_CASHDRO (tinyint(1)) | Null: YES | Key: 
+- INGRESO_DIRECTO_CASHDRO (tinyint(1)) | Null: YES | Key: 
+- CAJERO_CASHDRO (int(4)) | Null: YES | Key: 
+- IMPRESORA_CASHDRO (tinyint(1)) | Null: YES | Key: 
+- NOMBRE_IMPRESORA_CASHDRO (varchar(60)) | Null: YES | Key: 
+
+Tabla: consultas
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- nombre (varchar(50)) | Null: YES | Key: UNI
+- fecha (datetime) | Null: NO | Key: 
+- query (longtext) | Null: YES | Key: 
+- largos (varchar(80)) | Null: YES | Key: 
+- coltotales (varchar(80)) | Null: YES | Key: 
+- alineamientos (varchar(80)) | Null: YES | Key: 
+- codigo_de_programa (int(6) unsigned) | Null: YES | Key: 
+
+Tabla: convenios
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_convenio (mediumint(6) unsigned) | Null: NO | Key: PRI
+- estado (enum('S','N')) | Null: YES | Key: 
+- descripcion (varchar(60)) | Null: YES | Key: 
+- monto (double(15,4)) | Null: YES | Key: 
+- cant_pordia (tinyint(3)) | Null: YES | Key: 
+- cant_pormes (tinyint(3)) | Null: YES | Key: 
+- estado_conv (tinyint(1) unsigned) | Null: YES | Key: 
+- prepago (enum('S','N')) | Null: YES | Key: 
+
+Tabla: conveniosporclte
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (tinyint(3)) | Null: NO | Key: 
+- cod_convenio (mediumint(6) unsigned) | Null: NO | Key: 
+- rut (char(10)) | Null: NO | Key: 
+- estado (enum('S','N')) | Null: YES | Key: 
+- estado_convxclte (tinyint(1) unsigned) | Null: YES | Key: 
+
+Tabla: conveniosprepagos
+-----------------------------------
+- COD_EMPRESA (tinyint(3) unsigned) | Null: NO | Key: PRI
+- RUT (char(10)) | Null: NO | Key: PRI
+- MONTO (double(15,4)) | Null: YES | Key: 
+- COD_CONVENIO (mediumint(6) unsigned) | Null: NO | Key: 
+
+Tabla: cuadraturacaja
+-----------------------------------
+- COD_EMPRESA (tinyint(3) unsigned) | Null: NO | Key: PRI
+- COD_SUCURSAL (smallint(4) unsigned) | Null: NO | Key: PRI
+- NRO_CUADRATURA (bigint(15)) | Null: NO | Key: PRI
+- FECHA_INGRESO (datetime) | Null: YES | Key: 
+- COD_CAJERO (mediumint(6) unsigned) | Null: NO | Key: 
+- CAJA (tinyint(3) unsigned) | Null: NO | Key: PRI
+- FECHA_DESDE (datetime) | Null: YES | Key: 
+- FECHA_HASTA (datetime) | Null: YES | Key: 
+- EFECTIVO (char(255)) | Null: YES | Key: 
+- MONTO_EFECTIVO (double(15,4)) | Null: YES | Key: 
+- CHQ_BANCARIOS (char(255)) | Null: YES | Key: 
+- MONTO_CHQBANCARIOS (double(15,4)) | Null: YES | Key: 
+- TARJETAS (char(255)) | Null: YES | Key: 
+- MONTO_TARJETAS (double(15,4)) | Null: YES | Key: 
+- CHQ_ACCOR (char(255)) | Null: YES | Key: 
+- MONTO_CHQACCOR (double(15,4)) | Null: YES | Key: 
+- CHQ_SODEXHO (char(255)) | Null: YES | Key: 
+- MONTO_CHQSODEXHO (double(15,4)) | Null: YES | Key: 
+- DEPOSITOS_BANCARIOS (char(255)) | Null: YES | Key: 
+- MONTO_DBANCARIOS (double(15,4)) | Null: YES | Key: 
+- MULTICAJA (char(255)) | Null: YES | Key: 
+- MONTO_MULTICAJA (double(15,4)) | Null: YES | Key: 
+- FECHA_CIERRE (datetime) | Null: YES | Key: 
+- MONTO_INGRESOS (double(15,4)) | Null: YES | Key: 
+- MONTO_EGRESOS (double(15,4)) | Null: YES | Key: 
+- DIFERENCIA (double(15,4)) | Null: YES | Key: 
+
+Tabla: cuentasbancarias
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_banco (smallint(3) unsigned) | Null: NO | Key: PRI
+- nro_cuenta (char(30)) | Null: NO | Key: PRI
+- plaza (char(10)) | Null: YES | Key: 
+- saldo (double(15,4)) | Null: YES | Key: 
+
+Tabla: despachocamiones
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: PRI
+- tipo_doc (tinyint(1) unsigned) | Null: NO | Key: PRI
+- nro_despacho (bigint(15) unsigned) | Null: NO | Key: PRI
+- cod_camion (smallint(4) unsigned) | Null: NO | Key: 
+- cod_chofer (mediumint(6) unsigned) | Null: NO | Key: 
+- fecha_Ingreso (datetime) | Null: YES | Key: 
+- estado (smallint(5) unsigned) | Null: YES | Key: 
+- cod_turno (tinyint(2) unsigned) | Null: YES | Key: 
+
+Tabla: detallecartolas
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_banco (smallint(3) unsigned) | Null: NO | Key: PRI
+- cod_cartola (smallint(3)) | Null: NO | Key: PRI
+- nro_cuenta (char(30)) | Null: NO | Key: PRI
+- nro_cheque (int(11)) | Null: NO | Key: PRI
+- beneficiario (varchar(60)) | Null: YES | Key: 
+- detalle (varchar(60)) | Null: YES | Key: 
+- fecha_cobro (datetime) | Null: YES | Key: 
+- monto (double(15,4)) | Null: YES | Key: 
+- saldo (double(15,4)) | Null: YES | Key: 
+- estado (smallint(1)) | Null: YES | Key: 
+- fecha_emision (datetime) | Null: YES | Key: 
+
+Tabla: detallecompras
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: 
+- cod_sucursal_mov (smallint(4) unsigned) | Null: NO | Key: 
+- cod_bodega (smallint(4) unsigned) | Null: NO | Key: 
+- tipo (tinyint(2) unsigned) | Null: NO | Key: 
+- numero (bigint(15) unsigned) | Null: NO | Key: 
+- rut_clte (varchar(10)) | Null: NO | Key: 
+- cod_sucursal_clte (mediumint(6) unsigned) | Null: YES | Key: 
+- cod_clte (int(9) unsigned) | Null: NO | Key: 
+- nro_item (smallint(4) unsigned) | Null: YES | Key: 
+- cod_art (int(7) unsigned) | Null: NO | Key: 
+- cod_barra (varchar(20)) | Null: YES | Key: 
+- cod_catalogo (varchar(20)) | Null: YES | Key: 
+- descripcion (varchar(80)) | Null: YES | Key: 
+- costo (double(15,4)) | Null: YES | Key: 
+- costo_unitario (double(15,4)) | Null: YES | Key: 
+- costo_oc (double(15,4)) | Null: YES | Key: 
+- flete (double(12,4)) | Null: YES | Key: 
+- cantidad (double(12,4)) | Null: YES | Key: 
+- cantidad_oc (double(12,4)) | Null: YES | Key: 
+- peso (double(15,4)) | Null: YES | Key: 
+- recibido (double(12,4)) | Null: YES | Key: 
+- descuentos (varchar(50)) | Null: YES | Key: 
+- descuento (double(10,4)) | Null: YES | Key: 
+- descuento_oc (double(10,4)) | Null: YES | Key: 
+- iva (double(8,4)) | Null: YES | Key: 
+- fecha (datetime) | Null: YES | Key: 
+- unidad (varchar(10)) | Null: YES | Key: 
+- unidad_compra (double(10,4)) | Null: YES | Key: 
+- cubicaje (double(12,4)) | Null: YES | Key: 
+- peso_bruto (double(12,4)) | Null: YES | Key: 
+- peso_neto (double(12,4)) | Null: YES | Key: 
+- piezas_caja (double(12,4)) | Null: YES | Key: 
+- dcto_global (double(8,4)) | Null: YES | Key: 
+- porc_impto_adic1 (double(8,4)) | Null: YES | Key: 
+- cod_impto_adic1 (tinyint(3) unsigned) | Null: YES | Key: 
+- porc_impto_adic2 (double(8,4)) | Null: YES | Key: 
+- cod_impto_adic2 (tinyint(3) unsigned) | Null: YES | Key: 
+- actualiza_stock (enum('S','N')) | Null: YES | Key: 
+- nro_lote (char(20)) | Null: YES | Key: 
+- fecha_elaboracion (datetime) | Null: YES | Key: 
+- fecha_vencimiento (datetime) | Null: YES | Key: 
+- fecha_cierre (datetime) | Null: YES | Key: 
+
+Tabla: detallecotizaciones
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: 
+- cod_sucursal_mov (smallint(4) unsigned) | Null: NO | Key: 
+- cod_bodega (smallint(4) unsigned) | Null: NO | Key: 
+- tipo (tinyint(2) unsigned) | Null: NO | Key: 
+- numero (bigint(15) unsigned) | Null: NO | Key: 
+- rut_clte (char(10)) | Null: NO | Key: 
+- cod_sucursal_clte (mediumint(6) unsigned) | Null: YES | Key: 
+- cod_empleado (mediumint(6) unsigned) | Null: NO | Key: 
+- caja (tinyint(3) unsigned) | Null: YES | Key: 
+- nro_item (smallint(4) unsigned) | Null: NO | Key: 
+- cod_art (int(7) unsigned) | Null: NO | Key: 
+- cod_barra (varchar(20)) | Null: YES | Key: 
+- cod_catalogo (varchar(20)) | Null: YES | Key: 
+- descripcion (varchar(80)) | Null: YES | Key: 
+- costo (double(15,4)) | Null: YES | Key: 
+- precio_unitario (double(15,4)) | Null: YES | Key: 
+- precio_venta_publico (double(15,4) unsigned) | Null: NO | Key: 
+- cantidad (double(12,4)) | Null: YES | Key: 
+- despachado (double(12,4)) | Null: YES | Key: 
+- descuento (double(10,4)) | Null: YES | Key: 
+- descuentos (varchar(30)) | Null: YES | Key: 
+- iva (double(8,4)) | Null: YES | Key: 
+- flete (double(12,4)) | Null: YES | Key: 
+- margen (double(12,4)) | Null: YES | Key: 
+- fecha (datetime) | Null: NO | Key: 
+- unidad (varchar(10)) | Null: YES | Key: 
+- unidad_venta (double(10,4)) | Null: YES | Key: 
+- factor (double(8,4)) | Null: YES | Key: 
+- cubicaje (double(12,4)) | Null: YES | Key: 
+- peso_bruto (double(12,4)) | Null: YES | Key: 
+- peso_neto (double(12,4)) | Null: YES | Key: 
+- piezas_caja (double(12,4)) | Null: YES | Key: 
+- dcto_global (double(8,4)) | Null: YES | Key: 
+- porc_impto_adic1 (double(8,4)) | Null: YES | Key: 
+- cod_impto_adic1 (tinyint(3) unsigned) | Null: YES | Key: 
+- porc_impto_adic2 (double(8,4)) | Null: YES | Key: 
+- cod_impto_adic2 (tinyint(3) unsigned) | Null: YES | Key: 
+- actualiza_stock (enum('S','N')) | Null: YES | Key: 
+- fecha_cierre (datetime) | Null: YES | Key: 
+- com_dinero (double(12,4)) | Null: YES | Key: 
+- com_porc (double(10,4)) | Null: YES | Key: 
+- id_promo (bigint(15) unsigned) | Null: NO | Key: 
+- descripcion_promo (char(80)) | Null: YES | Key: 
+
+Tabla: detalleencuestas
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: PRI
+- cod_encuesta (smallint(5) unsigned) | Null: NO | Key: PRI
+- nro_item (smallint(4) unsigned) | Null: NO | Key: PRI
+- descripcion (varchar(40)) | Null: YES | Key: 
+
+Tabla: detalleglosas
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: PRI
+- tipo (tinyint(2) unsigned) | Null: NO | Key: PRI
+- numero (bigint(15) unsigned) | Null: NO | Key: PRI
+- rut_clte (char(10)) | Null: NO | Key: 
+- caja (tinyint(3) unsigned) | Null: NO | Key: PRI
+- nro_item (smallint(4) unsigned) | Null: NO | Key: 
+- descripcion (varchar(80)) | Null: YES | Key: 
+- cantidad (double(15,4) unsigned) | Null: YES | Key: 
+- precio_unitario (double(15,4) unsigned) | Null: YES | Key: 
+- precio_venta_publico (double(15,4) unsigned) | Null: YES | Key: 
+
+Tabla: detalleinventarios
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: 
+- id_inventario (smallint(4) unsigned) | Null: NO | Key: 
+- cod_sucursal_inv (smallint(4) unsigned) | Null: NO | Key: 
+- cod_bodega (smallint(4) unsigned) | Null: NO | Key: 
+- cod_art (int(7) unsigned) | Null: NO | Key: 
+- stock (double(15,4)) | Null: YES | Key: 
+- unidad_lista (double(10,4)) | Null: YES | Key: 
+- simbolo_un_lista (varchar(10)) | Null: YES | Key: 
+- simbolo_stock (varchar(10)) | Null: YES | Key: 
+- moneda_venta (smallint(3) unsigned) | Null: NO | Key: 
+- unidad_compra (double(10,4)) | Null: YES | Key: 
+- simbolo_un_compra (varchar(10)) | Null: YES | Key: 
+- moneda_compra (smallint(3) unsigned) | Null: NO | Key: 
+- flete (double(10,4)) | Null: YES | Key: 
+- ultimo_costo (double(15,4)) | Null: YES | Key: 
+- costo_compra (double(15,4)) | Null: YES | Key: 
+- precio1 (double(15,4)) | Null: YES | Key: 
+- precio2 (double(15,4)) | Null: YES | Key: 
+- precio3 (double(15,4)) | Null: YES | Key: 
+- impprecio1 (double(15,4)) | Null: YES | Key: 
+- impprecio2 (double(15,4)) | Null: YES | Key: 
+- impprecio3 (double(15,4)) | Null: YES | Key: 
+- stock_sys (double(15,4)) | Null: YES | Key: 
+- stock_inf (double(15,4)) | Null: YES | Key: 
+
+Tabla: detallepopup
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: PRI
+- cod_popup (smallint(5) unsigned) | Null: NO | Key: PRI
+- nro_item (smallint(4) unsigned) | Null: NO | Key: PRI
+- tipo (tinyint(1)) | Null: YES | Key: 
+- cod_art (int(7) unsigned) | Null: NO | Key: 
+- descripcion (varchar(80)) | Null: YES | Key: 
+- cantidad (double(15,4)) | Null: YES | Key: 
+- impprecio1 (double(15,4)) | Null: YES | Key: 
+- precioagranda (double(15,4)) | Null: YES | Key: 
+- agrandapor (double(15,4)) | Null: YES | Key: 
+
+Tabla: detalletransbalanza
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: 
+- id_transaccion (bigint(15) unsigned) | Null: NO | Key: 
+- nro_balanza (smallint(3) unsigned) | Null: NO | Key: 
+- nro_transaccion (mediumint(6) unsigned) | Null: NO | Key: 
+- nro_item (tinyint(2) unsigned) | Null: NO | Key: 
+- cod_art (int(7) unsigned) | Null: NO | Key: 
+- cantidad (double(12,4)) | Null: YES | Key: 
+- precio_unitario (double(15,4)) | Null: YES | Key: 
+- total_plu (double(15,4)) | Null: YES | Key: 
+
+Tabla: detalleventas
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: 
+- cod_sucursal_mov (smallint(4) unsigned) | Null: NO | Key: 
+- cod_bodega (smallint(4) unsigned) | Null: NO | Key: 
+- tipo (tinyint(2) unsigned) | Null: NO | Key: 
+- numero (bigint(15) unsigned) | Null: NO | Key: 
+- rut_clte (char(10)) | Null: NO | Key: 
+- cod_sucursal_clte (mediumint(6) unsigned) | Null: YES | Key: 
+- cod_empleado (mediumint(6) unsigned) | Null: NO | Key: 
+- caja (tinyint(3) unsigned) | Null: YES | Key: 
+- nro_item (smallint(4) unsigned) | Null: NO | Key: 
+- cod_art (int(7) unsigned) | Null: NO | Key: 
+- cod_barra (varchar(20)) | Null: YES | Key: 
+- cod_catalogo (varchar(20)) | Null: YES | Key: 
+- descripcion (varchar(80)) | Null: YES | Key: 
+- costo (double(15,4)) | Null: YES | Key: 
+- precio_unitario (double(15,4)) | Null: YES | Key: 
+- precio_venta_publico (double(15,4)) | Null: YES | Key: 
+- cantidad (double(15,4)) | Null: YES | Key: 
+- despachado (double(12,4)) | Null: YES | Key: 
+- descuento (double(10,4)) | Null: YES | Key: 
+- descuentos (varchar(30)) | Null: YES | Key: 
+- iva (double(8,4)) | Null: YES | Key: 
+- flete (double(12,4)) | Null: YES | Key: 
+- margen (double(12,4)) | Null: YES | Key: 
+- fecha (datetime) | Null: NO | Key: 
+- unidad (varchar(10)) | Null: YES | Key: 
+- unidad_venta (tinyint(4)) | Null: YES | Key: 
+- factor (double(8,4)) | Null: YES | Key: 
+- cubicaje (double(12,4)) | Null: YES | Key: 
+- peso_bruto (double(12,4)) | Null: YES | Key: 
+- peso_neto (double(12,4)) | Null: YES | Key: 
+- piezas_caja (double(12,4)) | Null: YES | Key: 
+- dcto_global (double(8,4)) | Null: YES | Key: 
+- porc_impto_adic1 (double(8,4)) | Null: YES | Key: 
+- cod_impto_adic1 (tinyint(3) unsigned) | Null: YES | Key: 
+- porc_impto_adic2 (double(8,4)) | Null: YES | Key: 
+- cod_impto_adic2 (tinyint(3) unsigned) | Null: YES | Key: 
+- actualiza_stock (enum('S','N')) | Null: YES | Key: 
+- cod_sucursal_destino (smallint(4) unsigned) | Null: YES | Key: 
+- cod_bodega_destino (smallint(4) unsigned) | Null: YES | Key: 
+- fecha_cierre (datetime) | Null: YES | Key: 
+- com_dinero (double(12,4)) | Null: YES | Key: 
+- com_porc (double(10,4)) | Null: YES | Key: 
+- id_promo (bigint(15) unsigned) | Null: NO | Key: 
+- descripcion_promo (char(80)) | Null: YES | Key: 
+
+Tabla: doc_clientes
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (tinyint(3) unsigned) | Null: NO | Key: 
+- caja (tinyint(3) unsigned) | Null: NO | Key: 
+- rut_clte (char(10)) | Null: NO | Key: 
+- cod_cajero (mediumint(6) unsigned) | Null: NO | Key: 
+- cod_empleado (mediumint(6) unsigned) | Null: NO | Key: 
+- tipo_docto (tinyint(2) unsigned) | Null: NO | Key: 
+- nro_docto (bigint(15) unsigned) | Null: NO | Key: 
+- iscargo (enum('S','N')) | Null: NO | Key: 
+- tipo_pago (tinyint(2) unsigned) | Null: NO | Key: 
+- serie_documento (char(20)) | Null: NO | Key: 
+- nro_documento (bigint(15) unsigned) | Null: YES | Key: 
+- fecha_em (datetime) | Null: YES | Key: 
+- fecha_ven (datetime) | Null: YES | Key: 
+- fecha_can (datetime) | Null: YES | Key: 
+- cod_banco (smallint(3) unsigned) | Null: NO | Key: MUL
+- cod_tarjeta (smallint(3) unsigned) | Null: NO | Key: MUL
+- monto (double(15,4)) | Null: YES | Key: 
+- cod_mon (tinyint(3) unsigned) | Null: NO | Key: 
+- estado (tinyint(2) unsigned) | Null: YES | Key: 
+- tipo_cambio (double(12,4)) | Null: YES | Key: 
+- impresa (enum('S','N')) | Null: YES | Key: 
+- glosa (text) | Null: YES | Key: 
+- n_cuotas (tinyint(3) unsigned) | Null: YES | Key: 
+- donacion (double(10,2)) | Null: YES | Key: 
+- fecha_cierre (datetime) | Null: YES | Key: 
+- cod_convenio (smallint(5)) | Null: YES | Key: 
+- tipo_mov (tinyint(2) unsigned) | Null: YES | Key: 
+- ajuste_efectivo (tinyint(3)) | Null: YES | Key: 
+- cod_comercio (char(15)) | Null: YES | Key: 
+- cod_autorizacion (char(10)) | Null: YES | Key: 
+- nro_operacion (char(10)) | Null: YES | Key: 
+- terminal_id (char(10)) | Null: YES | Key: 
+- ultdigtarjeta (char(4)) | Null: YES | Key: 
+- abrevtarjeta (char(2)) | Null: YES | Key: 
+- monto_cuota (double(13,4)) | Null: YES | Key: 
+- fecha_trans (datetime) | Null: YES | Key: 
+
+Tabla: doc_prepagos
+-----------------------------------
+- COD_EMPRESA (tinyint(3) unsigned) | Null: NO | Key: PRI
+- COD_SUCURSAL (tinyint(3) unsigned) | Null: NO | Key: PRI
+- CAJA (tinyint(3) unsigned) | Null: YES | Key: 
+- RUT_CLTE (char(10)) | Null: NO | Key: PRI
+- COD_CAJERO (mediumint(6) unsigned) | Null: NO | Key: 
+- TIPO_PAGO (tinyint(2) unsigned) | Null: NO | Key: 
+- NRO_FISCAL (bigint(15) unsigned) | Null: NO | Key: 
+- SERIE_DOCUMENTO (char(20)) | Null: NO | Key: 
+- NRO_DOCUMENTO (bigint(15) unsigned) | Null: YES | Key: 
+- FECHA_EM (datetime) | Null: NO | Key: PRI
+- FECHA_VEN (datetime) | Null: YES | Key: 
+- FECHA_CAN (datetime) | Null: YES | Key: 
+- COD_BANCO (smallint(3) unsigned) | Null: NO | Key: 
+- COD_TARJETA (smallint(3) unsigned) | Null: NO | Key: 
+- MONTO (double(15,4)) | Null: YES | Key: 
+- COD_MON (smallint(3) unsigned) | Null: NO | Key: 
+- TIPO_CAMBIO (double(12,4)) | Null: YES | Key: 
+- N_CUOTAS (tinyint(3) unsigned) | Null: YES | Key: 
+- COD_CONVENIO (mediumint(6) unsigned) | Null: NO | Key: 
+
+Tabla: doc_proveedores
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (tinyint(3) unsigned) | Null: NO | Key: 
+- tipo_docto (tinyint(2) unsigned) | Null: NO | Key: 
+- nro_docto (bigint(15) unsigned) | Null: NO | Key: 
+- rut_clte (char(10)) | Null: NO | Key: 
+- cod_empleado (mediumint(6) unsigned) | Null: YES | Key: 
+- iscargo (enum('S','N')) | Null: YES | Key: 
+- tipo_pago (tinyint(2) unsigned) | Null: YES | Key: 
+- serie_documento (char(20)) | Null: NO | Key: 
+- nro_documento (bigint(15) unsigned) | Null: YES | Key: 
+- fecha_em (datetime) | Null: YES | Key: 
+- fecha_ven (datetime) | Null: YES | Key: 
+- fecha_can (datetime) | Null: YES | Key: 
+- nro_cuenta (char(30)) | Null: NO | Key: 
+- cod_banco (smallint(4) unsigned) | Null: YES | Key: MUL
+- cod_tarjeta (smallint(3) unsigned) | Null: NO | Key: 
+- monto (double(15,4)) | Null: YES | Key: 
+- cod_mon (tinyint(3) unsigned) | Null: YES | Key: 
+- estado (tinyint(2) unsigned) | Null: YES | Key: 
+- tipo_cambio (double(12,4)) | Null: YES | Key: 
+- n_cuotas (tinyint(3) unsigned) | Null: YES | Key: 
+- glosa (text) | Null: YES | Key: 
+- impresa (enum('S','N')) | Null: YES | Key: 
+- fecha_cierre (datetime) | Null: YES | Key: 
+
+Tabla: empresas
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- n_fantasia (varchar(60)) | Null: YES | Key: 
+- r_social (varchar(60)) | Null: YES | Key: 
+- rut (varchar(10)) | Null: NO | Key: 
+- giro (varchar(80)) | Null: YES | Key: 
+- direccion (varchar(40)) | Null: YES | Key: 
+- telefono1 (varchar(20)) | Null: YES | Key: 
+- telefono2 (varchar(20)) | Null: YES | Key: 
+- fax (varchar(20)) | Null: YES | Key: 
+- encargado (varchar(30)) | Null: YES | Key: 
+- cod_pos (varchar(6)) | Null: YES | Key: 
+- cod_pais (smallint(5)) | Null: YES | Key: 
+- cod_ciudad (smallint(5)) | Null: YES | Key: 
+- cod_comuna (smallint(5) unsigned) | Null: NO | Key: 
+- retenedor_ila (enum('S','N')) | Null: YES | Key: 
+- retenedor_carne (enum('S','N')) | Null: YES | Key: 
+- retenedor_harina (enum('S','N')) | Null: YES | Key: 
+- activar_seguridad (enum('S','N')) | Null: YES | Key: 
+- email (varchar(60)) | Null: YES | Key: 
+- cod_actividad (mediumint(9) unsigned) | Null: NO | Key: 
+- contador_promos (bigint(15) unsigned) | Null: NO | Key: 
+- cierre_mensual (enum('S','N')) | Null: YES | Key: 
+- cierre_ano (smallint(4)) | Null: YES | Key: 
+- cierre_mes (tinyint(2)) | Null: YES | Key: 
+- cierre_diario (enum('S','N')) | Null: YES | Key: 
+- cierre_fecha (date) | Null: YES | Key: 
+
+Tabla: enlacecompras
+-----------------------------------
+- cod_empresa (tinyint(3)) | Null: NO | Key: MUL
+- rut_clte (char(10)) | Null: NO | Key: 
+- devolucion (enum('S','N')) | Null: NO | Key: 
+- cod_sucursal_ing (tinyint(3) unsigned) | Null: NO | Key: 
+- cod_sucursal_ped (tinyint(3) unsigned) | Null: NO | Key: 
+- numero_ing (bigint(15)) | Null: YES | Key: 
+- numero_ped (bigint(15)) | Null: YES | Key: 
+- fecha_ing (date) | Null: YES | Key: 
+- fecha_ped (date) | Null: YES | Key: 
+- pendiente_ing (enum('S','N')) | Null: YES | Key: 
+- pendiente_ped (enum('S','N')) | Null: YES | Key: 
+- cod_sucursal_oc (tinyint(3) unsigned) | Null: NO | Key: 
+- numero_oc (bigint(15)) | Null: YES | Key: 
+- fecha_oc (datetime) | Null: YES | Key: 
+- pendiente_oc (enum('S','N')) | Null: YES | Key: 
+- cod_sucursal_gd (tinyint(3) unsigned) | Null: NO | Key: 
+- numero_gd (bigint(15)) | Null: YES | Key: 
+- fecha_gd (datetime) | Null: YES | Key: 
+- pendiente_gd (enum('S','N')) | Null: YES | Key: 
+- cod_sucursal_bol (tinyint(3) unsigned) | Null: NO | Key: 
+- numero_bol (bigint(15)) | Null: YES | Key: 
+- fecha_bol (datetime) | Null: YES | Key: 
+- pendiente_bol (enum('S','N')) | Null: YES | Key: 
+- cod_sucursal_fac (tinyint(3) unsigned) | Null: NO | Key: 
+- numero_fac (bigint(15)) | Null: YES | Key: 
+- fecha_fac (datetime) | Null: YES | Key: 
+- pendiente_fac (enum('S','N')) | Null: YES | Key: 
+- cod_sucursal_ndb (tinyint(3) unsigned) | Null: NO | Key: 
+- numero_ndb (bigint(15)) | Null: YES | Key: 
+- fecha_ndb (date) | Null: YES | Key: 
+- pendiente_ndb (enum('S','N')) | Null: YES | Key: 
+
+Tabla: enlaceventas
+-----------------------------------
+- cod_empresa (tinyint(3)) | Null: NO | Key: MUL
+- rut_clte (char(10)) | Null: NO | Key: 
+- devolucion (enum('S','N')) | Null: NO | Key: 
+- cod_sucursal_cot (tinyint(3) unsigned) | Null: NO | Key: 
+- numero_cot (bigint(15)) | Null: YES | Key: 
+- pendiente_cot (enum('S','N')) | Null: YES | Key: 
+- fecha_cot (datetime) | Null: YES | Key: 
+- cod_sucursal_nv (tinyint(3) unsigned) | Null: NO | Key: 
+- numero_nv (bigint(15)) | Null: YES | Key: 
+- pendiente_nv (enum('S','N')) | Null: YES | Key: 
+- fecha_nv (datetime) | Null: YES | Key: 
+- cod_sucursal_gd (tinyint(3) unsigned) | Null: NO | Key: 
+- numero_gd (bigint(15)) | Null: YES | Key: 
+- pendiente_gd (enum('S','N')) | Null: YES | Key: 
+- fecha_gd (datetime) | Null: YES | Key: 
+- cod_sucursal_fac (tinyint(3) unsigned) | Null: NO | Key: 
+- numero_fac (bigint(15)) | Null: YES | Key: 
+- pendiente_fac (enum('S','N')) | Null: YES | Key: 
+- fecha_fac (datetime) | Null: YES | Key: 
+- cod_sucursal_bol (tinyint(3) unsigned) | Null: NO | Key: 
+- numero_bol (bigint(15)) | Null: YES | Key: 
+- pendiente_bol (enum('S','N')) | Null: YES | Key: 
+- fecha_bol (datetime) | Null: YES | Key: 
+- cod_sucursal_ndb (tinyint(3) unsigned) | Null: NO | Key: 
+- numero_ndb (bigint(15)) | Null: YES | Key: 
+- fecha_ndb (date) | Null: YES | Key: 
+- pendiente_ndb (enum('S','N')) | Null: YES | Key: 
+- cod_sucursal_lfac (tinyint(3) unsigned) | Null: NO | Key: 
+- numero_lfac (bigint(15)) | Null: YES | Key: 
+- fecha_lfac (date) | Null: YES | Key: 
+- pendiente_lfac (enum('S','N')) | Null: YES | Key: 
+- cod_sucursal_ctr (tinyint(3) unsigned) | Null: NO | Key: 
+- numero_ctr (bigint(15)) | Null: YES | Key: 
+- fecha_ctr (date) | Null: YES | Key: 
+- pendiente_ctr (enum('S','N')) | Null: YES | Key: 
+
+Tabla: familias
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- rubro (int(5) unsigned) | Null: NO | Key: 
+- familia (int(5) unsigned) | Null: NO | Key: PRI
+- descripcion (varchar(40)) | Null: YES | Key: 
+- com_dinero (double(12,4)) | Null: YES | Key: 
+- com_porc (double(10,4)) | Null: YES | Key: 
+- com_activa (enum('S','N')) | Null: NO | Key: 
+
+Tabla: formasdeenvio
+-----------------------------------
+- codigo (smallint(4) unsigned) | Null: NO | Key: PRI
+- descripcion (varchar(20)) | Null: YES | Key: 
+
+Tabla: formulasdearmado
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_art (int(7) unsigned) | Null: NO | Key: PRI
+- cod_art_componente (int(7) unsigned) | Null: NO | Key: PRI
+- descripcion (varchar(40)) | Null: YES | Key: 
+- cantidad (double(15,6)) | Null: YES | Key: 
+- desc_etiqueta (varchar(15)) | Null: YES | Key: 
+- imprimir (enum('S','N')) | Null: YES | Key: 
+- aplicarfactor (enum('S','N')) | Null: YES | Key: 
+
+Tabla: grupospromo
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (smallint(5) unsigned) | Null: NO | Key: 
+- id_promo (bigint(15) unsigned) | Null: NO | Key: 
+- cod_grupo (int(5) unsigned) | Null: NO | Key: 
+- rut_prov (char(10)) | Null: NO | Key: 
+- tipo_grupo (tinyint(5) unsigned) | Null: NO | Key: 
+- cant_inicial (double(12,4)) | Null: NO | Key: 
+- cant_pagar (double(12,4)) | Null: NO | Key: 
+- descuento (decimal(7,4) unsigned) | Null: NO | Key: 
+
+Tabla: hojapagoreparto
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: PRI
+- id_hoja (int(11)) | Null: NO | Key: PRI
+- cod_empleado (mediumint(6) unsigned) | Null: NO | Key: 
+- fecha (date) | Null: NO | Key: 
+
+Tabla: impuestos
+-----------------------------------
+- cod_imp (tinyint(3) unsigned) | Null: NO | Key: PRI
+- descripcion (varchar(20)) | Null: YES | Key: 
+- porc_imp (double(8,4)) | Null: NO | Key: 
+- retencion (enum('S','N')) | Null: NO | Key: 
+- ila (enum('S','N')) | Null: NO | Key: 
+- aplica_al_costo (enum('S','N')) | Null: YES | Key: 
+- cod_imp_sii (smallint(4) unsigned) | Null: YES | Key: 
+
+Tabla: impuestos_sii
+-----------------------------------
+- cod_imp (smallint(4) unsigned) | Null: NO | Key: PRI
+- descripcion (varchar(60)) | Null: YES | Key: 
+- porc_imp (double(8,4)) | Null: NO | Key: 
+
+Tabla: informes_z
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_sucursal (tinyint(3) unsigned) | Null: NO | Key: PRI
+- caja (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_cajero (mediumint(6) unsigned) | Null: NO | Key: 
+- nro_z (bigint(15) unsigned) | Null: NO | Key: PRI
+- fecha_z (datetime) | Null: YES | Key: 
+- boleta_iniz (bigint(15) unsigned) | Null: NO | Key: 
+- boleta_finz (bigint(15) unsigned) | Null: NO | Key: 
+- monto_z (double(15,4)) | Null: YES | Key: 
+- monto_efectivo (double(15,4)) | Null: YES | Key: 
+- monto_cheques (double(15,4)) | Null: YES | Key: 
+- monto_tarjetas (double(15,4)) | Null: YES | Key: 
+- monto_letras (double(15,4)) | Null: YES | Key: 
+- monto_chqrestaurant (double(15,4)) | Null: YES | Key: 
+- monto_donaciones (double(15,4)) | Null: YES | Key: 
+- fecha_cierre (datetime) | Null: YES | Key: 
+- CENTRO_COSTO (varchar(20)) | Null: YES | Key: 
+- NUMERO_POS (varchar(20)) | Null: YES | Key: 
+- ZONA_POS (varchar(20)) | Null: YES | Key: 
+- CANTIDAD_CIGARROS (smallint(5)) | Null: YES | Key: 
+- MONTO_CIGARROS (double(15,4)) | Null: YES | Key: 
+- CANTIDAD_RECARGAS (smallint(5)) | Null: YES | Key: 
+- MONTO_RECARGAS (double(15,4)) | Null: YES | Key: 
+- CANTIDAD_EXENTOS (smallint(5)) | Null: YES | Key: 
+- MONTO_EXENTOS (double(15,4)) | Null: YES | Key: 
+- CANTIDAD_EFECTIVO (smallint(4)) | Null: YES | Key: 
+- CANTIDAD_CHEQUES (smallint(4)) | Null: YES | Key: 
+- CANTIDAD_TARCREDITO (smallint(5)) | Null: YES | Key: 
+- CANTIDAD_TARDEBITO (smallint(4)) | Null: YES | Key: 
+- MONTO_TARDEBITO (double(15,4)) | Null: YES | Key: 
+- CANTIDAD_LETRAS (smallint(5)) | Null: YES | Key: 
+- CANTIDAD_CHQRESTEDENRED (smallint(5)) | Null: YES | Key: 
+- CANTIDAD_CHQRESTSODEXO (smallint(5)) | Null: YES | Key: 
+- MONTO_CHQRESTSODEXO (double(15,4)) | Null: YES | Key: 
+- CANTIDAD_DEPOSITOS (smallint(5)) | Null: YES | Key: 
+- MONTO_DEPOSITOS (double(15,4)) | Null: YES | Key: 
+- CANTIDAD_MULTICAJA (smallint(5)) | Null: YES | Key: 
+- MONTO_MULTICAJA (double(15,4)) | Null: YES | Key: 
+- CANTIDAD_CONVENIOS (smallint(5)) | Null: YES | Key: 
+- MONTO_CONVENIOS (double(15,4)) | Null: YES | Key: 
+
+Tabla: ingredientes
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_art (int(7) unsigned) | Null: NO | Key: PRI
+- id_ing (tinyint(3) unsigned) | Null: NO | Key: PRI
+- descripcion (char(80)) | Null: YES | Key: 
+
+Tabla: inventarios
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: PRI
+- id_inventario (smallint(4) unsigned) | Null: NO | Key: PRI
+- cod_sucursal_inv (smallint(4) unsigned) | Null: NO | Key: 
+- cod_bodega (smallint(4) unsigned) | Null: NO | Key: 
+- fecha (datetime) | Null: YES | Key: 
+- observaciones (text) | Null: YES | Key: 
+- tipo (tinyint(1) unsigned) | Null: NO | Key: 
+- numid_inicial (bigint(15) unsigned) | Null: NO | Key: 
+- numid_final (bigint(15) unsigned) | Null: NO | Key: 
+- tipo_ajuste (tinyint(2) unsigned) | Null: NO | Key: 
+
+Tabla: inventarioxproducto
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: 
+- id_inventario (int(8)) | Null: NO | Key: PRI
+- caja (tinyint(3) unsigned) | Null: NO | Key: 
+- fecha (datetime) | Null: NO | Key: 
+- cod_art (int(7) unsigned) | Null: NO | Key: 
+- cantidad_inicial (double(15,4) unsigned) | Null: NO | Key: 
+- cantidad_ajuste (double(15,4) unsigned) | Null: NO | Key: 
+- cantidad_final (double(15,4) unsigned) | Null: NO | Key: 
+- nro_z (bigint(15) unsigned) | Null: NO | Key: 
+- fecha_ajuste (datetime) | Null: YES | Key: 
+
+Tabla: lastcargo
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- tipo (tinyint(2) unsigned) | Null: NO | Key: PRI
+- ano (smallint(4) unsigned) | Null: NO | Key: PRI
+- mes (tinyint(2) unsigned) | Null: NO | Key: PRI
+- numero (bigint(15) unsigned) | Null: NO | Key: 
+
+Tabla: lastdoc
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: PRI
+- tipo_documento (tinyint(2)) | Null: NO | Key: PRI
+- nombre (varchar(40)) | Null: YES | Key: 
+- numero (bigint(15)) | Null: NO | Key: 
+- ultimo_numero (bigint(15) unsigned) | Null: YES | Key: 
+- nro_aviso (bigint(15) unsigned) | Null: YES | Key: 
+- vias (varchar(50)) | Null: YES | Key: 
+
+Tabla: listasprecios
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_lista (smallint(4) unsigned) | Null: NO | Key: PRI
+- rut_clte (char(10)) | Null: YES | Key: 
+- nombre (varchar(30)) | Null: YES | Key: 
+- fecha_impresion (datetime) | Null: YES | Key: 
+- cod_mon (smallint(3) unsigned) | Null: NO | Key: 
+
+Tabla: marcas
+-----------------------------------
+- cod_marca (smallint(5)) | Null: NO | Key: PRI
+- nombre (char(40)) | Null: YES | Key: 
+
+Tabla: modificaciondestock
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: PRI
+- numid (bigint(15) unsigned) | Null: NO | Key: PRI
+- cod_art (int(7) unsigned) | Null: NO | Key: 
+- cod_barra (varchar(20)) | Null: YES | Key: 
+- fecha (datetime) | Null: YES | Key: 
+- accion (tinyint(1) unsigned) | Null: NO | Key: 
+- descripcion (varchar(80)) | Null: YES | Key: 
+- costo (double(15,4)) | Null: YES | Key: 
+- precio (double(15,4)) | Null: YES | Key: 
+- cod_sucursal_origen (smallint(4) unsigned) | Null: NO | Key: 
+- cod_bodega_origen (smallint(4) unsigned) | Null: NO | Key: 
+- cod_sucursal_destino (smallint(4) unsigned) | Null: NO | Key: 
+- cod_bodega_destino (smallint(4) unsigned) | Null: NO | Key: 
+- unidad (char(10)) | Null: YES | Key: 
+- simbolo (char(10)) | Null: YES | Key: 
+- cantidad (double(12,4)) | Null: YES | Key: 
+- causa (varchar(80)) | Null: YES | Key: 
+- fecha_cierre (datetime) | Null: YES | Key: 
+- caja (tinyint(3) unsigned) | Null: NO | Key: 
+- tipo_mov (tinyint(1) unsigned) | Null: YES | Key: 
+- tipo_cargo (tinyint(2) unsigned) | Null: NO | Key: 
+- nro_cargo (bigint(15) unsigned) | Null: NO | Key: 
+- nro_serie (char(20)) | Null: YES | Key: 
+
+Tabla: monedas
+-----------------------------------
+- cod_mon (smallint(3) unsigned) | Null: NO | Key: PRI
+- simbolo (char(3)) | Null: YES | Key: 
+- fecha_cot (datetime) | Null: YES | Key: 
+- cotizacion (double(10,4)) | Null: YES | Key: 
+- nombre (varchar(20)) | Null: YES | Key: 
+- tipo_cambio (double(10,4)) | Null: YES | Key: 
+
+Tabla: monedasest
+-----------------------------------
+- cod_mon (mediumint(8) unsigned) | Null: YES | Key: 
+- nombre (varchar(15)) | Null: YES | Key: 
+
+Tabla: movimiento_series
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- rut_clte (char(10)) | Null: NO | Key: 
+- cod_art (int(7) unsigned) | Null: NO | Key: PRI
+- nro_serie (char(20)) | Null: NO | Key: 
+- id_mov (tinyint(1) unsigned) | Null: NO | Key: 
+- tipo (tinyint(2) unsigned) | Null: NO | Key: 
+- numero (bigint(15) unsigned) | Null: NO | Key: 
+- fecha_cierre (datetime) | Null: YES | Key: 
+
+Tabla: multicaja
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: PRI
+- caja (tinyint(3) unsigned) | Null: NO | Key: PRI
+- fecha (datetime) | Null: NO | Key: PRI
+- cod_cajero (mediumint(6) unsigned) | Null: NO | Key: 
+- cod_art (int(7) unsigned) | Null: NO | Key: PRI
+- id_comercio (int(7) unsigned) | Null: NO | Key: MUL
+- id_local (int(7) unsigned) | Null: NO | Key: 
+- id_terminal (int(7) unsigned) | Null: NO | Key: 
+- codigo_mc (int(7) unsigned) | Null: NO | Key: 
+- tipo (int(1) unsigned) | Null: NO | Key: 
+- operadora (varchar(25)) | Null: YES | Key: 
+- monto (double(15,4)) | Null: YES | Key: 
+- nro_celular (char(20)) | Null: YES | Key: 
+- codigo_autorizacion (bigint(13) unsigned) | Null: NO | Key: 
+- id_transaccion (int(7) unsigned) | Null: NO | Key: 
+- nro_tarjeta (int(7) unsigned) | Null: NO | Key: 
+- rut_beneficiario (char(10)) | Null: YES | Key: 
+- n_cuotas (tinyint(3) unsigned) | Null: YES | Key: 
+- fecha_cierre (datetime) | Null: YES | Key: 
+
+Tabla: odepa
+-----------------------------------
+- Id (tinyint(2)) | Null: NO | Key: PRI
+- descripcion (char(40)) | Null: YES | Key: 
+- precio_x_kilo (double(10,2)) | Null: NO | Key: 
+
+Tabla: ordenesdearmado
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: PRI
+- numero_id (bigint(15) unsigned) | Null: NO | Key: PRI
+- tipo_mov (tinyint(1) unsigned) | Null: NO | Key: 
+- cod_art (int(7) unsigned) | Null: NO | Key: 
+- cantidad (double(15,4)) | Null: YES | Key: 
+- pendiente (double(15,4)) | Null: YES | Key: 
+- fecha (datetime) | Null: YES | Key: 
+- cod_bodega (smallint(4) unsigned) | Null: NO | Key: 
+
+Tabla: origenes
+-----------------------------------
+- cod_origen (tinyint(3) unsigned) | Null: NO | Key: PRI
+- descripcion (char(30)) | Null: YES | Key: 
+
+Tabla: pagospromo
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (smallint(5) unsigned) | Null: NO | Key: 
+- id_promo (bigint(15) unsigned) | Null: NO | Key: 
+- cod_pago (smallint(3) unsigned) | Null: NO | Key: 
+- tipo_pago (tinyint(3) unsigned) | Null: NO | Key: 
+- descuento (decimal(8,4) unsigned) | Null: NO | Key: 
+
+Tabla: paises
+-----------------------------------
+- cod_pais (smallint(4) unsigned) | Null: NO | Key: PRI
+- pais (varchar(30)) | Null: YES | Key: 
+
+Tabla: peonetasdespacho
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: 
+- tipo_doc (tinyint(1) unsigned) | Null: NO | Key: 
+- nro_despacho (bigint(15) unsigned) | Null: NO | Key: 
+- cod_empleado (mediumint(6) unsigned) | Null: NO | Key: 
+
+Tabla: personal
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_empleado (mediumint(6) unsigned) | Null: NO | Key: PRI
+- rut (char(10)) | Null: NO | Key: 
+- nombre (varchar(40)) | Null: YES | Key: 
+- nombre_seguridad (char(30)) | Null: YES | Key: 
+- clave (char(20)) | Null: YES | Key: 
+- direccion (varchar(40)) | Null: YES | Key: 
+- telefono (char(20)) | Null: YES | Key: 
+- cod_comuna (smallint(6) unsigned) | Null: NO | Key: 
+- cod_ciudad (smallint(6) unsigned) | Null: NO | Key: 
+- cod_pais (smallint(4) unsigned) | Null: NO | Key: 
+- cod_postal (char(10)) | Null: YES | Key: 
+- fecha_ingreso (datetime) | Null: YES | Key: 
+- sueldo (double(12,4)) | Null: YES | Key: 
+- gratificacion (double(15,4) unsigned) | Null: YES | Key: 
+- cod_mon (smallint(3) unsigned) | Null: NO | Key: 
+- porc_comision (double(6,2)) | Null: YES | Key: 
+- notas (mediumtext) | Null: YES | Key: 
+- cargo (varchar(20)) | Null: YES | Key: 
+- email (varchar(40)) | Null: YES | Key: 
+- nivel (tinyint(3) unsigned) | Null: YES | Key: 
+- otros (enum('S','N')) | Null: YES | Key: 
+- security (enum('S','N')) | Null: YES | Key: 
+- estado (enum('S','N')) | Null: YES | Key: 
+- cod_isapre (tinyint(3) unsigned) | Null: YES | Key: 
+
+Tabla: precios
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_lista (smallint(4) unsigned) | Null: NO | Key: PRI
+- tipo_precio (tinyint(1) unsigned) | Null: NO | Key: 
+- cod_art (int(7) unsigned) | Null: NO | Key: PRI
+- unidad1 (double(12,4)) | Null: YES | Key: 
+- unidad2 (double(12,4)) | Null: YES | Key: 
+- unidad3 (double(12,4)) | Null: YES | Key: 
+- precio_ant1 (double(15,4)) | Null: YES | Key: 
+- precio1 (double(15,4)) | Null: YES | Key: 
+- precio_ant2 (double(15,4)) | Null: YES | Key: 
+- precio2 (double(15,4)) | Null: YES | Key: 
+- precio_ant3 (double(15,4)) | Null: YES | Key: 
+- precio3 (double(15,4)) | Null: YES | Key: 
+- margen_ant1 (double(10,4)) | Null: YES | Key: 
+- margen1 (double(10,4)) | Null: YES | Key: 
+- margen_ant2 (double(10,4)) | Null: YES | Key: 
+- margen2 (double(10,4)) | Null: YES | Key: 
+- margen_ant3 (double(10,4)) | Null: YES | Key: 
+- margen3 (double(10,4)) | Null: YES | Key: 
+- impprecio_ant1 (double(15,4)) | Null: YES | Key: 
+- impprecio1 (double(15,4)) | Null: YES | Key: 
+- impprecio_ant2 (double(15,4)) | Null: YES | Key: 
+- impprecio2 (double(15,4)) | Null: YES | Key: 
+- impprecio_ant3 (double(15,4)) | Null: YES | Key: 
+- impprecio3 (double(15,4)) | Null: YES | Key: 
+- cod_mon (tinyint(3) unsigned) | Null: YES | Key: 
+- fecha_act_ant (datetime) | Null: YES | Key: 
+- fecha_act (datetime) | Null: YES | Key: 
+- simbolo (char(5)) | Null: YES | Key: 
+- flagprecio (enum('S','N')) | Null: YES | Key: 
+- com_porc1 (double(10,4)) | Null: YES | Key: 
+- com_dinero1 (double(12,4)) | Null: YES | Key: 
+- com_porc2 (double(10,4)) | Null: YES | Key: 
+- com_dinero2 (double(12,4)) | Null: YES | Key: 
+- com_porc3 (double(10,4)) | Null: YES | Key: 
+- com_dinero3 (double(12,4)) | Null: YES | Key: 
+- com_activa (enum('S','N')) | Null: NO | Key: 
+- precio_final1 (double(15,4)) | Null: YES | Key: 
+- precio_final2 (double(15,4)) | Null: YES | Key: 
+- precio_final3 (double(15,4)) | Null: YES | Key: 
+- cod_unidad1 (smallint(4) unsigned) | Null: YES | Key: 
+- cod_unidad2 (smallint(4) unsigned) | Null: YES | Key: 
+- cod_unidad3 (smallint(4) unsigned) | Null: YES | Key: 
+
+Tabla: productos
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_art (int(7) unsigned) | Null: NO | Key: PRI
+- rubro (int(5) unsigned) | Null: NO | Key: 
+- familia (int(5) unsigned) | Null: NO | Key: 
+- subfamilia (int(5) unsigned) | Null: NO | Key: 
+- estado (tinyint(2)) | Null: YES | Key: 
+- rut_clte (char(10)) | Null: YES | Key: 
+- cod_marca (smallint(5) unsigned) | Null: NO | Key: 
+- descripcion (varchar(60)) | Null: NO | Key: 
+- descripcion_corta (varchar(25)) | Null: YES | Key: 
+- descripcion_larga (varchar(80)) | Null: YES | Key: 
+- origen (tinyint(1)) | Null: NO | Key: 
+- stock (double(12,4)) | Null: YES | Key: 
+- stock_critico (double(12,4)) | Null: YES | Key: 
+- stock_pedido (double(12,4)) | Null: YES | Key: 
+- stock_comprometido (double(12,4)) | Null: YES | Key: 
+- unidad_lista (double(10,4)) | Null: YES | Key: 
+- simbolo_un_lista (varchar(10)) | Null: YES | Key: 
+- simbolo_stock (varchar(10)) | Null: YES | Key: 
+- moneda_venta (smallint(3) unsigned) | Null: NO | Key: 
+- unidad_compra (double(10,4)) | Null: YES | Key: 
+- simbolo_un_compra (varchar(10)) | Null: YES | Key: 
+- moneda_compra (smallint(3) unsigned) | Null: NO | Key: 
+- ultimo_costo (double(15,4)) | Null: YES | Key: 
+- costo_compra (double(15,4)) | Null: YES | Key: 
+- costo_prom (double(15,4)) | Null: YES | Key: 
+- costo_reposicion (double(15,4)) | Null: YES | Key: 
+- costo_adicional (double(15,4)) | Null: YES | Key: 
+- fob (double(15,4)) | Null: YES | Key: 
+- cif (double(15,4)) | Null: YES | Key: 
+- dum14 (char(20)) | Null: YES | Key: 
+- flete (double(10,4)) | Null: YES | Key: 
+- fletevta (double(15,4)) | Null: YES | Key: 
+- tipo_fletevta (tinyint(1) unsigned) | Null: YES | Key: 
+- descuento (varchar(60)) | Null: YES | Key: 
+- fecha_ultmov (datetime) | Null: YES | Key: 
+- fecha_ingreso (datetime) | Null: YES | Key: 
+- fecha_ult_compra (date) | Null: YES | Key: 
+- cod_iva (tinyint(3) unsigned) | Null: NO | Key: 
+- cod_impto_adic1 (tinyint(3) unsigned) | Null: YES | Key: 
+- cod_impto_adic2 (tinyint(3) unsigned) | Null: YES | Key: 
+- peso_bruto (double(12,4)) | Null: YES | Key: 
+- peso_neto (double(12,4)) | Null: YES | Key: 
+- cubicaje (double(12,4)) | Null: YES | Key: 
+- piezas_caja (smallint(6)) | Null: YES | Key: 
+- unidad_fleje (varchar(15)) | Null: YES | Key: 
+- archivo_etiqueta (varchar(20)) | Null: YES | Key: 
+- propiedad (tinyint(2) unsigned) | Null: NO | Key: 
+- tipo (tinyint(2) unsigned) | Null: YES | Key: 
+- tipo_pesable (tinyint(1)) | Null: YES | Key: 
+- especie (tinyint(2) unsigned) | Null: YES | Key: 
+- faenamiento (enum('S','N')) | Null: YES | Key: 
+- tipo_promocion (tinyint(1) unsigned) | Null: NO | Key: 
+- enpromocion (enum('S','N')) | Null: YES | Key: 
+- dias_duracion (tinyint(4)) | Null: YES | Key: 
+- cod_balanza (int(7) unsigned) | Null: YES | Key: 
+- tara (double(15,4)) | Null: YES | Key: 
+- cantidad_x_pieza (double(12,4)) | Null: YES | Key: 
+- cod_envase (int(7) unsigned) | Null: YES | Key: 
+- factor_conversion (double(12,4)) | Null: YES | Key: 
+- contenido (double(12,4)) | Null: YES | Key: 
+- foto (varchar(40)) | Null: YES | Key: 
+- cod_popup (smallint(4) unsigned) | Null: YES | Key: 
+- cod_encuesta (smallint(4) unsigned) | Null: YES | Key: 
+- ticket_atencion (tinyint(1) unsigned) | Null: YES | Key: 
+- minimo_venta (smallint(4) unsigned) | Null: YES | Key: 
+
+Tabla: productos_series
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_sucursal (smallint(5) unsigned) | Null: NO | Key: 
+- cod_bodega (smallint(4) unsigned) | Null: NO | Key: 
+- rut_clte (char(10)) | Null: NO | Key: PRI
+- cod_art (int(7) unsigned) | Null: NO | Key: PRI
+- nro_serie (char(20)) | Null: NO | Key: PRI
+- cantidad (double(12,2)) | Null: YES | Key: 
+- peso (double(12,4)) | Null: YES | Key: 
+- fecha_ingreso (datetime) | Null: YES | Key: 
+- fecha_vencimiento (datetime) | Null: YES | Key: 
+- fecha_proceso (datetime) | Null: YES | Key: 
+- fecha_compra (datetime) | Null: YES | Key: 
+- estado (tinyint(1) unsigned) | Null: YES | Key: 
+- tipo_cargo (tinyint(2) unsigned) | Null: NO | Key: 
+- nro_cargo (bigint(15) unsigned) | Null: NO | Key: 
+- fecha_cierre (datetime) | Null: YES | Key: 
+
+Tabla: productosarmados
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_art (int(7) unsigned) | Null: NO | Key: PRI
+- descripcion (varchar(80)) | Null: YES | Key: 
+- costo_agregado (double(15,4)) | Null: YES | Key: 
+
+Tabla: productoseliminar
+-----------------------------------
+- cod_art (int(7)) | Null: YES | Key: 
+- descripcion (varchar(60)) | Null: YES | Key: 
+
+Tabla: productospromo
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (smallint(5) unsigned) | Null: NO | Key: 
+- id_promo (bigint(15) unsigned) | Null: NO | Key: 
+- tipo_prod (tinyint(1) unsigned zerofill) | Null: NO | Key: 
+- cod_art (int(7) unsigned) | Null: NO | Key: 
+- descripcion (char(80)) | Null: YES | Key: 
+- cant_inicial (double(12,4)) | Null: NO | Key: 
+- cant_pagar (double(12,4)) | Null: NO | Key: 
+- stock_limitado (double(12,4)) | Null: NO | Key: 
+- stock_restante (double(12,4)) | Null: NO | Key: 
+- descuento (decimal(7,4) unsigned) | Null: NO | Key: 
+- precio_venta (double(15,4)) | Null: NO | Key: 
+- precio_actual (double(15,4)) | Null: NO | Key: 
+
+Tabla: promociones
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_sucursal (smallint(5) unsigned) | Null: NO | Key: PRI
+- id_promo (bigint(15) unsigned) | Null: NO | Key: PRI
+- tipo (tinyint(3) unsigned) | Null: NO | Key: 
+- con_prod_var (tinyint(1) unsigned zerofill) | Null: NO | Key: 
+- nombre (char(60)) | Null: YES | Key: 
+- cod_art (int(7) unsigned) | Null: NO | Key: 
+- costo (double(15,4)) | Null: NO | Key: 
+- precio_neto (double(15,4)) | Null: NO | Key: 
+- precio_bruto (double(15,4)) | Null: NO | Key: 
+- duracion (tinyint(2) unsigned) | Null: NO | Key: 
+- diapromo (tinyint(1) unsigned zerofill) | Null: NO | Key: 
+- fechainicio (date) | Null: YES | Key: 
+- fechafin (date) | Null: YES | Key: 
+- horainicio (time) | Null: YES | Key: 
+- horafin (time) | Null: YES | Key: 
+- estado (tinyint(1) unsigned) | Null: NO | Key: 
+- limita_pagos (enum('S','N')) | Null: NO | Key: 
+- creditos (enum('S','N')) | Null: NO | Key: 
+- clientes (tinyint(1) unsigned) | Null: NO | Key: 
+- evaluacion (tinyint(1) unsigned) | Null: NO | Key: 
+- tipo_agrupacion (tinyint(2) unsigned) | Null: NO | Key: 
+
+Tabla: provarticulos
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- rut_clte (char(10)) | Null: NO | Key: PRI
+- cod_art (int(7) unsigned) | Null: NO | Key: PRI
+- cod_prov (char(20)) | Null: NO | Key: PRI
+- costo_prov (double(15,4)) | Null: YES | Key: 
+- descuentos (char(50)) | Null: YES | Key: 
+- descuento (decimal(10,4)) | Null: YES | Key: 
+- simbolo_un_compra (char(10)) | Null: YES | Key: 
+- cod_unidad (smallint(4) unsigned) | Null: YES | Key: 
+- flete (double(12,4)) | Null: YES | Key: 
+- sw_prox_costo (tinyint(1) unsigned) | Null: YES | Key: 
+- fecha_prox_costo (date) | Null: YES | Key: 
+- prox_costo (double(15,4)) | Null: YES | Key: 
+- prox_descuento (decimal(12,4)) | Null: YES | Key: 
+
+Tabla: reg_operaciones
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (tinyint(3)) | Null: NO | Key: 
+- cod_usuario (mediumint(6) unsigned) | Null: NO | Key: 
+- nombre_equipo (char(40)) | Null: YES | Key: 
+- cod_prog (tinyint(2) unsigned) | Null: NO | Key: 
+- cod_seccion (smallint(4) unsigned) | Null: NO | Key: 
+- accion (tinyint(1) unsigned) | Null: NO | Key: 
+- fecha_ingreso (datetime) | Null: NO | Key: 
+- observacion (text) | Null: YES | Key: 
+
+Tabla: reg_secciones
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_prog (tinyint(2) unsigned) | Null: NO | Key: PRI
+- cod_seccion (smallint(4) unsigned) | Null: NO | Key: PRI
+- descripcion (varchar(80)) | Null: YES | Key: 
+
+Tabla: rhf_paso
+-----------------------------------
+- COD_ART (int(11)) | Null: YES | Key: 
+- GRUPO (varchar(200)) | Null: YES | Key: 
+- FAMILIA (varchar(200)) | Null: YES | Key: 
+- SUBFAMILIA (varchar(200)) | Null: YES | Key: 
+- MARCA (varchar(200)) | Null: YES | Key: 
+- ORIGEN (varchar(200)) | Null: YES | Key: 
+
+Tabla: rhfmatrizfamilia
+-----------------------------------
+- rubro (varchar(500)) | Null: YES | Key: 
+- codRubro (int(11)) | Null: YES | Key: 
+- familia (varchar(500)) | Null: YES | Key: 
+- codFamilia (int(11)) | Null: YES | Key: 
+- subfamilia (varchar(500)) | Null: YES | Key: 
+- codSubfam (int(11)) | Null: YES | Key: 
+
+Tabla: rubros
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- rubro (int(5) unsigned) | Null: NO | Key: PRI
+- descripcion (varchar(40)) | Null: YES | Key: 
+- comisiondinero (double(12,4)) | Null: YES | Key: 
+- comisionporc (double(10,4)) | Null: YES | Key: 
+- com_dinero (double(12,4)) | Null: YES | Key: 
+- com_porc (double(10,4)) | Null: YES | Key: 
+- com_activa (enum('S','N')) | Null: NO | Key: 
+
+Tabla: rubros_empresas
+-----------------------------------
+- cod_rubro (tinyint(3) unsigned) | Null: NO | Key: 
+- descripcion (varchar(80)) | Null: YES | Key: 
+
+Tabla: subfamilias
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- familia (int(5) unsigned) | Null: NO | Key: 
+- subfamilia (int(5) unsigned) | Null: NO | Key: PRI
+- descripcion (varchar(40)) | Null: YES | Key: 
+- com_dinero (double(12,4)) | Null: YES | Key: 
+- com_porc (double(10,4)) | Null: YES | Key: 
+- com_activa (enum('S','N')) | Null: NO | Key: 
+
+Tabla: subrubros_empresas
+-----------------------------------
+- cod_rubro (tinyint(3) unsigned) | Null: NO | Key: 
+- cod_subrubro (tinyint(3) unsigned) | Null: NO | Key: 
+- descripcion (varchar(120)) | Null: YES | Key: 
+
+Tabla: sucursales
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: PRI
+- nombre (char(40)) | Null: YES | Key: 
+- direccion (char(80)) | Null: YES | Key: 
+- cod_pais (smallint(4) unsigned) | Null: YES | Key: 
+- cod_ciudad (smallint(5) unsigned) | Null: YES | Key: 
+- cod_comuna (smallint(5) unsigned) | Null: YES | Key: 
+- cod_sucursal_sii (char(15)) | Null: YES | Key: 
+
+Tabla: sys1
+-----------------------------------
+- codigo (smallint(4) unsigned) | Null: NO | Key: PRI
+- nombre (varchar(40)) | Null: YES | Key: MUL
+- password (varchar(10)) | Null: YES | Key: 
+- nivel (tinyint(3) unsigned) | Null: YES | Key: 
+- otros (enum('S','N')) | Null: YES | Key: 
+- security (enum('S','N')) | Null: YES | Key: MUL
+
+Tabla: sys2
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_prog (tinyint(2) unsigned) | Null: NO | Key: PRI
+- cod_seccion (smallint(6)) | Null: NO | Key: PRI
+- DESCRIPCION (varchar(80)) | Null: YES | Key: 
+- ingreso (enum('S','N')) | Null: YES | Key: 
+- consulta (enum('S','N')) | Null: YES | Key: 
+- modificar (enum('S','N')) | Null: YES | Key: 
+- crear (enum('S','N')) | Null: YES | Key: 
+- anular (enum('S','N')) | Null: YES | Key: 
+- borrar (enum('S','N')) | Null: YES | Key: 
+
+Tabla: sys3
+-----------------------------------
+- cod_prog (tinyint(2) unsigned) | Null: NO | Key: PRI
+- nombre (varchar(50)) | Null: YES | Key: 
+- habilitar (enum('S','N')) | Null: YES | Key: 
+
+Tabla: sys4
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: PRI
+- cod_seccion (smallint(4) unsigned) | Null: NO | Key: PRI
+- codigo (mediumint(6) unsigned) | Null: NO | Key: PRI
+- ingreso (enum('S','N')) | Null: YES | Key: 
+- consulta (enum('S','N')) | Null: YES | Key: 
+- modificar (enum('S','N')) | Null: YES | Key: 
+- crear (enum('S','N')) | Null: YES | Key: 
+- anular (enum('S','N')) | Null: YES | Key: 
+- borrar (enum('S','N')) | Null: YES | Key: 
+
+Tabla: tarjetas
+-----------------------------------
+- cod_tarjeta (smallint(3) unsigned) | Null: NO | Key: PRI
+- nombre (char(40)) | Null: YES | Key: 
+- tipo (tinyint(1) unsigned) | Null: NO | Key: 
+- abreviatura (char(2)) | Null: YES | Key: 
+
+Tabla: ticketrestaurant
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: 
+- caja (tinyint(3) unsigned) | Null: YES | Key: 
+- cod_cajero (mediumint(6) unsigned) | Null: NO | Key: 
+- fecha_em (datetime) | Null: YES | Key: 
+- nro_cargo (bigint(15) unsigned) | Null: NO | Key: 
+- tipo_ticket (tinyint(1) unsigned) | Null: NO | Key: PRI
+- nro_ticket (varchar(40)) | Null: NO | Key: PRI
+- valor_ticket (double(15,4)) | Null: YES | Key: 
+- fecha_cierre (datetime) | Null: YES | Key: 
+
+Tabla: traspaso
+-----------------------------------
+- id (int(6)) | Null: NO | Key: PRI
+- origen (varchar(70)) | Null: YES | Key: 
+- destino (varchar(70)) | Null: YES | Key: 
+- archivo (varchar(50)) | Null: YES | Key: 
+- tipo (int(1)) | Null: YES | Key: 
+
+Tabla: turnos
+-----------------------------------
+- cod_turno (tinyint(2) unsigned) | Null: NO | Key: PRI
+- descripcion (char(40)) | Null: YES | Key: 
+- desde (time) | Null: NO | Key: 
+- hasta (time) | Null: NO | Key: 
+
+Tabla: ultimosprecios
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_lista (smallint(4) unsigned) | Null: NO | Key: 
+- cod_art (int(7) unsigned) | Null: NO | Key: 
+- unidad1 (double(12,4)) | Null: YES | Key: 
+- unidad2 (double(12,4)) | Null: YES | Key: 
+- unidad3 (double(12,4)) | Null: YES | Key: 
+- precio1 (double(15,4)) | Null: YES | Key: 
+- precio2 (double(15,4)) | Null: YES | Key: 
+- precio3 (double(15,4)) | Null: YES | Key: 
+- margen1 (double(10,4)) | Null: YES | Key: 
+- margen2 (double(10,4)) | Null: YES | Key: 
+- margen3 (double(10,4)) | Null: YES | Key: 
+- impprecio1 (double(15,4)) | Null: YES | Key: 
+- impprecio2 (double(15,4)) | Null: YES | Key: 
+- impprecio3 (double(15,4)) | Null: YES | Key: 
+- cod_mon (tinyint(3) unsigned) | Null: YES | Key: 
+- fecha_act (datetime) | Null: YES | Key: 
+
+Tabla: unidadarticulo
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: YES | Key: MUL
+- cod_art (int(7) unsigned) | Null: YES | Key: 
+- cod_unidad (smallint(4) unsigned) | Null: YES | Key: 
+- factor (double(10,5)) | Null: YES | Key: 
+
+Tabla: unidadesdeventa
+-----------------------------------
+- cod_unidad (smallint(4) unsigned) | Null: NO | Key: PRI
+- descripcion (varchar(20)) | Null: YES | Key: 
+- sigla (char(3)) | Null: YES | Key: 
+
+Tabla: usuariocatalogo
+-----------------------------------
+- rut (varchar(12)) | Null: NO | Key: PRI
+- nombre (varchar(100)) | Null: NO | Key: 
+- password_hash (varchar(255)) | Null: NO | Key: 
+- debe_cambiar_pass (tinyint(1)) | Null: YES | Key: 
+- created_at (timestamp) | Null: NO | Key: 
+- rol (varchar(20)) | Null: YES | Key: 
+
+Tabla: variacioncostos
+-----------------------------------
+- cod_empresa (tinyint(3) unsigned) | Null: NO | Key: MUL
+- cod_sucursal (smallint(4) unsigned) | Null: NO | Key: 
+- tipo (tinyint(2) unsigned) | Null: NO | Key: 
+- numero (bigint(15) unsigned) | Null: NO | Key: 
+- rut_clte (char(10)) | Null: NO | Key: 
+- fecha (datetime) | Null: YES | Key: 
+- cod_art (int(7) unsigned) | Null: NO | Key: 
+- descripcion (varchar(80)) | Null: YES | Key: 
+- costo_actual (double(15,4)) | Null: YES | Key: 
+- costo_nuevo (double(15,4)) | Null: YES | Key: 
+- cantidad (double(12,4)) | Null: YES | Key: 
+- unidad (char(10)) | Null: YES | Key: 
