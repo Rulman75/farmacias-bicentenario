@@ -34,7 +34,7 @@ export default function SugerenciaPrecioPage() {
     setHistorialLoading(true);
     const res = await getHistorialSugerencias();
     if (res.success) {
-      setHistorial(res.data);
+      setHistorial(res.data || []);
     }
     setHistorialLoading(false);
   };
@@ -52,9 +52,9 @@ export default function SugerenciaPrecioPage() {
     setLoading(true);
     const res = await getProductoParaSugerencia(query);
     if (res.success) {
-      setSearchResults(res.data);
+      setSearchResults(res.data || []);
       const initProps: Record<string, number> = {};
-      res.data.forEach((p: any) => {
+      (res.data || []).forEach((p: any) => {
         initProps[p.cod_art] = p.precio_final1 || 0;
       });
       setProposedPrices(initProps);
@@ -187,7 +187,7 @@ export default function SugerenciaPrecioPage() {
     const res = await getSugerenciaDetalle(sugerencia.id_sugerencia);
     if (res.success) {
       generatePDF(
-        res.data, 
+        res.data || [], 
         sugerencia.observacion, 
         sugerencia.id_sugerencia, 
         formatDate(new Date(sugerencia.fecha))
@@ -208,7 +208,7 @@ export default function SugerenciaPrecioPage() {
   const handleEditHistorial = async (sugerencia: any) => {
     const res = await getSugerenciaDetalle(sugerencia.id_sugerencia);
     if (res.success) {
-      setAddedItems(res.data.map((d: any) => ({
+      setAddedItems((res.data || []).map((d: any) => ({
         cod_art: d.cod_art,
         descripcion: d.descripcion,
         precio_final1: d.precio_actual,
