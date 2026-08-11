@@ -9,9 +9,9 @@ export const metadata: Metadata = {
   title: 'Sistema de Gestión Farmacias Bicentenario',
   description: 'Sistema web de gestión para Farmacias Bicentenario',
   icons: {
-    icon: '/icon.png',
-    shortcut: '/icon.png',
-    apple: '/icon.png',
+    icon: '/favicon-v2.png',
+    shortcut: '/favicon-v2.png',
+    apple: '/favicon-v2.png',
   },
 };
 
