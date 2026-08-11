@@ -2,12 +2,14 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { getSucursales, searchProducto, registrarIngreso, checkIngresoExistente } from '@/app/actions';
-import { PackagePlus, Search, CheckCircle2, AlertCircle } from 'lucide-react';
+import { PackagePlus, Search, CheckCircle2, AlertCircle, Camera } from 'lucide-react';
+import ScannerModal from '@/components/ScannerModal';
 
 export default function IngresoVencimientos() {
   const [sucursales, setSucursales] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [showScanner, setShowScanner] = useState(false);
 
   // Foco para escáner
   const scanRef = useRef<HTMLInputElement>(null);
@@ -132,19 +134,29 @@ export default function IngresoVencimientos() {
 
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-700">Código de Barras o Interno</label>
-              <div className="relative">
-                <input 
-                  type="text" 
-                  ref={scanRef}
-                  value={codigoIngresado}
-                  onChange={(e) => setCodigoIngresado(e.target.value)}
-                  onBlur={handleSearchProducto}
-                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleSearchProducto())}
-                  placeholder="Escanee o escriba el código..."
-                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 outline-none transition-all"
-                  required
-                />
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <input 
+                    type="text" 
+                    ref={scanRef}
+                    value={codigoIngresado}
+                    onChange={(e) => setCodigoIngresado(e.target.value)}
+                    onBlur={handleSearchProducto}
+                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleSearchProducto())}
+                    placeholder="Escanee o escriba el código..."
+                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 outline-none transition-all"
+                    required
+                  />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowScanner(true)}
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 p-3 rounded-xl transition-colors border border-slate-200 flex-shrink-0 flex items-center justify-center"
+                  title="Escanear con cámara del celular"
+                >
+                  <Camera size={24} />
+                </button>
               </div>
             </div>
           </div>
@@ -162,6 +174,7 @@ export default function IngresoVencimientos() {
               <label className="text-sm font-bold text-slate-700">Cantidad (Unidades)</label>
               <input 
                 type="number" 
+                inputMode="decimal"
                 ref={cantidadRef}
                 min="0.01"
                 step="0.01"
@@ -196,6 +209,23 @@ export default function IngresoVencimientos() {
           </div>
         </form>
       </div>
+
+      {showScanner && (
+        <ScannerModal 
+          onClose={() => setShowScanner(false)} 
+          onScan={(code) => {
+            setCodigoIngresado(code);
+            setShowScanner(false);
+            // Wait slightly for React to update the state, then search
+            setTimeout(() => {
+              if (scanRef.current) {
+                scanRef.current.focus();
+                scanRef.current.blur(); // Trigger the onBlur search
+              }
+            }, 100);
+          }} 
+        />
+      )}
     </div>
   );
 }
