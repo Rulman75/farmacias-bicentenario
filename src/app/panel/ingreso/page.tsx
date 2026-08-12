@@ -103,21 +103,6 @@ export default function IngresoVencimientos() {
     }
   };
 
-  return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="bg-fuchsia-600 p-3 rounded-xl text-white shadow-lg shadow-fuchsia-600/20">
-          <PackagePlus size={28} />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800">Registrar Ingreso de Producto</h1>
-          <p className="text-slate-500">Ingrese la fecha de vencimiento y unidades del nuevo producto</p>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <form onSubmit={handleSubmit} className="p-8 space-y-6">
-          
   const FormContent = () => (
     <>
       {message && (
@@ -128,87 +113,86 @@ export default function IngresoVencimientos() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700">Sucursal de Destino</label>
-              <select 
-                value={codSucursal}
-                onChange={(e) => setCodSucursal(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 outline-none transition-all cursor-pointer"
-                required
-              >
-                {sucursales.map(s => (
-                  <option key={s.cod_sucursal} value={s.cod_sucursal}>
-                    {s.nombre}
-                  </option>
-                ))}
-              </select>
-            </div>
+        <div className="space-y-2">
+          <label className="text-sm font-bold text-slate-700">Sucursal de Destino</label>
+          <select 
+            value={codSucursal}
+            onChange={(e) => setCodSucursal(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 outline-none transition-all cursor-pointer"
+            required
+          >
+            {sucursales.map(s => (
+              <option key={s.cod_sucursal} value={s.cod_sucursal}>
+                {s.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700">Código de Barras o Interno</label>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <input 
-                    type="text" 
-                    ref={scanRef}
-                    value={codigoIngresado}
-                    onChange={(e) => setCodigoIngresado(e.target.value)}
-                    onBlur={handleSearchProducto}
-                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleSearchProducto())}
-                    placeholder="Escanee o escriba el código..."
-                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 outline-none transition-all"
-                    required
-                  />
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowScanner(true)}
-                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 p-3 rounded-xl transition-colors border border-slate-200 flex-shrink-0 flex items-center justify-center"
-                  title="Escanear con cámara del celular"
-                >
-                  <Camera size={24} />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Tarjeta de Producto Encontrado */}
-          <div className={`p-5 rounded-xl border ${productoData ? 'border-emerald-200 bg-emerald-50/50' : 'border-slate-100 bg-slate-50'} transition-all`}>
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Producto Identificado</label>
-            <div className="text-lg font-semibold text-slate-800">
-              {productoData ? productoData.descripcion : <span className="text-slate-400 italic">Esperando lectura de código...</span>}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700">Cantidad (Unidades)</label>
+        <div className="space-y-2">
+          <label className="text-sm font-bold text-slate-700">Código de Barras o Interno</label>
+          <div className="flex gap-2">
+            <div className="relative flex-1">
               <input 
-                type="number" 
-                inputMode="decimal"
-                ref={cantidadRef}
-                min="0.01"
-                step="0.01"
-                value={cantidad}
-                onChange={(e) => setCantidad(e.target.value)}
-                placeholder="Ej. 50"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 outline-none transition-all"
+                type="text" 
+                ref={scanRef}
+                value={codigoIngresado}
+                onChange={(e) => setCodigoIngresado(e.target.value)}
+                onBlur={handleSearchProducto}
+                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleSearchProducto())}
+                placeholder="Escanee o escriba el código..."
+                className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 outline-none transition-all"
                 required
               />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
             </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700">Fecha de Vencimiento (Mes-Año)</label>
-              <input 
-                type="month" 
-                value={fechaVencimiento}
-                onChange={(e) => setFechaVencimiento(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 outline-none transition-all"
-                required
-              />
-            </div>
+            <button
+              type="button"
+              onClick={() => setShowScanner(true)}
+              className="bg-slate-100 hover:bg-slate-200 text-slate-700 p-3 rounded-xl transition-colors border border-slate-200 flex-shrink-0 flex items-center justify-center"
+              title="Escanear con cámara del celular"
+            >
+              <Camera size={24} />
+            </button>
           </div>
+        </div>
+      </div>
+
+      <div className={`p-5 rounded-xl border ${productoData ? 'border-emerald-200 bg-emerald-50/50' : 'border-slate-100 bg-slate-50'} transition-all`}>
+        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Producto Identificado</label>
+        <div className="text-lg font-semibold text-slate-800">
+          {productoData ? productoData.descripcion : <span className="text-slate-400 italic">Esperando lectura de código...</span>}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <label className="text-sm font-bold text-slate-700">Cantidad (Unidades)</label>
+          <input 
+            type="number" 
+            inputMode="decimal"
+            ref={cantidadRef}
+            min="0.01"
+            step="0.01"
+            value={cantidad}
+            onChange={(e) => setCantidad(e.target.value)}
+            placeholder="Ej. 50"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 outline-none transition-all"
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-bold text-slate-700">Fecha de Vencimiento (Mes-Año)</label>
+          <input 
+            type="month" 
+            value={fechaVencimiento}
+            onChange={(e) => setFechaVencimiento(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 outline-none transition-all"
+            required
+          />
+        </div>
+      </div>
 
       <div className="pt-4 border-t border-slate-100 flex justify-end">
         <button 
@@ -332,7 +316,6 @@ export default function IngresoVencimientos() {
           onScan={(code) => {
             setCodigoIngresado(code);
             setShowScanner(false);
-            // Wait slightly for React to update the state, then search
             setTimeout(() => {
               if (scanRef.current) {
                 scanRef.current.focus();
