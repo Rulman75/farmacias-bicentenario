@@ -76,14 +76,6 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean, setIs
                 <Pill size={18} className="text-slate-400 group-hover:text-white" />
                 <span className="font-medium text-slate-400 group-hover:text-white">Registrar Ingreso</span>
               </Link>
-              <Link href="/panel/vencidos" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors group text-sm">
-                <Clock size={18} className="text-slate-400 group-hover:text-white" />
-                <span className="font-medium text-slate-400 group-hover:text-white">Productos Vencidos</span>
-              </Link>
-              <Link href="/panel/agrupado" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors group text-sm">
-                <LayoutDashboard size={18} className="text-slate-400 group-hover:text-white" />
-                <span className="font-medium text-slate-400 group-hover:text-white">Inventario Agrupado</span>
-              </Link>
               <Link href="/panel/historial-traspasos" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors group text-sm">
                 <ArrowRightLeft size={18} className="text-slate-400 group-hover:text-white" />
                 <span className="font-medium text-slate-400 group-hover:text-white">Historial Traspasos</span>
