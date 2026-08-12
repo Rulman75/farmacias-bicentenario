@@ -91,13 +91,38 @@ export default function HistorialTraspasosPage() {
         item.cantidad.toString()
       ]);
 
+      const isAnulado = traspaso.estado === 'ANULADO';
       autoTable(doc, {
         startY: currentY,
-        head: [['Cod.', 'Medicamento', 'Vencimiento', 'Cant.']],
+        head: [['Cód.', 'Medicamento', 'Vencimiento', 'Cant.']],
         body: tableData,
+        headStyles: { 
+          fillColor: isAnulado ? [254, 226, 226] : [241, 245, 249], // red-50 if anulado, else slate-100
+          textColor: isAnulado ? [153, 27, 27] : [15, 23, 42], // red-800 if anulado, else slate-900
+          fontStyle: 'bold', 
+          halign: 'center',
+          fontSize: 10,
+          cellPadding: 5,
+          lineColor: isAnulado ? [252, 165, 165] : [226, 232, 240], // red-300 if anulado
+          lineWidth: 0.1
+        },
+        bodyStyles: { 
+          textColor: [51, 65, 85], // slate-700
+          fontSize: 9,
+          cellPadding: 4,
+          lineColor: [226, 232, 240], // slate-200
+          lineWidth: 0.1
+        },
+        alternateRowStyles: {
+          fillColor: [250, 250, 250]
+        },
+        columnStyles: { 
+          0: { halign: 'center', fontStyle: 'bold' }, 
+          1: { halign: 'left' },
+          2: { halign: 'center' },
+          3: { halign: 'right', fontStyle: 'bold', textColor: isAnulado ? [153, 27, 27] : [5, 150, 105] } // Red if annulled, else Emerald
+        },
         theme: 'grid',
-        headStyles: { fillColor: traspaso.estado === 'ANULADO' ? [156, 163, 175] : [5, 150, 105] },
-        styles: { fontSize: 10, cellPadding: 4 },
         margin: { left: 14, right: 14 },
       });
 

@@ -46,8 +46,8 @@ export const applyCorporateHeader = async (doc: jsPDF, docTitle: string, docNumb
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 116, 139); // slate-500
-  doc.text(`Nº Documento:`, pageWidth - 40, 20, { align: 'right' });
-  doc.text(`Fecha Emisión:`, pageWidth - 40, 26, { align: 'right' });
+  doc.text(`Nº Documento:`, pageWidth - 65, 20, { align: 'right' });
+  doc.text(`Fecha Emisión:`, pageWidth - 65, 26, { align: 'right' });
   
   // Valores
   doc.setTextColor(15, 23, 42); // slate-900
