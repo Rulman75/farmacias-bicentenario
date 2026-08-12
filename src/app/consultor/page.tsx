@@ -3,7 +3,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { getConsultorProductos } from '@/app/actions';
-import { Search, Loader2, Tag, Box, ArrowRight, X, Info, Calculator } from 'lucide-react';
+import { Search, Loader2, Tag, Box, ArrowRight, X, Info, Calculator, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ConsultorPage() {
   const [products, setProducts] = useState<any[]>([]);
@@ -63,6 +64,9 @@ export default function ConsultorPage() {
       
       {/* Cabecera */}
       <div className="flex items-center gap-4 mb-4">
+        <Link href="/" className="bg-slate-100 p-2 rounded-lg text-slate-600 hover:bg-slate-200 transition-colors">
+          <ArrowLeft size={24} />
+        </Link>
         <div className="bg-gradient-to-br from-emerald-500 to-emerald-700 p-3 rounded-xl text-white shadow-lg shadow-emerald-500/30">
           <Tag size={28} />
         </div>

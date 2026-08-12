@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { getMarginAnalysis } from '@/app/actions';
-import { TrendingUp, Calendar, FileText, Loader2, AlertTriangle, FileSpreadsheet } from 'lucide-react';
+import { TrendingUp, Calendar, FileText, Loader2, AlertTriangle, FileSpreadsheet, ArrowLeft } from 'lucide-react';
 import { Bar } from 'react-chartjs-2';
+import Link from 'next/link';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import * as XLSX from 'xlsx';
 
@@ -180,6 +181,9 @@ export default function MargenesPage() {
       
       <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
         <div className="flex items-center gap-4">
+          <Link href="/" className="bg-slate-100 p-2 rounded-lg text-slate-600 hover:bg-slate-200 transition-colors">
+            <ArrowLeft size={24} />
+          </Link>
           <div className="bg-gradient-to-br from-teal-500 to-teal-700 p-3 rounded-xl text-white shadow-lg shadow-teal-500/30">
             <TrendingUp size={28} />
           </div>

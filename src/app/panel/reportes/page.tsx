@@ -1,5 +1,6 @@
 import pool from '@/lib/db';
-import { FileBarChart } from 'lucide-react';
+import { FileBarChart, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 import ChartWrapper from '@/components/reportes/ChartWrapper';
 import SucursalFilter from '@/components/dashboard/SucursalFilter';
 
@@ -81,6 +82,9 @@ export default async function ReportesPage({ searchParams }: { searchParams: Pro
     <div className="max-w-7xl mx-auto space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-3">
+          <Link href="/panel" className="bg-slate-100 p-2 rounded-lg text-slate-600 hover:bg-slate-200 transition-colors">
+            <ArrowLeft size={24} />
+          </Link>
           <div className="bg-fuchsia-600 p-3 rounded-xl text-white shadow-lg shadow-fuchsia-600/20">
             <FileBarChart size={28} />
           </div>

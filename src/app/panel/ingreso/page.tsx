@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { getSucursales, searchProducto, registrarIngreso, checkIngresoExistente } from '@/app/actions';
-import { PackagePlus, Search, CheckCircle2, AlertCircle, Camera, Maximize, X } from 'lucide-react';
+import { PackagePlus, Search, CheckCircle2, AlertCircle, Camera, Maximize, X, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 import ScannerModal from '@/components/ScannerModal';
 import { getCurrentUser } from '@/app/auth/actions';
 
@@ -294,6 +295,9 @@ export default function IngresoVencimientos() {
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-3">
+          <Link href="/panel" className="bg-slate-100 p-2 rounded-lg text-slate-600 hover:bg-slate-200 transition-colors">
+            <ArrowLeft size={24} />
+          </Link>
           <div className="bg-fuchsia-600 p-3 rounded-xl text-white shadow-lg shadow-fuchsia-600/20">
             <PackagePlus size={28} />
           </div>

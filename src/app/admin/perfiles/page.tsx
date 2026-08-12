@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { getPerfiles, crearPerfil, eliminarPerfil, getAplicaciones, getPerfilAplicaciones, asignarAplicaciones } from './actions';
-import { ShieldAlert, Plus, Trash2, Settings, Loader2, Check, X, AlertCircle } from 'lucide-react';
+import { ShieldAlert, Plus, Trash2, Settings, Loader2, Check, X, AlertCircle, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function GestionPerfiles() {
   const [perfiles, setPerfiles] = useState<any[]>([]);
@@ -96,6 +97,9 @@ export default function GestionPerfiles() {
     <div className="max-w-6xl mx-auto space-y-6 pb-10">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
+          <Link href="/" className="bg-slate-100 p-2 rounded-lg text-slate-600 hover:bg-slate-200 transition-colors">
+            <ArrowLeft size={24} />
+          </Link>
           <div className="bg-gradient-to-br from-amber-500 to-amber-700 p-3 rounded-xl text-white shadow-lg shadow-amber-500/30">
             <ShieldAlert size={28} />
           </div>

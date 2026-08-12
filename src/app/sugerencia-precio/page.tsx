@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { getProductoParaSugerencia } from '@/app/actions';
 import { guardarSugerencia, getHistorialSugerencias, getSugerenciaDetalle, eliminarSugerencia } from './actions';
 import { getCurrentUser } from '@/app/auth/actions';
-import { Search, Loader2, Tag, FileDown, Plus, Trash2, Save, FileText, Eye, AlertCircle } from 'lucide-react';
+import { Tag, Search, Plus, Trash2, Printer, Loader2, Save, FileText, Check, AlertCircle, TrendingUp, ChevronDown, ChevronUp, History, Download, PenBox, ArrowLeft, FileDown, Eye } from 'lucide-react';
+import Link from 'next/link';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { applyCorporateHeader, applyCorporateFooter, formatDate } from '@/lib/pdfUtils';
@@ -229,6 +230,9 @@ export default function SugerenciaPrecioPage() {
   return (
     <div className="max-w-7xl mx-auto space-y-6 pb-10">
       <div className="flex items-center gap-4 mb-4">
+        <Link href="/" className="bg-slate-100 p-2 rounded-lg text-slate-600 hover:bg-slate-200 transition-colors">
+          <ArrowLeft size={24} />
+        </Link>
         <div className="bg-gradient-to-br from-emerald-500 to-emerald-700 p-3 rounded-xl text-white shadow-lg shadow-emerald-500/30">
           <Tag size={28} />
         </div>

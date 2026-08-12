@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { getAplicacionesFull, crearAplicacion, actualizarAplicacion, eliminarAplicacion } from './actions';
-import { LayoutGrid, Plus, Pencil, Trash2, Loader2, Save, X, AlertCircle } from 'lucide-react';
+import { LayoutGrid, Plus, Pencil, Trash2, Loader2, Save, X, AlertCircle, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function GestionAplicaciones() {
   const [aplicaciones, setAplicaciones] = useState<any[]>([]);
@@ -82,6 +83,9 @@ export default function GestionAplicaciones() {
     <div className="max-w-5xl mx-auto space-y-6 pb-10">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
+          <Link href="/" className="bg-slate-100 p-2 rounded-lg text-slate-600 hover:bg-slate-200 transition-colors">
+            <ArrowLeft size={24} />
+          </Link>
           <div className="bg-gradient-to-br from-fuchsia-500 to-fuchsia-700 p-3 rounded-xl text-white shadow-lg shadow-fuchsia-500/30">
             <LayoutGrid size={28} />
           </div>

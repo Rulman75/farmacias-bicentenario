@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { getUsuarios, crearUsuario, actualizarUsuario, eliminarUsuario } from '@/app/admin/actions';
 import { getPerfiles } from '@/app/admin/perfiles/actions';
 import { getSucursales } from '@/app/actions';
-import { Users, UserPlus, Pencil, Trash2, KeyRound, Loader2, Save, X, AlertCircle } from 'lucide-react';
+import { Users, UserPlus, Pencil, Trash2, KeyRound, Loader2, Save, X, AlertCircle, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function GestionUsuarios() {
   const [usuarios, setUsuarios] = useState<any[]>([]);
@@ -99,6 +100,9 @@ export default function GestionUsuarios() {
     <div className="max-w-6xl mx-auto space-y-6 pb-10">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
+          <Link href="/" className="bg-slate-100 p-2 rounded-lg text-slate-600 hover:bg-slate-200 transition-colors">
+            <ArrowLeft size={24} />
+          </Link>
           <div className="bg-gradient-to-br from-indigo-500 to-indigo-700 p-3 rounded-xl text-white shadow-lg shadow-indigo-500/30">
             <Users size={28} />
           </div>
