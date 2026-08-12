@@ -8,11 +8,6 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Sistema de Gestión Farmacias Bicentenario',
   description: 'Sistema web de gestión para Farmacias Bicentenario',
-  icons: {
-    icon: '/favicon-v2.png',
-    shortcut: '/favicon-v2.png',
-    apple: '/favicon-v2.png',
-  },
 };
 
 export default function RootLayout({
