@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { getSucursales, searchProducto, registrarIngreso, checkIngresoExistente } from '@/app/actions';
 import { PackagePlus, Search, CheckCircle2, AlertCircle, Camera, Maximize, X } from 'lucide-react';
 import ScannerModal from '@/components/ScannerModal';
+import { getCurrentUser } from '@/app/auth/actions';
 
 export default function IngresoVencimientos() {
   const [sucursales, setSucursales] = useState<any[]>([]);
@@ -12,6 +13,7 @@ export default function IngresoVencimientos() {
   const [showScanner, setShowScanner] = useState(false);
   const [isScannerMode, setIsScannerMode] = useState(false);
   const [recentScans, setRecentScans] = useState<any[]>([]);
+  const [userSucursalFija, setUserSucursalFija] = useState<number | null>(null);
 
   // Foco para escáner
   const scanRef = useRef<HTMLInputElement>(null);
@@ -25,10 +27,15 @@ export default function IngresoVencimientos() {
   const [fechaVencimiento, setFechaVencimiento] = useState('');
 
   useEffect(() => {
-    getSucursales().then(res => {
-      if (res.success && res.data) {
-        setSucursales(res.data);
-        if (res.data.length > 0) setCodSucursal(res.data[0].cod_sucursal.toString());
+    Promise.all([getSucursales(), getCurrentUser()]).then(([resSucursales, user]) => {
+      if (resSucursales.success && resSucursales.data) {
+        setSucursales(resSucursales.data);
+        if (user && user.cod_sucursal) {
+          setUserSucursalFija(user.cod_sucursal as number);
+          setCodSucursal((user.cod_sucursal as number).toString());
+        } else if (resSucursales.data.length > 0) {
+          setCodSucursal(resSucursales.data[0].cod_sucursal.toString());
+        }
       }
     });
     // Auto-focus on scan input on load
@@ -118,7 +125,8 @@ export default function IngresoVencimientos() {
           <select 
             value={codSucursal}
             onChange={(e) => setCodSucursal(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 outline-none transition-all cursor-pointer"
+            disabled={userSucursalFija !== null}
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 outline-none transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             required
           >
             {sucursales.map(s => (
@@ -127,6 +135,9 @@ export default function IngresoVencimientos() {
               </option>
             ))}
           </select>
+          {userSucursalFija !== null && (
+            <p className="text-xs text-fuchsia-600 font-medium">Sucursal asignada por defecto a tu usuario.</p>
+          )}
         </div>
 
         <div className="space-y-2">

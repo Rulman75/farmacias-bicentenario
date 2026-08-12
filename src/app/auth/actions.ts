@@ -29,7 +29,7 @@ export async function login(rut: string, password: string) {
       return { success: false, requirePasswordChange: true, rut: user.rut };
     }
 
-    const token = await new SignJWT({ rut: user.rut, nombre: user.nombre, id_perfil: user.id_perfil, rutas_apli })
+    const token = await new SignJWT({ rut: user.rut, nombre: user.nombre, id_perfil: user.id_perfil, rutas_apli, cod_sucursal: user.cod_sucursal })
       .setProtectedHeader({ alg: 'HS256' })
       .setExpirationTime('8h')
       .sign(JWT_SECRET);
@@ -96,7 +96,7 @@ export async function updatePassword(rut: string, currentPassword: string, newPa
     const [appRows] = await connection.query('SELECT a.ruta FROM aplicaciones a JOIN perfil_apli pa ON a.id_apli = pa.id_apli WHERE pa.id_perfil = ?', [user.id_perfil]);
     const rutas_apli = (appRows as any[]).map(r => r.ruta);
     
-    const token = await new SignJWT({ rut: user.rut, nombre: user.nombre, id_perfil: user.id_perfil, rutas_apli })
+    const token = await new SignJWT({ rut: user.rut, nombre: user.nombre, id_perfil: user.id_perfil, rutas_apli, cod_sucursal: user.cod_sucursal })
       .setProtectedHeader({ alg: 'HS256' })
       .setExpirationTime('8h')
       .sign(JWT_SECRET);

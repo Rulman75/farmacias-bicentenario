@@ -7,7 +7,13 @@ import { revalidatePath } from 'next/cache';
 export async function getUsuarios() {
   const connection = await pool.getConnection();
   try {
-    const [rows] = await connection.query('SELECT u.rut, u.nombre, u.id_perfil, p.Descripcion as perfil_desc, u.debe_cambiar_pass, u.created_at FROM usuarioCatalogo u LEFT JOIN perfiles p ON u.id_perfil = p.Id_Perfil ORDER BY u.created_at DESC');
+    const [rows] = await connection.query(`
+      SELECT u.rut, u.nombre, u.id_perfil, u.cod_sucursal, p.Descripcion as perfil_desc, u.debe_cambiar_pass, u.created_at, s.nombre as sucursal_nombre
+      FROM usuarioCatalogo u 
+      LEFT JOIN perfiles p ON u.id_perfil = p.Id_Perfil 
+      LEFT JOIN sucursales s ON u.cod_sucursal = s.cod_sucursal
+      ORDER BY u.created_at DESC
+    `);
     return { success: true, data: rows as any[] };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -16,15 +22,15 @@ export async function getUsuarios() {
   }
 }
 
-export async function crearUsuario(data: { rut: string, nombre: string, id_perfil: number }) {
+export async function crearUsuario(data: { rut: string, nombre: string, id_perfil: number, cod_sucursal: number | null }) {
   const connection = await pool.getConnection();
   try {
     const passPorDefecto = data.rut.substring(0, 4);
     const hash = await bcrypt.hash(passPorDefecto, 10);
     
     await connection.query(
-      'INSERT INTO usuarioCatalogo (rut, nombre, password_hash, debe_cambiar_pass, id_perfil) VALUES (?, ?, ?, TRUE, ?)',
-      [data.rut, data.nombre, hash, data.id_perfil]
+      'INSERT INTO usuarioCatalogo (rut, nombre, password_hash, debe_cambiar_pass, id_perfil, cod_sucursal) VALUES (?, ?, ?, TRUE, ?, ?)',
+      [data.rut, data.nombre, hash, data.id_perfil, data.cod_sucursal]
     );
     
     revalidatePath('/admin/usuarios');
@@ -37,20 +43,20 @@ export async function crearUsuario(data: { rut: string, nombre: string, id_perfi
   }
 }
 
-export async function actualizarUsuario(rut: string, data: { nombre: string, id_perfil: number, resetPass: boolean }) {
+export async function actualizarUsuario(rut: string, data: { nombre: string, id_perfil: number, resetPass: boolean, cod_sucursal: number | null }) {
   const connection = await pool.getConnection();
   try {
     if (data.resetPass) {
       const passPorDefecto = rut.substring(0, 4);
       const hash = await bcrypt.hash(passPorDefecto, 10);
       await connection.query(
-        'UPDATE usuarioCatalogo SET nombre = ?, id_perfil = ?, password_hash = ?, debe_cambiar_pass = TRUE WHERE rut = ?',
-        [data.nombre, data.id_perfil, hash, rut]
+        'UPDATE usuarioCatalogo SET nombre = ?, id_perfil = ?, cod_sucursal = ?, password_hash = ?, debe_cambiar_pass = TRUE WHERE rut = ?',
+        [data.nombre, data.id_perfil, data.cod_sucursal, hash, rut]
       );
     } else {
       await connection.query(
-        'UPDATE usuarioCatalogo SET nombre = ?, id_perfil = ? WHERE rut = ?',
-        [data.nombre, data.id_perfil, rut]
+        'UPDATE usuarioCatalogo SET nombre = ?, id_perfil = ?, cod_sucursal = ? WHERE rut = ?',
+        [data.nombre, data.id_perfil, data.cod_sucursal, rut]
       );
     }
     

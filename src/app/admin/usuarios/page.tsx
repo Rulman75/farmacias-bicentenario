@@ -3,26 +3,29 @@
 import React, { useState, useEffect } from 'react';
 import { getUsuarios, crearUsuario, actualizarUsuario, eliminarUsuario } from '@/app/admin/actions';
 import { getPerfiles } from '@/app/admin/perfiles/actions';
+import { getSucursales } from '@/app/actions';
 import { Users, UserPlus, Pencil, Trash2, KeyRound, Loader2, Save, X, AlertCircle } from 'lucide-react';
 
 export default function GestionUsuarios() {
   const [usuarios, setUsuarios] = useState<any[]>([]);
   const [perfiles, setPerfiles] = useState<any[]>([]);
+  const [sucursales, setSucursales] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ rut: '', nombre: '', id_perfil: 2, resetPass: false });
+  const [formData, setFormData] = useState<{rut: string, nombre: string, id_perfil: number, resetPass: boolean, cod_sucursal: number | null}>({ rut: '', nombre: '', id_perfil: 2, resetPass: false, cod_sucursal: null });
 
   const loadData = async () => {
     setLoading(true);
-    const [resUsers, resPerfiles] = await Promise.all([getUsuarios(), getPerfiles()]);
+    const [resUsers, resPerfiles, resSucursales] = await Promise.all([getUsuarios(), getPerfiles(), getSucursales()]);
     if (resUsers.success) setUsuarios(resUsers.data || []);
     else setError(resUsers.error || 'Error al cargar usuarios');
     
     if (resPerfiles.success) setPerfiles(resPerfiles.data || []);
+    if (resSucursales.success) setSucursales(resSucursales.data || []);
     setLoading(false);
   };
 
@@ -40,10 +43,16 @@ export default function GestionUsuarios() {
       res = await actualizarUsuario(formData.rut, { 
         nombre: formData.nombre, 
         id_perfil: formData.id_perfil, 
-        resetPass: formData.resetPass 
+        resetPass: formData.resetPass,
+        cod_sucursal: formData.cod_sucursal
       });
     } else {
-      res = await crearUsuario({ rut: formData.rut, nombre: formData.nombre, id_perfil: formData.id_perfil });
+      res = await crearUsuario({ 
+        rut: formData.rut, 
+        nombre: formData.nombre, 
+        id_perfil: formData.id_perfil,
+        cod_sucursal: formData.cod_sucursal
+      });
     }
 
     if (res.success) {
@@ -69,14 +78,14 @@ export default function GestionUsuarios() {
   };
 
   const openNew = () => {
-    setFormData({ rut: '', nombre: '', id_perfil: 2, resetPass: false });
+    setFormData({ rut: '', nombre: '', id_perfil: 2, resetPass: false, cod_sucursal: null });
     setIsEditing(false);
     setError(null);
     setIsModalOpen(true);
   };
 
   const openEdit = (user: any) => {
-    setFormData({ rut: user.rut, nombre: user.nombre, id_perfil: user.id_perfil, resetPass: false });
+    setFormData({ rut: user.rut, nombre: user.nombre, id_perfil: user.id_perfil, resetPass: false, cod_sucursal: user.cod_sucursal || null });
     setIsEditing(true);
     setError(null);
     setIsModalOpen(true);
@@ -121,6 +130,7 @@ export default function GestionUsuarios() {
                 <th className="px-6 py-4 font-semibold">RUT</th>
                 <th className="px-6 py-4 font-semibold">Nombre</th>
                 <th className="px-6 py-4 font-semibold">Perfil</th>
+                <th className="px-6 py-4 font-semibold">Sucursal Fija</th>
                 <th className="px-6 py-4 font-semibold text-center">Estado Pass</th>
                 <th className="px-6 py-4 font-semibold text-center">Fecha Creación</th>
                 <th className="px-6 py-4 font-semibold text-right">Acciones</th>
@@ -135,6 +145,15 @@ export default function GestionUsuarios() {
                     <span className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg font-bold text-xs">
                       {u.perfil_desc || 'Sin Perfil'}
                     </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    {u.cod_sucursal ? (
+                      <span className="text-slate-600 bg-slate-100 px-2 py-1 rounded-md text-xs font-medium">
+                        {u.sucursal_nombre}
+                      </span>
+                    ) : (
+                      <span className="text-slate-400 italic text-xs">Ninguna (Libre)</span>
+                    )}
                   </td>
                   <td className="px-6 py-4 text-center">
                     {u.debe_cambiar_pass ? (
@@ -231,6 +250,21 @@ export default function GestionUsuarios() {
                     <option key={p.Id_Perfil} value={p.Id_Perfil}>{p.Descripcion}</option>
                   ))}
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Sucursal Asignada</label>
+                <select
+                  value={formData.cod_sucursal || ''}
+                  onChange={(e) => setFormData({...formData, cod_sucursal: e.target.value ? parseInt(e.target.value) : null})}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-slate-700"
+                >
+                  <option value="">Ninguna (Puede elegir libremente)</option>
+                  {sucursales.map(s => (
+                    <option key={s.cod_sucursal} value={s.cod_sucursal}>{s.nombre}</option>
+                  ))}
+                </select>
+                <p className="text-xs text-slate-500 mt-1">Fija la sucursal por defecto para este usuario.</p>
               </div>
 
               {isEditing && (
