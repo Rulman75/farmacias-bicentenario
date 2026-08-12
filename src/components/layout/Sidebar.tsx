@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react';
 import { getCurrentUser } from '@/app/auth/actions';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LayoutDashboard, Pill, LogOut, ChevronDown, ChevronRight, Clock, ArrowRightLeft, Tag, TrendingUp, Users, ShoppingCart, Briefcase, ShieldAlert, Home } from 'lucide-react';
+import { LayoutDashboard, Pill, LogOut, ChevronDown, ChevronRight, Clock, ArrowRightLeft, Tag, TrendingUp, Users, ShoppingCart, Briefcase, ShieldAlert, Home, X } from 'lucide-react';
 import { logout } from '@/app/auth/actions';
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean, setIsOpen?: (v: boolean) => void }) {
   const [vencimientoOpen, setVencimientoOpen] = useState(false);
   const [comercialOpen, setComercialOpen] = useState(false);
   const [gestionComercialOpen, setGestionComercialOpen] = useState(false);
@@ -27,16 +27,19 @@ export default function Sidebar() {
   }, []);
 
   return (
-    <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col min-h-screen fixed left-0 top-0 z-40">
-      <div className="h-20 flex items-center justify-center border-b border-slate-200 bg-white px-4">
+    <aside className={`w-64 bg-slate-900 text-slate-300 flex flex-col min-h-screen fixed left-0 top-0 z-40 transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+      <div className="h-20 flex items-center justify-between border-b border-slate-700 bg-white px-4">
         <Image 
           src="/logo-bicentenario.png" 
           alt="Farmacias Bicentenario" 
-          width={180} 
-          height={55} 
+          width={150} 
+          height={45} 
           className="object-contain" 
           priority 
         />
+        <button onClick={() => setIsOpen?.(false)} className="md:hidden text-slate-400 hover:text-slate-600 p-2 rounded-lg bg-slate-100">
+          <X size={20} />
+        </button>
       </div>
       
       <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">

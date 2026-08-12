@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { getSucursales, searchProducto, registrarIngreso, checkIngresoExistente } from '@/app/actions';
-import { PackagePlus, Search, CheckCircle2, AlertCircle, Camera } from 'lucide-react';
+import { PackagePlus, Search, CheckCircle2, AlertCircle, Camera, Maximize, X } from 'lucide-react';
 import ScannerModal from '@/components/ScannerModal';
 
 export default function IngresoVencimientos() {
@@ -10,6 +10,8 @@ export default function IngresoVencimientos() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [showScanner, setShowScanner] = useState(false);
+  const [isScannerMode, setIsScannerMode] = useState(false);
+  const [recentScans, setRecentScans] = useState<any[]>([]);
 
   // Foco para escáner
   const scanRef = useRef<HTMLInputElement>(null);
@@ -82,6 +84,14 @@ export default function IngresoVencimientos() {
 
     if (res.success) {
       setMessage({ type: 'success', text: 'Ingreso registrado correctamente' });
+      setRecentScans(prev => [{
+        id: Date.now(),
+        codigo: codigoIngresado,
+        descripcion: productoData.descripcion,
+        cantidad,
+        fechaVencimiento
+      }, ...prev].slice(0, 10)); // Keep last 10 items
+      
       // Reset form (except sucursal)
       setCodigoIngresado('');
       setProductoData(null);
@@ -108,14 +118,16 @@ export default function IngresoVencimientos() {
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
           
-          {message && (
-            <div className={`p-4 rounded-lg flex items-center gap-3 \${message.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
-              {message.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
-              <p className="font-medium">{message.text}</p>
-            </div>
-          )}
+  const FormContent = () => (
+    <>
+      {message && (
+        <div className={`p-4 rounded-lg flex items-center gap-3 ${message.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
+          {message.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
+          <p className="font-medium">{message.text}</p>
+        </div>
+      )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-700">Sucursal de Destino</label>
               <select 
@@ -198,16 +210,120 @@ export default function IngresoVencimientos() {
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-100 flex justify-end">
-            <button 
-              type="submit" 
-              disabled={loading || !productoData}
-              className="bg-fuchsia-600 hover:bg-fuchsia-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-8 rounded-xl transition-colors shadow-lg shadow-fuchsia-600/30 flex items-center gap-2"
-            >
-              {loading ? 'Registrando...' : 'Registrar Ingreso'}
-            </button>
+      <div className="pt-4 border-t border-slate-100 flex justify-end">
+        <button 
+          type="submit" 
+          disabled={loading || !productoData}
+          className="bg-fuchsia-600 hover:bg-fuchsia-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-8 rounded-xl transition-colors shadow-lg shadow-fuchsia-600/30 flex items-center gap-2 w-full md:w-auto justify-center"
+        >
+          {loading ? 'Registrando...' : 'Registrar Ingreso'}
+        </button>
+      </div>
+    </>
+  );
+
+  const RecentScansGrid = () => (
+    <div className="mt-6 border-t border-slate-200 pt-6">
+      <h3 className="text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider">Últimos Ingresos</h3>
+      {recentScans.length === 0 ? (
+        <div className="text-sm text-slate-400 italic">No hay ingresos en esta sesión.</div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-slate-50 text-slate-600">
+              <tr>
+                <th className="px-4 py-2 rounded-l-lg">Producto</th>
+                <th className="px-4 py-2">Cant.</th>
+                <th className="px-4 py-2 rounded-r-lg">Venc.</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {recentScans.map(scan => (
+                <tr key={scan.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="px-4 py-2 font-medium text-slate-700">
+                    <span className="block truncate max-w-[200px]" title={scan.descripcion}>{scan.descripcion}</span>
+                  </td>
+                  <td className="px-4 py-2 text-slate-600">{scan.cantidad}</td>
+                  <td className="px-4 py-2 text-slate-600">{scan.fechaVencimiento}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+
+  if (isScannerMode) {
+    return (
+      <div className="fixed inset-0 bg-slate-50 z-[60] flex flex-col overflow-y-auto">
+        <div className="bg-fuchsia-600 p-4 text-white flex justify-between items-center shadow-md sticky top-0 z-10">
+          <div className="flex items-center gap-2 font-bold text-lg">
+            <PackagePlus size={24} />
+            <span>Modo Escáner</span>
           </div>
+          <button onClick={() => setIsScannerMode(false)} className="p-2 hover:bg-white/20 rounded-full transition-colors">
+            <X size={24} />
+          </button>
+        </div>
+        <div className="p-4 flex-1 max-w-lg w-full mx-auto">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-6">
+            <form onSubmit={handleSubmit} className="p-5 space-y-5">
+              <FormContent />
+            </form>
+          </div>
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+            <RecentScansGrid />
+          </div>
+        </div>
+        {showScanner && (
+          <ScannerModal 
+            onClose={() => setShowScanner(false)} 
+            onScan={(code) => {
+              setCodigoIngresado(code);
+              setShowScanner(false);
+              setTimeout(() => {
+                if (scanRef.current) {
+                  scanRef.current.focus();
+                  scanRef.current.blur();
+                }
+              }, 100);
+            }} 
+          />
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+        <div className="flex items-center gap-3">
+          <div className="bg-fuchsia-600 p-3 rounded-xl text-white shadow-lg shadow-fuchsia-600/20">
+            <PackagePlus size={28} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800">Registrar Ingreso de Producto</h1>
+            <p className="text-slate-500">Ingrese la fecha de vencimiento y unidades</p>
+          </div>
+        </div>
+        <button 
+          onClick={() => setIsScannerMode(true)}
+          className="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl transition-colors flex items-center gap-2 font-medium shadow-lg w-full sm:w-auto justify-center"
+        >
+          <Maximize size={18} />
+          Modo Escáner
+        </button>
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <form onSubmit={handleSubmit} className="p-8 space-y-6">
+          <FormContent />
         </form>
+      </div>
+      
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+        <RecentScansGrid />
       </div>
 
       {showScanner && (
