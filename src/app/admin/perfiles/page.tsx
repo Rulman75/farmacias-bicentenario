@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { getPerfiles, crearPerfil, eliminarPerfil, getAplicaciones, getPerfilAplicaciones, asignarAplicaciones } from './actions';
 import { ShieldAlert, Plus, Trash2, Settings, Loader2, Check, X, AlertCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useSortableData } from '@/hooks/useSortableData';
+import SortableHeader from '@/components/SortableHeader';
 
 export default function GestionPerfiles() {
   const [perfiles, setPerfiles] = useState<any[]>([]);
@@ -19,6 +21,8 @@ export default function GestionPerfiles() {
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [activePerfil, setActivePerfil] = useState<any>(null);
   const [selectedApps, setSelectedApps] = useState<number[]>([]);
+
+  const { items: sortedPerfiles, requestSort, sortConfig } = useSortableData(perfiles);
 
   const loadData = async () => {
     setLoading(true);
@@ -120,13 +124,13 @@ export default function GestionPerfiles() {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
-              <th className="px-6 py-4 font-semibold w-24 text-center">ID</th>
-              <th className="px-6 py-4 font-semibold">Descripción del Perfil</th>
-              <th className="px-6 py-4 font-semibold text-right">Acciones</th>
+              <SortableHeader label="ID" sortKey="Id_Perfil" currentSort={sortConfig} requestSort={requestSort} className="w-24 text-center" />
+              <SortableHeader label="Descripción del Perfil" sortKey="Descripcion" currentSort={sortConfig} requestSort={requestSort} />
+              <th className="px-6 py-4 font-semibold text-right sticky top-0 z-10 bg-slate-50 border-b border-slate-200">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 text-sm">
-            {perfiles.map(p => (
+            {sortedPerfiles.map((p) => (
               <tr key={p.Id_Perfil} className="hover:bg-slate-50 transition-colors">
                 <td className="px-6 py-4 text-center font-mono text-slate-500">{p.Id_Perfil}</td>
                 <td className="px-6 py-4 font-bold text-slate-800">{p.Descripcion}</td>

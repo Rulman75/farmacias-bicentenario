@@ -383,11 +383,15 @@ export async function getMarginAnalysis(params: { startDate?: string, endDate?: 
         DATE_FORMAT(variacioncostos.fecha, '%d-%m-%Y') as fecha,
         variacioncostos.cod_art,
         variacioncostos.descripcion,
-        (variacioncostos.costo_actual * 1.19) as COSTO_ACTUAL,
-        (variacioncostos.costo_nuevo * 1.19) as COSTO_NUEVO,
+        (variacioncostos.costo_actual) as COSTO_ACTUAL_NETO,
+        (variacioncostos.costo_nuevo) as COSTO_NUEVO_NETO,
+        (variacioncostos.costo_actual * 1.19) as COSTO_ACTUAL_BRUTO,
+        (variacioncostos.costo_nuevo * 1.19) as COSTO_NUEVO_BRUTO,
         precios.precio_final1 as PRECIO_VENTA,
-        IF(variacioncostos.costo_actual = 0, NULL, (((precios.precio_final1 - (variacioncostos.costo_actual * 1.19))/ (variacioncostos.costo_actual * 1.19)) * 100)) as MARGEN_ACTUAL,
-        IF(variacioncostos.costo_nuevo = 0, NULL, (((precios.precio_final1 - (variacioncostos.costo_nuevo * 1.19))/ (variacioncostos.costo_nuevo * 1.19)) * 100)) as MARGEN_NUEVO,
+        IF(variacioncostos.costo_actual = 0, NULL, (((precios.precio_final1 / 1.19) - variacioncostos.costo_actual)/ variacioncostos.costo_actual) * 100) as MARGEN_ACTUAL_NETO,
+        IF(variacioncostos.costo_actual = 0, NULL, ((precios.precio_final1 - variacioncostos.costo_actual)/ variacioncostos.costo_actual) * 100) as MARGEN_ACTUAL_BRUTO,
+        IF(variacioncostos.costo_nuevo = 0, NULL, (((precios.precio_final1 / 1.19) - variacioncostos.costo_nuevo)/ variacioncostos.costo_nuevo) * 100) as MARGEN_NUEVO_NETO,
+        IF(variacioncostos.costo_nuevo = 0, NULL, ((precios.precio_final1 - variacioncostos.costo_nuevo)/ variacioncostos.costo_nuevo) * 100) as MARGEN_NUEVO_BRUTO,
         IF(variacioncostos.costo_actual = 0, 1, 0) as es_nuevo
       FROM variacioncostos
       INNER JOIN precios ON variacioncostos.cod_art = precios.cod_art

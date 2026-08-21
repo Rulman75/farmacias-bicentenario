@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { getAplicacionesFull, crearAplicacion, actualizarAplicacion, eliminarAplicacion } from './actions';
 import { LayoutGrid, Plus, Pencil, Trash2, Loader2, Save, X, AlertCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useSortableData } from '@/hooks/useSortableData';
+import SortableHeader from '@/components/SortableHeader';
 
 export default function GestionAplicaciones() {
   const [aplicaciones, setAplicaciones] = useState<any[]>([]);
@@ -14,6 +16,8 @@ export default function GestionAplicaciones() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ id_apli: 0, nombre_apli: '', ruta: '' });
+
+  const { items: sortedApps, requestSort, sortConfig } = useSortableData(aplicaciones);
 
   const loadData = async () => {
     setLoading(true);
@@ -114,14 +118,14 @@ export default function GestionAplicaciones() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
-                <th className="px-6 py-4 font-semibold w-24">ID</th>
-                <th className="px-6 py-4 font-semibold">Nombre de Aplicación</th>
-                <th className="px-6 py-4 font-semibold">Ruta (URL)</th>
-                <th className="px-6 py-4 font-semibold text-right">Acciones</th>
+                <SortableHeader label="ID" sortKey="id_apli" currentSort={sortConfig} requestSort={requestSort} className="w-24 text-center" />
+                <SortableHeader label="Módulo (Aplicación)" sortKey="nombre_apli" currentSort={sortConfig} requestSort={requestSort} />
+                <SortableHeader label="Ruta (Path)" sortKey="ruta" currentSort={sortConfig} requestSort={requestSort} />
+                <th className="px-6 py-4 font-semibold text-right sticky top-0 z-10 bg-slate-50 border-b border-slate-200">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-sm">
-              {aplicaciones.map((a) => (
+              {sortedApps.map((a) => (
                 <tr key={a.id_apli} className="hover:bg-slate-50 transition-colors">
                   <td className="px-6 py-4 font-mono text-slate-500">{a.id_apli}</td>
                   <td className="px-6 py-4 font-bold text-slate-800">{a.nombre_apli}</td>

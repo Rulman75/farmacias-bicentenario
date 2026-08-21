@@ -5,6 +5,8 @@ import { getMarginAnalysis } from '@/app/actions';
 import { TrendingUp, Calendar, FileText, Loader2, AlertTriangle, FileSpreadsheet, ArrowLeft } from 'lucide-react';
 import { Bar } from 'react-chartjs-2';
 import Link from 'next/link';
+import { useSortableData } from '@/hooks/useSortableData';
+import SortableHeader from '@/components/SortableHeader';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import * as XLSX from 'xlsx';
 
@@ -47,7 +49,8 @@ export default function MargenesPage() {
       // Initialize simulations
       const initSims = res.data.map(d => ({
         ...d,
-        simCostoNuevo: d.COSTO_NUEVO || d.COSTO_ACTUAL,
+        simCostoNuevoNeto: d.COSTO_NUEVO_NETO || d.COSTO_ACTUAL_NETO,
+        simCostoNuevoBruto: d.COSTO_NUEVO_BRUTO || d.COSTO_ACTUAL_BRUTO,
         simPrecioVenta: d.PRECIO_VENTA
       }));
       setSimulatedData(initSims);
@@ -57,21 +60,26 @@ export default function MargenesPage() {
     setLoading(false);
   };
 
-  const handleSimulate = (index: number, field: 'costo' | 'precio', value: string) => {
+  const handleSimulate = (index: number, field: 'costo_neto' | 'precio', value: string) => {
     const val = parseFloat(value) || 0;
     setSimulatedData(prev => {
       const copy = [...prev];
-      if (field === 'costo') copy[index].simCostoNuevo = val;
+      if (field === 'costo_neto') {
+        copy[index].simCostoNuevoNeto = val;
+        copy[index].simCostoNuevoBruto = val * 1.19;
+      }
       if (field === 'precio') copy[index].simPrecioVenta = val;
       
       const isNew = copy[index].es_nuevo === 1;
-      const costoNuevo = copy[index].simCostoNuevo;
+      const costoNuevoNeto = copy[index].simCostoNuevoNeto;
       const precioVenta = copy[index].simPrecioVenta;
       
-      if (costoNuevo > 0) {
-        copy[index].MARGEN_NUEVO = ((precioVenta - costoNuevo) / costoNuevo) * 100;
+      if (costoNuevoNeto > 0) {
+        copy[index].MARGEN_NUEVO_NETO = (((precioVenta / 1.19) - costoNuevoNeto) / costoNuevoNeto) * 100;
+        copy[index].MARGEN_NUEVO_BRUTO = ((precioVenta - costoNuevoNeto) / costoNuevoNeto) * 100;
       } else {
-        copy[index].MARGEN_NUEVO = null;
+        copy[index].MARGEN_NUEVO_NETO = null;
+        copy[index].MARGEN_NUEVO_BRUTO = null;
       }
       return copy;
     });
@@ -93,11 +101,13 @@ export default function MargenesPage() {
       'Número': item.numero,
       'Código Artículo': item.cod_art,
       'Descripción': item.descripcion,
-      'Costo Actual (IVA)': item.COSTO_ACTUAL,
-      'Costo Nuevo Simulado': item.simCostoNuevo,
-      'Precio Simulado': item.simPrecioVenta,
-      'Margen Actual (%)': item.MARGEN_ACTUAL,
-      'Margen Nuevo Simulado (%)': item.MARGEN_NUEVO
+      'Costo Actual (Neto)': item.COSTO_ACTUAL_NETO,
+      'Costo Nuevo Simulado (Neto)': item.simCostoNuevoNeto,
+      'Precio Simulado (Bruto)': item.simPrecioVenta,
+      'Margen Real Actual (%)': item.MARGEN_ACTUAL_NETO,
+      'Margen Real Nuevo (%)': item.MARGEN_NUEVO_NETO,
+      'Margen c/IVA Actual (%)': item.MARGEN_ACTUAL_BRUTO,
+      'Margen c/IVA Nuevo (%)': item.MARGEN_NUEVO_BRUTO,
     }));
 
     const ws = XLSX.utils.json_to_sheet(excelData);
@@ -110,8 +120,8 @@ export default function MargenesPage() {
   const filteredData = useMemo(() => {
     return simulatedData.filter((item) => {
       const isNew = item.es_nuevo === 1;
-      const mNuevo = item.MARGEN_NUEVO;
-      const mActual = item.MARGEN_ACTUAL;
+      const mNuevo = item.MARGEN_NUEVO_NETO;
+      const mActual = item.MARGEN_ACTUAL_NETO;
       
       let colorStatus = '';
       if (!isNew && mNuevo !== null && mActual !== null) {
@@ -128,6 +138,8 @@ export default function MargenesPage() {
       return true;
     });
   }, [simulatedData, comportamiento]);
+
+  const { items: sortedFilteredData, requestSort, sortConfig } = useSortableData(filteredData);
 
   // Datos para el gráfico
   const chartDataObj = useMemo(() => {
@@ -147,19 +159,19 @@ export default function MargenesPage() {
       datasets: [
         {
           label: 'Margen Actual (%)',
-          data: dataToGraph.map(d => (d.MARGEN_ACTUAL || 0).toFixed(2)),
-          backgroundColor: 'rgba(99, 102, 241, 0.7)',
-          borderColor: 'rgb(99, 102, 241)',
+          data: dataToGraph.map(d => d.MARGEN_ACTUAL_NETO || 0),
+          backgroundColor: 'rgba(94, 234, 212, 0.4)', // teal-300
+          borderColor: 'rgb(20, 184, 166)', // teal-500
           borderWidth: 1,
         },
         {
-          label: 'Margen Nuevo Simulado (%)',
-          data: dataToGraph.map(d => (d.MARGEN_NUEVO || 0).toFixed(2)),
-          backgroundColor: 'rgba(20, 184, 166, 0.7)',
-          borderColor: 'rgb(20, 184, 166)',
+          label: 'Margen Simulado (%)',
+          data: dataToGraph.map(d => d.MARGEN_NUEVO_NETO || 0),
+          backgroundColor: 'rgba(99, 102, 241, 0.4)', // indigo-500
+          borderColor: 'rgb(79, 70, 229)',
           borderWidth: 1,
-        },
-      ],
+        }
+      ]
     };
   }, [filteredData, selectedRows, chartView, simulatedData]);
 
@@ -267,36 +279,41 @@ export default function MargenesPage() {
               <table className="w-full text-left border-collapse min-w-[1000px]">
                 <thead>
                   <tr className="bg-slate-50 text-slate-500 text-[11px] uppercase tracking-wider border-b border-slate-200">
-                    <th className="px-4 py-3 font-semibold text-center w-12">Graf.</th>
-                    <th className="px-4 py-3 font-semibold w-36">Fecha / Doc</th>
-                    <th className="px-4 py-3 font-semibold">Producto</th>
-                    <th className="px-4 py-3 font-semibold text-right border-l border-slate-100 w-28">Costo Ant.</th>
-                    <th className="px-4 py-3 font-semibold text-right bg-slate-50 w-32">Costo Sim.</th>
-                    <th className="px-4 py-3 font-semibold text-right border-l border-slate-100 w-32">P. Venta Sim.</th>
-                    <th className="px-4 py-3 font-semibold text-right border-l border-slate-100 w-28">Margen Ant.</th>
-                    <th className="px-4 py-3 font-semibold text-right bg-teal-50/30 text-teal-700 w-32">Margen Sim.</th>
+                    <th className="px-4 py-3 font-semibold text-center w-12 sticky top-0 z-10 bg-slate-50">Graf.</th>
+                    <SortableHeader label="Fecha / Doc" sortKey="fecha" currentSort={sortConfig} requestSort={requestSort} className="w-36" />
+                    <SortableHeader label="Producto" sortKey="descripcion" currentSort={sortConfig} requestSort={requestSort} />
+                    <SortableHeader label="Costo Ant. (Neto)" sortKey="COSTO_ACTUAL_NETO" currentSort={sortConfig} requestSort={requestSort} className="text-right border-l border-slate-100 w-28" />
+                    <SortableHeader label="Costo Sim. (Neto)" sortKey="simCostoNuevoNeto" currentSort={sortConfig} requestSort={requestSort} className="text-right bg-slate-50 w-32" />
+                    <SortableHeader label="P. Venta Sim (Bruto)" sortKey="simPrecioVenta" currentSort={sortConfig} requestSort={requestSort} className="text-right border-l border-slate-100 w-32" />
+                    <SortableHeader label="Margen Ant. (Neto)" sortKey="MARGEN_ACTUAL_NETO" currentSort={sortConfig} requestSort={requestSort} className="text-right border-l border-slate-100 w-28" />
+                    <SortableHeader label="Margen Sim. (Neto)" sortKey="MARGEN_NUEVO_NETO" currentSort={sortConfig} requestSort={requestSort} className="text-right bg-teal-50/30 text-teal-700 w-28" />
+                    <SortableHeader label="Margen Sim. c/IVA" sortKey="MARGEN_NUEVO_BRUTO" currentSort={sortConfig} requestSort={requestSort} className="text-right bg-teal-100 text-teal-800 w-28" />
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm">
                   {loading ? (
-                    <tr><td colSpan={7} className="px-6 py-12 text-center text-slate-400"><Loader2 size={32} className="animate-spin mx-auto mb-2 text-teal-500" /></td></tr>
-                  ) : filteredData.length === 0 ? (
-                    <tr><td colSpan={7} className="px-6 py-12 text-center text-slate-400">No se encontraron variaciones.</td></tr>
+                    <tr><td colSpan={9} className="px-6 py-12 text-center text-slate-400"><Loader2 size={32} className="animate-spin mx-auto mb-2 text-teal-500" /></td></tr>
+                  ) : sortedFilteredData.length === 0 ? (
+                    <tr><td colSpan={9} className="px-6 py-12 text-center text-slate-400">No se encontraron variaciones.</td></tr>
                   ) : (
-                    filteredData.map((d, index) => {
+                    sortedFilteredData.map((d, index) => {
                       const realIndex = simulatedData.findIndex(sd => sd.id === d.id && sd.cod_art === d.cod_art && sd.fecha === d.fecha);
                       const originalIndex = realIndex >= 0 ? realIndex : index;
                       
-                      const diffMargen = d.es_nuevo === 1 ? 0 : ((d.MARGEN_NUEVO || 0) - (d.MARGEN_ACTUAL || 0));
+                      const diffMargen = d.es_nuevo === 1 ? 0 : ((d.MARGEN_NUEVO_NETO || 0) - (d.MARGEN_ACTUAL_NETO || 0));
                       let margenColor = "text-slate-600";
                       let badge = null;
                       
-                      if (!d.es_nuevo && d.MARGEN_NUEVO !== null) {
+                      if (!d.es_nuevo && d.MARGEN_NUEVO_NETO !== null) {
                         if (diffMargen > 0) {
                           margenColor = "text-emerald-600";
                           badge = <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1 rounded ml-1">+{diffMargen.toFixed(1)}%</span>;
                         } else if (diffMargen < 0) {
-                          margenColor = "text-red-600";
+                          if (d.MARGEN_NUEVO_NETO >= 0) {
+                            margenColor = "text-blue-600";
+                          } else {
+                            margenColor = "text-red-600";
+                          }
                           badge = <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded ml-1">{diffMargen.toFixed(1)}%</span>;
                         }
                       }
@@ -319,15 +336,15 @@ export default function MargenesPage() {
                             </div>
                           </td>
                           <td className="px-4 py-3 text-right font-medium text-slate-500 border-l border-slate-100">
-                            {d.es_nuevo === 1 ? '-' : formatoMoneda(d.COSTO_ACTUAL)}
+                            {d.es_nuevo === 1 ? '-' : formatoMoneda(d.COSTO_ACTUAL_NETO)}
                           </td>
                           <td className="px-4 py-3 text-right bg-slate-50">
                             <div className="relative inline-block w-24">
                               <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 font-medium select-none pointer-events-none">$</span>
                               <input 
                                 type="number" 
-                                value={d.simCostoNuevo} 
-                                onChange={(e) => handleSimulate(originalIndex, 'costo', e.target.value)}
+                                value={d.simCostoNuevoNeto} 
+                                onChange={(e) => handleSimulate(originalIndex, 'costo_neto', e.target.value)}
                                 className="w-full pl-6 pr-2 py-1 rounded bg-white border border-slate-200 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none font-bold text-slate-800 shadow-sm text-right"
                               />
                             </div>
@@ -344,13 +361,16 @@ export default function MargenesPage() {
                             </div>
                           </td>
                           <td className="px-4 py-3 text-right font-medium text-slate-500 border-l border-slate-100">
-                            {d.es_nuevo === 1 || d.MARGEN_ACTUAL === null ? '-' : <span className={d.MARGEN_ACTUAL < 30 ? 'text-red-500' : ''}>{Number(d.MARGEN_ACTUAL).toFixed(1)}%</span>}
+                            {d.es_nuevo === 1 || d.MARGEN_ACTUAL_NETO === null ? '-' : <span className={d.MARGEN_ACTUAL_NETO < 30 ? 'text-red-500' : ''}>{Number(d.MARGEN_ACTUAL_NETO).toFixed(1)}%</span>}
                           </td>
                           <td className="px-4 py-3 text-right font-black bg-teal-50/30">
                             <div className="flex flex-col items-end">
-                              <span className={d.MARGEN_NUEVO < 30 ? 'text-red-600' : margenColor}>{d.MARGEN_NUEVO === null ? '-' : Number(d.MARGEN_NUEVO).toFixed(1) + '%'}</span>
+                              <span className={d.MARGEN_NUEVO_NETO !== null && d.MARGEN_NUEVO_NETO < 0 ? 'text-red-600' : margenColor}>{d.MARGEN_NUEVO_NETO === null ? '-' : Number(d.MARGEN_NUEVO_NETO).toFixed(1) + '%'}</span>
                               {badge}
                             </div>
+                          </td>
+                          <td className="px-4 py-3 text-right font-black bg-teal-100 text-teal-800">
+                             {d.MARGEN_NUEVO_BRUTO === null ? '-' : Number(d.MARGEN_NUEVO_BRUTO).toFixed(1) + '%'}
                           </td>
                         </tr>
                       );

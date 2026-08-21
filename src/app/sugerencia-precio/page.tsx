@@ -8,12 +8,13 @@ import { Tag, Search, Plus, Trash2, Printer, Loader2, Save, FileText, Check, Ale
 import Link from 'next/link';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { useSortableData } from '@/hooks/useSortableData';
+import SortableHeader from '@/components/SortableHeader';
 import { applyCorporateHeader, applyCorporateFooter, formatDate } from '@/lib/pdfUtils';
 
 export default function SugerenciaPrecioPage() {
   const [activeTab, setActiveTab] = useState<'nueva' | 'historial'>('nueva');
   const [currentUser, setCurrentUser] = useState<any>(null);
-
   // --- TAB NUEVA SUGERENCIA ---
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,6 +27,10 @@ export default function SugerenciaPrecioPage() {
   // --- TAB HISTORIAL ---
   const [historial, setHistorial] = useState<any[]>([]);
   const [historialLoading, setHistorialLoading] = useState(false);
+
+  const { items: sortedSearchResults, requestSort: requestSortSearch, sortConfig: sortSearch } = useSortableData(searchResults);
+  const { items: sortedAddedItems, requestSort: requestSortAdded, sortConfig: sortAdded } = useSortableData(addedItems);
+  const { items: sortedHistorial, requestSort: requestSortHistorial, sortConfig: sortHistorial } = useSortableData(historial);
 
   useEffect(() => {
     getCurrentUser().then(u => setCurrentUser(u));

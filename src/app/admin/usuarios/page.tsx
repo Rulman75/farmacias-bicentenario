@@ -6,6 +6,8 @@ import { getPerfiles } from '@/app/admin/perfiles/actions';
 import { getSucursales } from '@/app/actions';
 import { Users, UserPlus, Pencil, Trash2, KeyRound, Loader2, Save, X, AlertCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useSortableData } from '@/hooks/useSortableData';
+import SortableHeader from '@/components/SortableHeader';
 
 export default function GestionUsuarios() {
   const [usuarios, setUsuarios] = useState<any[]>([]);
@@ -18,6 +20,8 @@ export default function GestionUsuarios() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<{rut: string, nombre: string, id_perfil: number, resetPass: boolean, cod_sucursal: number | null}>({ rut: '', nombre: '', id_perfil: 2, resetPass: false, cod_sucursal: null });
+
+  const { items: sortedUsuarios, requestSort, sortConfig } = useSortableData(usuarios);
 
   const loadData = async () => {
     setLoading(true);
@@ -131,17 +135,17 @@ export default function GestionUsuarios() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
-                <th className="px-6 py-4 font-semibold">RUT</th>
-                <th className="px-6 py-4 font-semibold">Nombre</th>
-                <th className="px-6 py-4 font-semibold">Perfil</th>
-                <th className="px-6 py-4 font-semibold">Sucursal Fija</th>
-                <th className="px-6 py-4 font-semibold text-center">Estado Pass</th>
-                <th className="px-6 py-4 font-semibold text-center">Fecha Creación</th>
-                <th className="px-6 py-4 font-semibold text-right">Acciones</th>
+                <SortableHeader label="RUT" sortKey="rut" currentSort={sortConfig} requestSort={requestSort} />
+                <SortableHeader label="Nombre" sortKey="nombre" currentSort={sortConfig} requestSort={requestSort} />
+                <SortableHeader label="Perfil" sortKey="perfil_desc" currentSort={sortConfig} requestSort={requestSort} />
+                <SortableHeader label="Sucursal Fija" sortKey="sucursal_nombre" currentSort={sortConfig} requestSort={requestSort} />
+                <SortableHeader label="Estado Pass" sortKey="debe_cambiar_pass" currentSort={sortConfig} requestSort={requestSort} className="text-center" />
+                <SortableHeader label="Fecha Creación" sortKey="fecha_creacion" currentSort={sortConfig} requestSort={requestSort} className="text-center" />
+                <th className="px-6 py-4 font-semibold text-right sticky top-0 z-10 bg-slate-50 border-b border-slate-200">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-sm">
-              {usuarios.map((u) => (
+              {sortedUsuarios.map((u) => (
                 <tr key={u.rut} className="hover:bg-slate-50 transition-colors">
                   <td className="px-6 py-4 font-mono font-medium text-slate-700">{u.rut}</td>
                   <td className="px-6 py-4 font-bold text-slate-800">{u.nombre}</td>
