@@ -6,12 +6,16 @@ import { ArrowLeft, ArrowRightLeft, FileDown, Ban, ChevronDown, ChevronRight, Lo
 import Link from 'next/link';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { useSortableData } from '@/hooks/useSortableData';
+import SortableHeader from '@/components/SortableHeader';
 
 export default function HistorialTraspasosPage() {
   const [traspasos, setTraspasos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [procesandoAnulacion, setProcesandoAnulacion] = useState<number | null>(null);
+
+  const { items: sortedTraspasos, requestSort, sortConfig } = useSortableData(traspasos);
 
   useEffect(() => {
     cargarHistorial();
@@ -154,10 +158,10 @@ export default function HistorialTraspasosPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
-                <th className="px-6 py-4 font-semibold">Correlativo</th>
-                <th className="px-6 py-4 font-semibold">Fecha y Hora</th>
+                <SortableHeader label="Correlativo" sortKey="correlativo" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4" />
+                <SortableHeader label="Fecha y Hora" sortKey="fecha" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4" />
                 <th className="px-6 py-4 font-semibold text-center">Líneas</th>
-                <th className="px-6 py-4 font-semibold text-center">Estado</th>
+                <SortableHeader label="Estado" sortKey="estado" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4 text-center" />
                 <th className="px-6 py-4 font-semibold text-right">Acciones</th>
               </tr>
             </thead>
@@ -176,7 +180,7 @@ export default function HistorialTraspasosPage() {
                   </td>
                 </tr>
               ) : (
-                traspasos.map((t) => {
+                sortedTraspasos.map((t) => {
                   const isAnulado = t.estado === 'ANULADO';
                   return (
                     <React.Fragment key={t.id_traspaso}>

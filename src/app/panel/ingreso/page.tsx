@@ -6,6 +6,8 @@ import { PackagePlus, Search, CheckCircle2, AlertCircle, Camera, Maximize, X, Ar
 import Link from 'next/link';
 import ScannerModal from '@/components/ScannerModal';
 import { getCurrentUser } from '@/app/auth/actions';
+import { useSortableData } from '@/hooks/useSortableData';
+import SortableHeader from '@/components/SortableHeader';
 
 export default function IngresoVencimientos() {
   const [sucursales, setSucursales] = useState<any[]>([]);
@@ -218,6 +220,8 @@ export default function IngresoVencimientos() {
     </>
   );
 
+  const { items: sortedRecentScans, requestSort: requestSortRecent, sortConfig: sortRecent } = useSortableData(recentScans);
+
   const RecentScansGrid = () => (
     <div className="mt-6 border-t border-slate-200 pt-6">
       <h3 className="text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider">Últimos Ingresos</h3>
@@ -228,13 +232,13 @@ export default function IngresoVencimientos() {
           <table className="w-full text-sm text-left">
             <thead className="bg-slate-50 text-slate-600">
               <tr>
-                <th className="px-4 py-2 rounded-l-lg">Producto</th>
-                <th className="px-4 py-2">Cant.</th>
-                <th className="px-4 py-2 rounded-r-lg">Venc.</th>
+                <SortableHeader label="Producto" sortKey="descripcion" currentSort={sortRecent} requestSort={requestSortRecent} className="px-4 py-2 rounded-l-lg" />
+                <SortableHeader label="Cant." sortKey="cantidad" currentSort={sortRecent} requestSort={requestSortRecent} className="px-4 py-2" />
+                <SortableHeader label="Venc." sortKey="fechaVencimiento" currentSort={sortRecent} requestSort={requestSortRecent} className="px-4 py-2 rounded-r-lg" />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {recentScans.map(scan => (
+              {sortedRecentScans.map(scan => (
                 <tr key={scan.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-4 py-2 font-medium text-slate-700">
                     <span className="block truncate max-w-[200px]" title={scan.descripcion}>{scan.descripcion}</span>

@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { Pencil, Trash2, Check, X, Loader2, XCircle, AlertCircle, AlertTriangle, CheckCircle } from 'lucide-react';
 import { updateIngresoVencimiento, deleteIngresoVencimiento } from '@/app/actions';
 import { useRouter } from 'next/navigation';
+import { useSortableData } from '@/hooks/useSortableData';
+import SortableHeader from '@/components/SortableHeader';
 
 export default function LotesTableClient({ initialLotes }: { initialLotes: any[] }) {
   const [lotes, setLotes] = useState(initialLotes);
@@ -11,6 +13,8 @@ export default function LotesTableClient({ initialLotes }: { initialLotes: any[]
   const [editCantidad, setEditCantidad] = useState<number>(0);
   const [loadingId, setLoadingId] = useState<number | null>(null);
   const router = useRouter();
+  
+  const { items: sortedLotes, requestSort, sortConfig } = useSortableData(lotes);
 
   // Sync with props when server data changes
   React.useEffect(() => {
@@ -67,13 +71,13 @@ export default function LotesTableClient({ initialLotes }: { initialLotes: any[]
         <thead>
           <tr className="bg-white text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
             <th className="px-6 py-4 font-semibold w-16">Semáforo</th>
-            <th className="px-6 py-4 font-semibold">Sucursal</th>
-            <th className="px-6 py-4 font-semibold">Cod Artículo</th>
-            <th className="px-6 py-4 font-semibold">Cód. Barras</th>
-            <th className="px-6 py-4 font-semibold min-w-[200px]">Medicamento</th>
-            <th className="px-6 py-4 font-semibold text-center w-32">Cantidad</th>
-            <th className="px-6 py-4 font-semibold">Vencimiento</th>
-            <th className="px-6 py-4 font-semibold text-center">Días Restantes</th>
+            <SortableHeader label="Sucursal" sortKey="sucursal_nombre" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4" />
+            <SortableHeader label="Cod Artículo" sortKey="cod_art" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4" />
+            <SortableHeader label="Cód. Barras" sortKey="cod_barra" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4" />
+            <SortableHeader label="Medicamento" sortKey="descripcion" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4 min-w-[200px]" />
+            <SortableHeader label="Cantidad" sortKey="cantidad" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4 text-center w-32" />
+            <SortableHeader label="Vencimiento" sortKey="fecha_vencimiento" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4" />
+            <SortableHeader label="Días Restantes" sortKey="dias_restantes" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4 text-center" />
             <th className="px-6 py-4 font-semibold text-right w-24">Acciones</th>
           </tr>
         </thead>
@@ -85,7 +89,7 @@ export default function LotesTableClient({ initialLotes }: { initialLotes: any[]
               </td>
             </tr>
           ) : (
-            lotes.map((lote) => {
+            sortedLotes.map((lote) => {
               const semaforo = getSemaforoInfo(lote.dias_restantes);
               const isEditing = editingId === lote.id;
               const isProcessing = loadingId === lote.id;

@@ -7,6 +7,46 @@ import Link from 'next/link';
 import { guardarTraspasosDB } from '@/app/actions';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { useSortableData } from '@/hooks/useSortableData';
+import SortableHeader from '@/components/SortableHeader';
+
+function GroupTable({ groupKey, items, onRemove }: { groupKey: string, items: any[], onRemove: (id: string) => void }) {
+  const { items: sortedItems, requestSort, sortConfig } = useSortableData(items);
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center gap-3">
+        <span className="font-bold text-slate-700 text-lg">{groupKey}</span>
+      </div>
+      <table className="w-full text-left border-collapse">
+        <thead className="bg-white text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
+          <tr>
+            <SortableHeader label="Cód." sortKey="cod_art" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4" />
+            <SortableHeader label="Producto" sortKey="descripcion" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4" />
+            <SortableHeader label="Cant." sortKey="cantidad" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4 text-center" />
+            <th className="px-6 py-4 font-semibold text-right">Acción</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100 text-sm">
+          {sortedItems.map((item: any) => (
+            <tr key={item.id} className="hover:bg-slate-50">
+              <td className="px-6 py-4 font-mono text-fuchsia-600 font-medium">{item.cod_art}</td>
+              <td className="px-6 py-4 font-bold text-slate-800">{item.descripcion}</td>
+              <td className="px-6 py-4 font-bold text-center text-slate-600">
+                <span className="bg-slate-100 px-3 py-1 rounded-lg">{item.cantidad} un.</span>
+              </td>
+              <td className="px-6 py-4 text-right">
+                <button onClick={() => onRemove(item.id)} className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition-colors">
+                  <Trash2 size={18} />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 export default function TraspasosPage() {
   const { items, removeItem, clearCart } = useTransferStore();
@@ -155,37 +195,12 @@ export default function TraspasosPage() {
           ) : (
             <div className="space-y-8">
               {Object.keys(groups).map(key => (
-                <div key={key} className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                  <div className="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center gap-3">
-                    <span className="font-bold text-slate-700 text-lg">{key}</span>
-                  </div>
-                  <table className="w-full text-left border-collapse">
-                    <thead className="bg-white text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
-                      <tr>
-                        <th className="px-6 py-4 font-semibold">Cód.</th>
-                        <th className="px-6 py-4 font-semibold">Producto</th>
-                        <th className="px-6 py-4 font-semibold text-center">Cant.</th>
-                        <th className="px-6 py-4 font-semibold text-right">Acción</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 text-sm">
-                      {groups[key].map((item: any) => (
-                        <tr key={item.id} className="hover:bg-slate-50">
-                          <td className="px-6 py-4 font-mono text-fuchsia-600 font-medium">{item.cod_art}</td>
-                          <td className="px-6 py-4 font-bold text-slate-800">{item.descripcion}</td>
-                          <td className="px-6 py-4 font-bold text-center text-slate-600">
-                            <span className="bg-slate-100 px-3 py-1 rounded-lg">{item.cantidad} un.</span>
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <button onClick={() => removeItem(item.id)} className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition-colors">
-                              <Trash2 size={18} />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                <GroupTable 
+                  key={key} 
+                  groupKey={key} 
+                  items={groups[key]} 
+                  onRemove={removeItem} 
+                />
               ))}
 
               <div className="flex justify-end gap-4 mt-8">

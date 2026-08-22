@@ -2,9 +2,12 @@
 
 import React, { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
+import { useSortableData } from '@/hooks/useSortableData';
+import SortableHeader from '@/components/SortableHeader';
 
 export default function VencidosTable({ detalles, totalPerdidaGlobal }: { detalles: any[], totalPerdidaGlobal: number }) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const { items: sortedDetalles, requestSort, sortConfig } = useSortableData(detalles);
 
   const toggle = (sucursal: string) => {
     setExpanded(prev => ({ ...prev, [sucursal]: !prev[sucursal] }));
@@ -18,10 +21,10 @@ export default function VencidosTable({ detalles, totalPerdidaGlobal }: { detall
     <table className="w-full text-left border-collapse">
       <thead>
         <tr className="bg-white text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
-          <th className="px-6 py-4 font-semibold">Sucursal</th>
-          <th className="px-6 py-4 font-semibold text-center">Variedad de Productos</th>
-          <th className="px-6 py-4 font-semibold text-center">Total Unidades Vencidas</th>
-          <th className="px-6 py-4 font-semibold text-right text-red-700">Pérdida Total</th>
+          <SortableHeader label="Sucursal" sortKey="sucursal" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4" />
+          <SortableHeader label="Variedad de Productos" sortKey="tipos_productos" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4 text-center" />
+          <SortableHeader label="Total Unidades Vencidas" sortKey="cantidad_vencida" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4 text-center" />
+          <SortableHeader label="Pérdida Total" sortKey="perdida_total" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4 text-right text-red-700" />
           <th className="px-6 py-4 font-semibold text-right">% Part.</th>
         </tr>
       </thead>
@@ -33,7 +36,7 @@ export default function VencidosTable({ detalles, totalPerdidaGlobal }: { detall
             </td>
           </tr>
         ) : (
-          detalles.map((d, i) => (
+          sortedDetalles.map((d, i) => (
             <React.Fragment key={d.cod_sucursal || i}>
               <tr 
                 className="hover:bg-slate-50 transition-colors cursor-pointer" 

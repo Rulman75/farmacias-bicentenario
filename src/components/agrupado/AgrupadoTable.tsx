@@ -3,10 +3,14 @@
 import React, { useState } from 'react';
 import { ArrowRightLeft } from 'lucide-react';
 import TransferModal from './TransferModal';
+import { useSortableData } from '@/hooks/useSortableData';
+import SortableHeader from '@/components/SortableHeader';
 
 export default function AgrupadoTable({ productsList, sucursales }: { productsList: any[], sucursales: any[] }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState<any>(null);
+  
+  const { items: sortedProducts, requestSort, sortConfig } = useSortableData(productsList);
 
   const openTransfer = (producto: any, sucursal: any, cellData: any) => {
     setSelectedData({
@@ -26,13 +30,22 @@ export default function AgrupadoTable({ productsList, sucursales }: { productsLi
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
-              <th className="px-6 py-4 font-semibold whitespace-nowrap sticky left-0 bg-slate-50 z-10 border-r border-slate-200">
-                Producto
-              </th>
+              <SortableHeader 
+                label="Producto" 
+                sortKey="descripcion" 
+                currentSort={sortConfig as any} 
+                requestSort={requestSort as any} 
+                className="px-6 py-4 whitespace-nowrap sticky left-0 bg-slate-50 z-10 border-r border-slate-200" 
+              />
               {sucursales.map(suc => (
-                <th key={suc.cod_sucursal} className="px-6 py-4 font-semibold whitespace-nowrap border-r border-slate-100 last:border-0 text-center">
-                  {suc.nombre}
-                </th>
+                <SortableHeader 
+                  key={suc.cod_sucursal}
+                  label={suc.nombre} 
+                  sortKey={`sucursalData.${suc.cod_sucursal}.cantidad`} 
+                  currentSort={sortConfig as any} 
+                  requestSort={requestSort as any} 
+                  className="px-6 py-4 whitespace-nowrap border-r border-slate-100 last:border-0 text-center" 
+                />
               ))}
             </tr>
           </thead>
@@ -44,7 +57,7 @@ export default function AgrupadoTable({ productsList, sucursales }: { productsLi
                 </td>
               </tr>
             ) : (
-              productsList.map((prod, index) => (
+              sortedProducts.map((prod, index) => (
                 <tr key={index} className="hover:bg-slate-50 transition-colors">
                   <td className="px-6 py-4 font-medium text-slate-700 sticky left-0 bg-white z-10 border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
                     <div className="font-bold text-slate-800">{prod.descripcion}</div>

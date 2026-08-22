@@ -298,10 +298,10 @@ export default function SugerenciaPrecioPage() {
               <table className="w-full text-left">
                 <thead className="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase">
                   <tr>
-                    <th className="px-6 py-3">Cód.</th>
-                    <th className="px-6 py-3">Descripción</th>
-                    <th className="px-6 py-3">Precio Actual</th>
-                    <th className="px-6 py-3">Costo Bruto</th>
+                    <SortableHeader label="Cód." sortKey="cod_art" currentSort={sortSearch} requestSort={requestSortSearch} className="px-6 py-3" />
+                    <SortableHeader label="Descripción" sortKey="descripcion" currentSort={sortSearch} requestSort={requestSortSearch} className="px-6 py-3" />
+                    <SortableHeader label="Precio Actual" sortKey="precio_final1" currentSort={sortSearch} requestSort={requestSortSearch} className="px-6 py-3" />
+                    <SortableHeader label="Costo Bruto" sortKey="costo_neto1" currentSort={sortSearch} requestSort={requestSortSearch} className="px-6 py-3" />
                     <th className="px-6 py-3">Margen Act.</th>
                     <th className="px-6 py-3 text-emerald-700 font-bold">Precio Sugerido</th>
                     <th className="px-6 py-3 text-emerald-700 font-bold">Margen Sug.</th>
@@ -309,7 +309,7 @@ export default function SugerenciaPrecioPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm">
-                  {searchResults.map((p) => {
+                  {sortedSearchResults.map((p) => {
                     const proposed = proposedPrices[p.cod_art] || 0;
                     const isAdded = addedItems.some(i => i.cod_art === p.cod_art);
                     return (
@@ -385,16 +385,16 @@ export default function SugerenciaPrecioPage() {
               <table className="w-full text-left">
                 <thead className="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase">
                   <tr>
-                    <th className="px-6 py-3">Cód.</th>
-                    <th className="px-6 py-3">Descripción</th>
-                    <th className="px-6 py-3">Precio Anterior</th>
-                    <th className="px-6 py-3 text-emerald-700 font-bold">Nuevo Precio</th>
+                    <SortableHeader label="Cód." sortKey="cod_art" currentSort={sortAdded} requestSort={requestSortAdded} className="px-6 py-3" />
+                    <SortableHeader label="Descripción" sortKey="descripcion" currentSort={sortAdded} requestSort={requestSortAdded} className="px-6 py-3" />
+                    <SortableHeader label="Precio Anterior" sortKey="precio_final1" currentSort={sortAdded} requestSort={requestSortAdded} className="px-6 py-3" />
+                    <SortableHeader label="Nuevo Precio" sortKey="nuevoPrecio" currentSort={sortAdded} requestSort={requestSortAdded} className="px-6 py-3 text-emerald-700 font-bold" />
                     <th className="px-6 py-3 text-emerald-700 font-bold">Nuevo Margen</th>
                     <th className="px-6 py-3 text-center">Remover</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm">
-                  {addedItems.map((p) => (
+                  {sortedAddedItems.map((p) => (
                     <tr key={p.cod_art} className="hover:bg-slate-50">
                       <td className="px-6 py-3 font-mono text-slate-500">{p.cod_art}</td>
                       <td className="px-6 py-3 font-bold text-slate-800">{p.descripcion}</td>
@@ -428,16 +428,16 @@ export default function SugerenciaPrecioPage() {
             <table className="w-full text-left">
               <thead className="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wider">
                 <tr>
-                  <th className="px-6 py-4 font-semibold text-center">Nº</th>
-                  <th className="px-6 py-4 font-semibold">Fecha</th>
-                  <th className="px-6 py-4 font-semibold">Usuario</th>
-                  <th className="px-6 py-4 font-semibold">Ítems</th>
+                  <SortableHeader label="Nº" sortKey="id_sugerencia" currentSort={sortHistorial} requestSort={requestSortHistorial} className="px-6 py-4 text-center" />
+                  <SortableHeader label="Fecha" sortKey="fecha" currentSort={sortHistorial} requestSort={requestSortHistorial} className="px-6 py-4" />
+                  <SortableHeader label="Usuario" sortKey="nombre_usuario" currentSort={sortHistorial} requestSort={requestSortHistorial} className="px-6 py-4" />
+                  <SortableHeader label="Ítems" sortKey="total_items" currentSort={sortHistorial} requestSort={requestSortHistorial} className="px-6 py-4" />
                   <th className="px-6 py-4 font-semibold">Observación</th>
                   <th className="px-6 py-4 font-semibold text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-sm">
-                {historial.map(h => (
+                {sortedHistorial.map(h => (
                   <tr key={h.id_sugerencia} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4 text-center font-mono font-bold text-emerald-600">#{h.id_sugerencia}</td>
                     <td className="px-6 py-4 font-medium text-slate-700">
