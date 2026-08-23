@@ -63,11 +63,11 @@ export default function LotesTableClient({ initialLotes }: { initialLotes: any[]
   };
 
   const getSemaforoInfo = (dias: number) => {
-    if (dias < 0) return { bg: 'bg-[#D9D9D9]', text: 'text-slate-800' };
-    if (dias <= 60) return { bg: 'bg-[#FF0000]', text: 'text-white' };
-    if (dias <= 180) return { bg: 'bg-[#E97132]', text: 'text-white' };
-    if (dias <= 270) return { bg: 'bg-[#FFC000]', text: 'text-white' };
-    return { bg: 'bg-[#00B050]', text: 'text-white' };
+    if (dias < 0) return { icon: XCircle, color: 'text-[#D9D9D9]', bg: 'bg-[#D9D9D9]', border: 'border-[#D9D9D9]', text: 'text-slate-800' };
+    if (dias <= 60) return { icon: AlertCircle, color: 'text-[#FF0000]', bg: 'bg-[#FF0000]', border: 'border-[#FF0000]', text: 'text-white' };
+    if (dias <= 180) return { icon: AlertCircle, color: 'text-[#E97132]', bg: 'bg-[#E97132]', border: 'border-[#E97132]', text: 'text-white' };
+    if (dias <= 270) return { icon: AlertTriangle, color: 'text-[#FFC000]', bg: 'bg-[#FFC000]', border: 'border-[#FFC000]', text: 'text-white' };
+    return { icon: CheckCircle, color: 'text-[#00B050]', bg: 'bg-[#00B050]', border: 'border-[#00B050]', text: 'text-white' };
   };
 
   return (
@@ -105,7 +105,7 @@ export default function LotesTableClient({ initialLotes }: { initialLotes: any[]
               return (
                 <tr key={lote.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-6 py-4 text-center">
-                    <div className={`w-5 h-5 rounded-full mx-auto shadow-sm ${semaforo.bg}`} title={`Días: ${lote.dias_restantes}`}></div>
+                    {React.createElement(semaforo.icon, { size: 24, className: `mx-auto ${semaforo.color}` })}
                   </td>
                   <td className="px-6 py-4 font-medium">{lote.sucursal_nombre}</td>
                   <td className="px-6 py-4 font-mono text-xs">{lote.cod_art}</td>
