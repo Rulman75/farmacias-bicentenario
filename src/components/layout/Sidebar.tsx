@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { getCurrentUser } from '@/app/auth/actions';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LayoutDashboard, Pill, LogOut, ChevronDown, ChevronRight, Clock, ArrowRightLeft, Tag, TrendingUp, Users, ShoppingCart, Briefcase, ShieldAlert, Home, X } from 'lucide-react';
+import { LayoutDashboard, Pill, LogOut, ChevronDown, ChevronRight, Clock, ArrowRightLeft, Tag, TrendingUp, Users, ShoppingCart, Briefcase, ShieldAlert, Home, X, CheckCircle } from 'lucide-react';
 import { logout } from '@/app/auth/actions';
 
 export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean, setIsOpen?: (v: boolean) => void }) {
@@ -79,6 +79,10 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean, setIs
               <Link href="/panel/historial-traspasos" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors group text-sm">
                 <ArrowRightLeft size={18} className="text-slate-400 group-hover:text-white" />
                 <span className="font-medium text-slate-400 group-hover:text-white">Historial Traspasos</span>
+              </Link>
+              <Link href="/panel/recepcion-traspasos" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors group text-sm">
+                <CheckCircle size={18} className="text-slate-400 group-hover:text-teal-400" />
+                <span className="font-medium text-slate-400 group-hover:text-white">Recepción Traspasos</span>
               </Link>
             </div>
           )}

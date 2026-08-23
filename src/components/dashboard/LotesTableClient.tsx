@@ -11,6 +11,7 @@ export default function LotesTableClient({ initialLotes }: { initialLotes: any[]
   const [lotes, setLotes] = useState(initialLotes);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editCantidad, setEditCantidad] = useState<number>(0);
+  const [editMotivo, setEditMotivo] = useState<string>('VENTA');
   const [loadingId, setLoadingId] = useState<number | null>(null);
   const router = useRouter();
   
@@ -32,9 +33,13 @@ export default function LotesTableClient({ initialLotes }: { initialLotes: any[]
 
   const handleSave = async (id: number) => {
     setLoadingId(id);
-    const res = await updateIngresoVencimiento(id, editCantidad);
+    const res = await updateIngresoVencimiento(id, editCantidad, editMotivo);
     if (res.success) {
-      setLotes(lotes.map(l => l.id === id ? { ...l, cantidad: editCantidad } : l));
+      if (editCantidad <= 0) {
+        setLotes(lotes.filter(l => l.id !== id));
+      } else {
+        setLotes(lotes.map(l => l.id === id ? { ...l, cantidad: editCantidad } : l));
+      }
       setEditingId(null);
       router.refresh(); // Refresh server state
     } else {
@@ -109,13 +114,25 @@ export default function LotesTableClient({ initialLotes }: { initialLotes: any[]
                   
                   <td className="px-6 py-4 text-center font-bold">
                     {isEditing ? (
-                      <input 
-                        type="number" 
-                        value={editCantidad} 
-                        onChange={(e) => setEditCantidad(parseInt(e.target.value) || 0)}
-                        className="w-20 px-2 py-1 border border-indigo-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 text-center"
-                        autoFocus
-                      />
+                      <div className="flex flex-col gap-1 items-center">
+                        <input 
+                          type="number" 
+                          value={editCantidad} 
+                          onChange={(e) => setEditCantidad(parseInt(e.target.value) || 0)}
+                          className="w-20 px-2 py-1 border border-indigo-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 text-center"
+                          autoFocus
+                        />
+                        <select 
+                          value={editMotivo}
+                          onChange={(e) => setEditMotivo(e.target.value)}
+                          className="text-xs px-1 py-1 border border-indigo-200 rounded text-slate-600 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        >
+                          <option value="VENTA">Venta</option>
+                          <option value="AJUSTE">Ajuste / Merma</option>
+                          <option value="TRASPASO">Traspaso Manual</option>
+                          <option value="ERROR_INGRESO">Error Ingreso</option>
+                        </select>
+                      </div>
                     ) : (
                       <span className="bg-slate-100 px-3 py-1 rounded-lg text-slate-700 text-base">{lote.cantidad}</span>
                     )}

@@ -128,7 +128,7 @@ export async function guardarTraspasosDB(items: any[]) {
     // 1. Insert Cabecera
     const [cabResult] = await connection.query(
       'INSERT INTO traspasos_cabecera (correlativo, estado) VALUES (?, ?)',
-      [correlativo, 'PROCESADO']
+      [correlativo, 'GENERADO']
     );
     const id_traspaso = (cabResult as any).insertId;
 
@@ -149,6 +149,10 @@ export async function guardarTraspasosDB(items: any[]) {
       );
 
       // b. Descontar de Origen
+      const [origenCurrent] = await connection.query(`SELECT cantidad FROM ingreso_vencimientos WHERE cod_sucursal = ? AND cod_art = ? AND DATE(fecha_vencimiento) = ? LIMIT 1`, [item.cod_sucursal_origen, item.cod_art, formattedFecha]);
+      let cantOrigenAnt = 0;
+      if ((origenCurrent as any[]).length > 0) cantOrigenAnt = (origenCurrent as any[])[0].cantidad;
+
       await connection.query(
         `UPDATE ingreso_vencimientos 
          SET cantidad = cantidad - ? 
@@ -156,15 +160,23 @@ export async function guardarTraspasosDB(items: any[]) {
          LIMIT 1`,
         [item.cantidad, item.cod_sucursal_origen, item.cod_art, formattedFecha]
       );
+      
+      // Log origen
+      try {
+        await connection.query(`INSERT INTO movimientos_inventario (cod_sucursal, cod_art, tipo_movimiento, cantidad_anterior, cantidad_nueva, id_referencia, usuario, observacion) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [item.cod_sucursal_origen, item.cod_art, 'TRASPASO_SALIDA', cantOrigenAnt, cantOrigenAnt - item.cantidad, correlativo, 'SISTEMA_TRASPASOS', `Traspaso a ${item.cod_sucursal_destino}`]);
+      } catch(e) {}
 
       // c. Aumentar en Destino
       const [existDestino] = await connection.query(
-        `SELECT id FROM ingreso_vencimientos 
+        `SELECT id, cantidad FROM ingreso_vencimientos 
          WHERE cod_sucursal = ? AND cod_art = ? AND DATE(fecha_vencimiento) = ? LIMIT 1`,
         [item.cod_sucursal_destino, item.cod_art, formattedFecha]
       );
 
+      let cantDestinoAnt = 0;
       if ((existDestino as any[]).length > 0) {
+        cantDestinoAnt = (existDestino as any[])[0].cantidad;
         await connection.query(
           `UPDATE ingreso_vencimientos 
            SET cantidad = cantidad + ? 
@@ -178,6 +190,12 @@ export async function guardarTraspasosDB(items: any[]) {
           [item.cod_sucursal_destino, item.cod_art, item.cod_art, item.cantidad, formattedFecha, 'SISTEMA_TRASPASOS']
         );
       }
+      
+      // Log destino
+      try {
+        await connection.query(`INSERT INTO movimientos_inventario (cod_sucursal, cod_art, tipo_movimiento, cantidad_anterior, cantidad_nueva, id_referencia, usuario, observacion) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [item.cod_sucursal_destino, item.cod_art, 'TRASPASO_ENTRADA', cantDestinoAnt, cantDestinoAnt + item.cantidad, correlativo, 'SISTEMA_TRASPASOS', `Recepción de ${item.cod_sucursal_origen}`]);
+      } catch(e) {}
     }
 
     await connection.commit();
@@ -282,7 +300,116 @@ export async function anularTraspaso(id_traspaso: number) {
     connection.release();
   }
 }
+// NEW WORKFLOW ACTIONS FOR TRASPASOS
+export async function confirmarTraspaso(id_traspaso: number) {
+  const connection = await pool.getConnection();
+  try {
+    await connection.query('UPDATE traspasos_cabecera SET estado = ? WHERE id_traspaso = ?', ['EJECUTADO', id_traspaso]);
+    revalidatePath('/panel/recepcion-traspasos');
+    revalidatePath('/panel/historial-traspasos');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
 
+export async function rechazarTraspaso(id_traspaso: number) {
+  // This is essentially the same as anularTraspaso, but sets state to NO_EJECUTADO
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    const [cabecera] = await connection.query(`SELECT estado FROM traspasos_cabecera WHERE id_traspaso = ?`, [id_traspaso]);
+    if ((cabecera as any[]).length === 0) throw new Error("Traspaso no encontrado");
+    if (['ANULADO', 'NO_EJECUTADO'].includes((cabecera as any[])[0].estado)) throw new Error("El traspaso ya está anulado o rechazado");
+
+    const [detalles] = await connection.query(`SELECT * FROM traspasos_detalle WHERE id_traspaso = ?`, [id_traspaso]);
+
+    for (const item of (detalles as any[])) {
+      const fechaVencDate = new Date(item.fecha_vencimiento);
+      const yyyy = fechaVencDate.getFullYear();
+      const mm = String(fechaVencDate.getMonth() + 1).padStart(2, '0');
+      const dd = String(fechaVencDate.getDate()).padStart(2, '0');
+      const formattedFecha = `${yyyy}-${mm}-${dd}`;
+
+      // a. Devolver a Origen
+      await connection.query(
+        `UPDATE ingreso_vencimientos SET cantidad = cantidad + ? WHERE cod_sucursal = ? AND cod_art = ? AND DATE(fecha_vencimiento) = ? LIMIT 1`,
+        [item.cantidad, item.cod_sucursal_origen, item.cod_art, formattedFecha]
+      );
+
+      // b. Quitar de Destino
+      await connection.query(
+        `UPDATE ingreso_vencimientos SET cantidad = cantidad - ? WHERE cod_sucursal = ? AND cod_art = ? AND DATE(fecha_vencimiento) = ? LIMIT 1`,
+        [item.cantidad, item.cod_sucursal_destino, item.cod_art, formattedFecha]
+      );
+    }
+
+    await connection.query(`UPDATE traspasos_cabecera SET estado = 'NO_EJECUTADO' WHERE id_traspaso = ?`, [id_traspaso]);
+
+    await connection.commit();
+    revalidatePath('/panel/recepcion-traspasos');
+    revalidatePath('/panel/historial-traspasos');
+    return { success: true };
+  } catch (error: any) {
+    await connection.rollback();
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
+
+export async function actualizarTraspaso(id_traspaso: number, modificaciones: { id_detalle: number, nueva_cantidad: number }[]) {
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    const [cabecera] = await connection.query(`SELECT estado FROM traspasos_cabecera WHERE id_traspaso = ?`, [id_traspaso]);
+    if ((cabecera as any[]).length === 0) throw new Error("Traspaso no encontrado");
+    
+    // For each modification, find difference
+    for (const mod of modificaciones) {
+      const [detalles] = await connection.query(`SELECT * FROM traspasos_detalle WHERE id_detalle = ? AND id_traspaso = ?`, [mod.id_detalle, id_traspaso]);
+      if ((detalles as any[]).length > 0) {
+        const item = (detalles as any[])[0];
+        const diff = item.cantidad - mod.nueva_cantidad; // e.g. original 10, nueva 8. Diff = 2.
+        
+        if (diff !== 0) {
+          const fechaVencDate = new Date(item.fecha_vencimiento);
+          const formattedFecha = `${fechaVencDate.getFullYear()}-${String(fechaVencDate.getMonth() + 1).padStart(2, '0')}-${String(fechaVencDate.getDate()).padStart(2, '0')}`;
+          
+          // If original 10, new 8 -> we need to reverse 2. Meaning add 2 to origin, subtract 2 from destination.
+          await connection.query(
+            `UPDATE ingreso_vencimientos SET cantidad = cantidad + ? WHERE cod_sucursal = ? AND cod_art = ? AND DATE(fecha_vencimiento) = ? LIMIT 1`,
+            [diff, item.cod_sucursal_origen, item.cod_art, formattedFecha]
+          );
+          
+          await connection.query(
+            `UPDATE ingreso_vencimientos SET cantidad = cantidad - ? WHERE cod_sucursal = ? AND cod_art = ? AND DATE(fecha_vencimiento) = ? LIMIT 1`,
+            [diff, item.cod_sucursal_destino, item.cod_art, formattedFecha]
+          );
+          
+          // Update the traspaso_detalle to reflect new quantity
+          await connection.query(`UPDATE traspasos_detalle SET cantidad = ? WHERE id_detalle = ?`, [mod.nueva_cantidad, mod.id_detalle]);
+        }
+      }
+    }
+
+    await connection.query(`UPDATE traspasos_cabecera SET estado = 'EJECUTADO_ACTUALIZADO' WHERE id_traspaso = ?`, [id_traspaso]);
+
+    await connection.commit();
+    revalidatePath('/panel/recepcion-traspasos');
+    revalidatePath('/panel/historial-traspasos');
+    return { success: true };
+  } catch (error: any) {
+    await connection.rollback();
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
 // CONSULTOR DE PRECIOS
 export async function getConsultorProductos(params: { q?: string, minPrice?: number, maxPrice?: number, sort?: string, page?: number, limit?: number }) {
   const { q, minPrice, maxPrice, sort = 'default', page = 1, limit = 100 } = params;
@@ -422,26 +549,80 @@ export async function getMarginAnalysis(params: { startDate?: string, endDate?: 
   }
 }
 
-export async function updateIngresoVencimiento(id: number, nuevaCantidad: number) {
+export async function updateIngresoVencimiento(id: number, nuevaCantidad: number, motivo: string = 'AJUSTE_MANUAL', usuario: string = 'SISTEMA') {
   const connection = await pool.getConnection();
   try {
-    await connection.query('UPDATE ingreso_vencimientos SET cantidad = ? WHERE id = ?', [nuevaCantidad, id]);
+    await connection.beginTransaction();
+
+    const [current] = await connection.query('SELECT * FROM ingreso_vencimientos WHERE id = ?', [id]);
+    if ((current as any[]).length === 0) throw new Error("Registro no encontrado");
+    
+    const currData = (current as any[])[0];
+
+    // Log auditoría (si la tabla no existe aún, fallará, por eso usamos TRY/CATCH para que siga si la BD aún no está migrada)
+    try {
+      await connection.query(`
+        INSERT INTO movimientos_inventario 
+        (cod_sucursal, cod_art, tipo_movimiento, cantidad_anterior, cantidad_nueva, id_referencia, usuario, observacion)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `, [currData.cod_sucursal, currData.cod_art, motivo, currData.cantidad, nuevaCantidad, id.toString(), usuario, 'Actualización manual panel']);
+    } catch (e) {
+      console.warn("Tabla de auditoría no disponible o error al registrar log:", e);
+    }
+
+    if (nuevaCantidad <= 0) {
+      // Intentar mover a la tabla de ceros
+      try {
+        await connection.query(`
+          INSERT INTO ingreso_vencimientos_final 
+          (id, cod_sucursal, cod_art, codigo_ingresado, cantidad, fecha_vencimiento, usuario_registro, motivo_cierre)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `, [currData.id, currData.cod_sucursal, currData.cod_art, currData.codigo_ingresado, nuevaCantidad, currData.fecha_vencimiento, currData.usuario_registro, motivo]);
+      } catch (e) {
+        console.warn("Tabla final no disponible o error al mover registro:", e);
+      }
+      
+      await connection.query('DELETE FROM ingreso_vencimientos WHERE id = ?', [id]);
+    } else {
+      await connection.query('UPDATE ingreso_vencimientos SET cantidad = ? WHERE id = ?', [nuevaCantidad, id]);
+    }
+
+    await connection.commit();
     revalidatePath('/');
     return { success: true };
   } catch (error: any) {
+    await connection.rollback();
     return { success: false, error: error.message };
   } finally {
     connection.release();
   }
 }
 
-export async function deleteIngresoVencimiento(id: number) {
+export async function deleteIngresoVencimiento(id: number, usuario: string = 'SISTEMA') {
   const connection = await pool.getConnection();
   try {
+    await connection.beginTransaction();
+
+    const [current] = await connection.query('SELECT * FROM ingreso_vencimientos WHERE id = ?', [id]);
+    if ((current as any[]).length > 0) {
+      const currData = (current as any[])[0];
+      try {
+        await connection.query(`
+          INSERT INTO movimientos_inventario 
+          (cod_sucursal, cod_art, tipo_movimiento, cantidad_anterior, cantidad_nueva, id_referencia, usuario, observacion)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `, [currData.cod_sucursal, currData.cod_art, 'ELIMINACION', currData.cantidad, 0, id.toString(), usuario, 'Registro eliminado desde panel']);
+      } catch (e) {
+        console.warn("Auditoría no disponible:", e);
+      }
+    }
+
     await connection.query('DELETE FROM ingreso_vencimientos WHERE id = ?', [id]);
+    await connection.commit();
     revalidatePath('/');
     return { success: true };
   } catch (error: any) {
+    await connection.rollback();
     return { success: false, error: error.message };
   } finally {
     connection.release();

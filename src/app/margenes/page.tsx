@@ -303,17 +303,15 @@ export default function MargenesPage() {
                       const diffMargen = d.es_nuevo === 1 ? 0 : ((d.MARGEN_NUEVO_NETO || 0) - (d.MARGEN_ACTUAL_NETO || 0));
                       let margenColor = "text-slate-600";
                       let badge = null;
+
+                      if (d.MARGEN_NUEVO_NETO !== null) {
+                        margenColor = d.MARGEN_NUEVO_NETO >= 0 ? "text-emerald-600" : "text-red-600";
+                      }
                       
                       if (!d.es_nuevo && d.MARGEN_NUEVO_NETO !== null) {
                         if (diffMargen > 0) {
-                          margenColor = "text-emerald-600";
                           badge = <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1 rounded ml-1">+{diffMargen.toFixed(1)}%</span>;
                         } else if (diffMargen < 0) {
-                          if (d.MARGEN_NUEVO_NETO >= 0) {
-                            margenColor = "text-blue-600";
-                          } else {
-                            margenColor = "text-red-600";
-                          }
                           badge = <span className="text-[10px] bg-red-100 text-red-700 px-1 rounded ml-1">{diffMargen.toFixed(1)}%</span>;
                         }
                       }
@@ -365,7 +363,7 @@ export default function MargenesPage() {
                           </td>
                           <td className="px-4 py-3 text-right font-black bg-teal-50/30">
                             <div className="flex flex-col items-end">
-                              <span className={d.MARGEN_NUEVO_NETO !== null && d.MARGEN_NUEVO_NETO < 0 ? 'text-red-600' : margenColor}>{d.MARGEN_NUEVO_NETO === null ? '-' : Number(d.MARGEN_NUEVO_NETO).toFixed(1) + '%'}</span>
+                              <span className={margenColor}>{d.MARGEN_NUEVO_NETO === null ? '-' : Number(d.MARGEN_NUEVO_NETO).toFixed(1) + '%'}</span>
                               {badge}
                             </div>
                           </td>
