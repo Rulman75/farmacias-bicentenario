@@ -295,6 +295,7 @@ export default function SugerenciaPrecioPage() {
               <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
                 <h3 className="font-bold text-slate-800">Resultados de Búsqueda</h3>
               </div>
+              <div className="overflow-auto max-h-[calc(100vh-400px)]">
               <table className="w-full text-left">
                 <thead className="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase">
                   <tr>
@@ -345,6 +346,7 @@ export default function SugerenciaPrecioPage() {
                   })}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
 
@@ -382,6 +384,7 @@ export default function SugerenciaPrecioPage() {
                 />
               </div>
 
+              <div className="overflow-auto max-h-[calc(100vh-400px)]">
               <table className="w-full text-left">
                 <thead className="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase">
                   <tr>
@@ -415,6 +418,7 @@ export default function SugerenciaPrecioPage() {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
         </div>
@@ -425,6 +429,7 @@ export default function SugerenciaPrecioPage() {
           {historialLoading ? (
             <div className="flex justify-center p-10"><Loader2 className="animate-spin text-emerald-500" size={32} /></div>
           ) : (
+            <div className="overflow-auto max-h-[calc(100vh-400px)]">
             <table className="w-full text-left">
               <thead className="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wider">
                 <tr>
@@ -486,6 +491,7 @@ export default function SugerenciaPrecioPage() {
                 )}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       )}

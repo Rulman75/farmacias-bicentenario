@@ -71,7 +71,7 @@ export default function LotesTableClient({ initialLotes }: { initialLotes: any[]
   };
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-auto max-h-[calc(100vh-350px)]">
       <table className="w-full text-left border-collapse">
         <thead>
           <tr className="bg-white text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">

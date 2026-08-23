@@ -187,7 +187,7 @@ export default async function VencidosPage({ searchParams }: { searchParams: Pro
             </Link>
           )}
         </div>
-        <div className="overflow-x-auto">
+        <div className="overflow-auto max-h-[calc(100vh-250px)]">
           <VencidosTable detalles={detalles} totalPerdidaGlobal={totalPerdidaGlobal} />
         </div>
       </div>
