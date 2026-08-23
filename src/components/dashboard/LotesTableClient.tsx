@@ -63,11 +63,11 @@ export default function LotesTableClient({ initialLotes }: { initialLotes: any[]
   };
 
   const getSemaforoInfo = (dias: number) => {
-    if (dias < 0) return { bg: 'bg-[#D9D9D9]' };
-    if (dias <= 60) return { bg: 'bg-[#FF0000]' };
-    if (dias <= 180) return { bg: 'bg-[#E97132]' };
-    if (dias <= 270) return { bg: 'bg-[#FFC000]' };
-    return { bg: 'bg-[#00B050]' };
+    if (dias < 0) return { bg: 'bg-[#D9D9D9]', text: 'text-slate-800' };
+    if (dias <= 60) return { bg: 'bg-[#FF0000]', text: 'text-white' };
+    if (dias <= 180) return { bg: 'bg-[#E97132]', text: 'text-white' };
+    if (dias <= 270) return { bg: 'bg-[#FFC000]', text: 'text-white' };
+    return { bg: 'bg-[#00B050]', text: 'text-white' };
   };
 
   return (
