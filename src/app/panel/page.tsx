@@ -3,6 +3,7 @@ import pool from '@/lib/db';
 import { AlertCircle, AlertTriangle, CheckCircle, XCircle, Layers, FileText, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import SucursalFilter from '@/components/dashboard/SucursalFilter';
 import LotesTableClient from '@/components/dashboard/LotesTableClient';
+import FilterLink from '@/components/dashboard/FilterLink';
 
 async function getLotes(sucursalId: number, estado: string, page: number) {
   const connection = await pool.getConnection();
@@ -139,7 +140,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         
         {/* Tarjeta Vencido */}
-        <Link href={`/panel?sucursal=${sucursalId}&estado=vencido`} className={`block bg-white rounded-2xl p-6 shadow-sm border transition-all hover:shadow-md ${estado === 'vencido' ? 'border-[#D9D9D9] ring-2 ring-[#D9D9D9]/50' : 'border-slate-200'}`}>
+        <FilterLink href={`/panel?sucursal=${sucursalId}&estado=vencido`} active={estado === 'vencido'} className={`bg-white rounded-2xl p-6 shadow-sm border transition-all hover:shadow-md ${estado === 'vencido' ? 'border-[#D9D9D9] ring-2 ring-[#D9D9D9]/50' : 'border-slate-200'}`}>
           <div className="flex items-center gap-4 mb-4">
             <div className="bg-[#D9D9D9] p-3 rounded-xl text-slate-700">
               <XCircle size={24} />
@@ -148,10 +149,10 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
           </div>
           <p className="text-3xl font-black text-slate-800">{kpis.vencido}</p>
           <p className="text-sm text-slate-500 font-medium mt-1">&lt; 0 días</p>
-        </Link>
+        </FilterLink>
 
         {/* Tarjeta Liquidar */}
-        <Link href={`/panel?sucursal=${sucursalId}&estado=liquidar`} className={`block bg-white rounded-2xl p-6 shadow-sm border transition-all hover:shadow-md ${estado === 'liquidar' ? 'border-[#FF0000] ring-2 ring-[#FF0000]/50' : 'border-slate-200'}`}>
+        <FilterLink href={`/panel?sucursal=${sucursalId}&estado=liquidar`} active={estado === 'liquidar'} className={`bg-white rounded-2xl p-6 shadow-sm border transition-all hover:shadow-md ${estado === 'liquidar' ? 'border-[#FF0000] ring-2 ring-[#FF0000]/50' : 'border-slate-200'}`}>
           <div className="flex items-center gap-4 mb-4">
             <div className="bg-[#FF0000]/20 p-3 rounded-xl text-[#FF0000]">
               <AlertCircle size={24} />
@@ -160,10 +161,10 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
           </div>
           <p className="text-3xl font-black text-slate-800">{kpis.liquidar}</p>
           <p className="text-sm text-slate-500 font-medium mt-1">0 a 60 días</p>
-        </Link>
+        </FilterLink>
 
         {/* Tarjeta Próximo */}
-        <Link href={`/panel?sucursal=${sucursalId}&estado=proximo`} className={`block bg-white rounded-2xl p-6 shadow-sm border transition-all hover:shadow-md ${estado === 'proximo' ? 'border-[#E97132] ring-2 ring-[#E97132]/50' : 'border-slate-200'}`}>
+        <FilterLink href={`/panel?sucursal=${sucursalId}&estado=proximo`} active={estado === 'proximo'} className={`bg-white rounded-2xl p-6 shadow-sm border transition-all hover:shadow-md ${estado === 'proximo' ? 'border-[#E97132] ring-2 ring-[#E97132]/50' : 'border-slate-200'}`}>
           <div className="flex items-center gap-4 mb-4">
             <div className="bg-[#E97132]/20 p-3 rounded-xl text-[#E97132]">
               <AlertCircle size={24} />
@@ -172,10 +173,10 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
           </div>
           <p className="text-3xl font-black text-slate-800">{kpis.proximo}</p>
           <p className="text-sm text-slate-500 font-medium mt-1">61 a 180 días</p>
-        </Link>
+        </FilterLink>
 
         {/* Tarjeta Precaucion */}
-        <Link href={`/panel?sucursal=${sucursalId}&estado=precaucion`} className={`block bg-white rounded-2xl p-6 shadow-sm border transition-all hover:shadow-md ${estado === 'precaucion' ? 'border-[#FFC000] ring-2 ring-[#FFC000]/50' : 'border-slate-200'}`}>
+        <FilterLink href={`/panel?sucursal=${sucursalId}&estado=precaucion`} active={estado === 'precaucion'} className={`bg-white rounded-2xl p-6 shadow-sm border transition-all hover:shadow-md ${estado === 'precaucion' ? 'border-[#FFC000] ring-2 ring-[#FFC000]/50' : 'border-slate-200'}`}>
           <div className="flex items-center gap-4 mb-4">
             <div className="bg-[#FFC000]/20 p-3 rounded-xl text-[#FFC000]">
               <AlertTriangle size={24} />
@@ -184,10 +185,10 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
           </div>
           <p className="text-3xl font-black text-slate-800">{kpis.precaucion}</p>
           <p className="text-sm text-slate-500 font-medium mt-1">181 a 270 días</p>
-        </Link>
+        </FilterLink>
 
         {/* Tarjeta Atencion */}
-        <Link href={`/panel?sucursal=${sucursalId}&estado=atencion`} className={`block bg-white rounded-2xl p-6 shadow-sm border transition-all hover:shadow-md ${estado === 'atencion' ? 'border-[#00B050] ring-2 ring-[#00B050]/50' : 'border-slate-200'}`}>
+        <FilterLink href={`/panel?sucursal=${sucursalId}&estado=atencion`} active={estado === 'atencion'} className={`bg-white rounded-2xl p-6 shadow-sm border transition-all hover:shadow-md ${estado === 'atencion' ? 'border-[#00B050] ring-2 ring-[#00B050]/50' : 'border-slate-200'}`}>
           <div className="flex items-center gap-4 mb-4">
             <div className="bg-[#00B050]/20 p-3 rounded-xl text-[#00B050]">
               <CheckCircle size={24} />
@@ -196,7 +197,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
           </div>
           <p className="text-3xl font-black text-slate-800">{kpis.atencion}</p>
           <p className="text-sm text-slate-500 font-medium mt-1">&gt; 270 días</p>
-        </Link>
+        </FilterLink>
 
       </div>
 
