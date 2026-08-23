@@ -21,7 +21,7 @@ export default function RecepcionTraspasosPage() {
   const fetchTraspasos = async () => {
     setLoading(true);
     const res = await getHistorialTraspasos();
-    if (res.success) {
+    if (res.success && res.data) {
       // Filtrar solo los generados
       setTraspasos(res.data.filter((t: any) => t.estado === 'GENERADO' || t.estado === 'PROCESADO'));
     }
