@@ -11,6 +11,7 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean, setIs
   const [vencimientoOpen, setVencimientoOpen] = useState(false);
   const [comercialOpen, setComercialOpen] = useState(false);
   const [gestionComercialOpen, setGestionComercialOpen] = useState(false);
+  const [rrhhOpen, setRrhhOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   
   const [user, setUser] = useState<any>(null);
@@ -144,6 +145,28 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean, setIs
           )}
         </div>
         )}
+
+        {/* Menu Recursos Humanos */}
+        <div>
+          <button 
+            onClick={() => setRrhhOpen(!rrhhOpen)}
+            className="w-full flex items-center justify-between px-3 py-3 rounded-lg hover:bg-slate-800 transition-colors group"
+          >
+            <div className="flex items-center gap-3">
+              <Users size={20} className="group-hover:text-blue-400 transition-colors text-blue-500" />
+              <span className="font-medium group-hover:text-blue-400 transition-colors text-blue-500">Recursos Humanos</span>
+            </div>
+            {rrhhOpen ? <ChevronDown size={16} className="text-blue-500/50" /> : <ChevronRight size={16} className="text-blue-500/50" />}
+          </button>
+          {rrhhOpen && (
+            <div className="mt-1 ml-4 border-l border-slate-700 pl-3 space-y-1">
+              <Link href="/panel/rrhh" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors group text-sm">
+                <Briefcase size={18} className="text-slate-400 group-hover:text-white" />
+                <span className="font-medium text-slate-400 group-hover:text-white">Directorio Personal</span>
+              </Link>
+            </div>
+          )}
+        </div>
 
         {/* Menu Administracion */}
         {(user?.rutas_apli?.includes('/admin/usuarios') || user?.rutas_apli?.includes('/admin/perfiles') || user?.rutas_apli?.includes('/admin/aplicaciones')) && (
