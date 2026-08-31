@@ -1,7 +1,8 @@
-import { getTrabajadorById, getCargos, getSucursalesRRHH } from '@/app/rrhh_actions';
-import { User, ChevronRight, Briefcase, FileText, FileSignature, MapPin } from 'lucide-react';
+import { getTrabajadorById, getCargos, getSucursalesRRHH, getAusentismosByTrabajador } from '@/app/rrhh_actions';
+import { User, ChevronRight, Briefcase, FileText, FileSignature, MapPin, CalendarOff } from 'lucide-react';
 import Link from 'next/link';
 import ContratoFormClient from '@/components/rrhh/ContratoFormClient';
+import AusentismoFormClient from '@/components/rrhh/AusentismoFormClient';
 
 export default async function TrabajadorPerfilPage({ params }: { params: { id: string } }) {
   const { id } = await params;
@@ -17,13 +18,15 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
 
   const t = res.data;
   
-  const [cargosRes, sucRes] = await Promise.all([
+  const [cargosRes, sucRes, ausentismosRes] = await Promise.all([
     getCargos(),
-    getSucursalesRRHH()
+    getSucursalesRRHH(),
+    getAusentismosByTrabajador(parseInt(id))
   ]);
 
   const cargos = cargosRes.success ? (cargosRes.data as any[]) : [];
   const sucursales = sucRes.success ? (sucRes.data as any[]) : [];
+  const ausentismos = ausentismosRes.success ? (ausentismosRes.data as any[]) : [];
 
   const formatoMoneda = (valor: number) => {
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(valor);
@@ -146,6 +149,52 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
               ) : (
                 <div className="p-8 text-center text-slate-500">
                   <p>Este trabajador no tiene contratos registrados aún.</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <CalendarOff size={20} className="text-rose-600" />
+                <h3 className="font-bold text-slate-800">Vacaciones y Licencias</h3>
+              </div>
+              <AusentismoFormClient trabajadorId={t.id} />
+            </div>
+            <div className="p-0">
+              {ausentismos && ausentismos.length > 0 ? (
+                <div className="divide-y divide-slate-100">
+                  {ausentismos.map((a: any) => (
+                    <div key={a.id} className="p-6 flex flex-col md:flex-row justify-between gap-4 hover:bg-slate-50 transition-colors">
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className={`px-2.5 py-1 rounded-md text-xs font-bold ${
+                            a.tipo === 'Vacaciones' ? 'bg-sky-100 text-sky-700' :
+                            a.tipo === 'Licencia Médica' ? 'bg-rose-100 text-rose-700' :
+                            'bg-slate-100 text-slate-700'
+                          }`}>
+                            {a.tipo}
+                          </span>
+                          <span className={`text-xs font-bold ${a.estado === 'APROBADO' ? 'text-emerald-600' : 'text-slate-500'}`}>
+                            • {a.estado}
+                          </span>
+                        </div>
+                        <p className="text-sm text-slate-600 mt-2">{a.motivo || 'Sin detalles adicionales'}</p>
+                      </div>
+                      
+                      <div className="md:text-right">
+                        <p className="text-sm font-medium text-slate-700">
+                          {new Date(a.fecha_inicio).toLocaleDateString()} al {new Date(a.fecha_termino).toLocaleDateString()}
+                        </p>
+                        <p className="font-bold text-slate-800 text-lg mt-1">{a.dias} días</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-8 text-center text-slate-500">
+                  <p>No se han registrado ausentismos para este trabajador.</p>
                 </div>
               )}
             </div>

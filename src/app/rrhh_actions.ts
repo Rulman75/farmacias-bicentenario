@@ -244,3 +244,38 @@ export async function getContratosPorVencer(dias: number = 30) {
     connection.release();
   }
 }
+
+// -- AUSENTISMOS --
+export async function getAusentismosByTrabajador(trabajador_id: number) {
+  const connection = await pool.getConnection();
+  try {
+    const [rows] = await connection.query(`
+      SELECT * FROM rrhh_ausentismos 
+      WHERE trabajador_id = ? 
+      ORDER BY fecha_inicio DESC
+    `, [trabajador_id]);
+    return { success: true, data: rows as any[] };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
+
+export async function createAusentismo(data: any) {
+  const connection = await pool.getConnection();
+  try {
+    const { trabajador_id, tipo, fecha_inicio, fecha_termino, dias, motivo } = data;
+    await connection.query(`
+      INSERT INTO rrhh_ausentismos (trabajador_id, tipo, fecha_inicio, fecha_termino, dias, motivo, estado)
+      VALUES (?, ?, ?, ?, ?, ?, 'APROBADO')
+    `, [trabajador_id, tipo, fecha_inicio, fecha_termino, dias, motivo]);
+    
+    revalidatePath(`/panel/rrhh/${trabajador_id}`);
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
