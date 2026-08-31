@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { getTrabajadores } from '@/app/rrhh_actions';
+import { getTrabajadores, getContratosPorVencer } from '@/app/rrhh_actions';
 import { Users, Plus, Search } from 'lucide-react';
 import RRHHTableClient from '@/components/rrhh/RRHHTableClient';
+import ContratosAlertWidget from '@/components/rrhh/ContratosAlertWidget';
 
 export default async function RRHHPage({
   searchParams
@@ -11,8 +12,13 @@ export default async function RRHHPage({
   const search = searchParams.search || '';
   const estado = searchParams.estado || 'ACTIVO';
 
-  const res = await getTrabajadores(search, estado);
+  const [res, alertRes] = await Promise.all([
+    getTrabajadores(search, estado),
+    getContratosPorVencer(30)
+  ]);
+  
   const trabajadores = res.success ? (res.data as any[]) : [];
+  const contratosVencer = alertRes.success ? (alertRes.data as any[]) : [];
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 pb-20">
@@ -35,6 +41,8 @@ export default async function RRHHPage({
           Nuevo Trabajador
         </Link>
       </div>
+
+      <ContratosAlertWidget contratos={contratosVencer} />
 
       <RRHHTableClient initialTrabajadores={trabajadores} search={search} estado={estado} />
     </div>

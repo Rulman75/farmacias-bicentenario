@@ -168,3 +168,31 @@ export async function getSucursalesRRHH() {
     connection.release();
   }
 }
+
+// -- ALERTAS --
+export async function getContratosPorVencer(dias: number = 30) {
+  const connection = await pool.getConnection();
+  try {
+    const [rows] = await connection.query(`
+      SELECT 
+        c.id, c.fecha_termino, c.tipo_contrato,
+        t.id as trabajador_id, t.rut, t.nombres, t.apellidos,
+        ca.nombre as cargo,
+        DATEDIFF(c.fecha_termino, NOW()) as dias_restantes
+      FROM rrhh_contratos c
+      JOIN rrhh_trabajadores t ON c.trabajador_id = t.id
+      JOIN rrhh_cargos ca ON c.cargo_id = ca.id
+      WHERE c.estado = 'ACTIVO' 
+        AND c.tipo_contrato = 'Plazo Fijo'
+        AND c.fecha_termino IS NOT NULL
+        AND DATEDIFF(c.fecha_termino, NOW()) BETWEEN 0 AND ?
+      ORDER BY dias_restantes ASC
+    `, [dias]);
+    
+    return { success: true, data: rows as any[] };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
