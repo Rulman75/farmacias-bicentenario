@@ -51,6 +51,12 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${t.estado === 'ACTIVO' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
                   {t.estado}
                 </span>
+                <Link 
+                  href={`/panel/rrhh/${t.id}/editar`}
+                  className="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors"
+                >
+                  Editar
+                </Link>
               </div>
             </div>
             
@@ -119,6 +125,20 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
                           <p>Desde: {new Date(c.fecha_inicio).toLocaleDateString()}</p>
                           {c.fecha_termino && <p>Hasta: {new Date(c.fecha_termino).toLocaleDateString()}</p>}
                         </div>
+                        {c.estado === 'ACTIVO' && (
+                          <div className="mt-3 flex justify-end">
+                            <ContratoFormClient 
+                              trabajadorId={t.id} 
+                              cargos={cargos} 
+                              sucursales={sucursales}
+                              initialData={c}
+                            >
+                              <button className="text-xs font-bold text-slate-500 hover:text-blue-600 underline">
+                                Editar Contrato
+                              </button>
+                            </ContratoFormClient>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}

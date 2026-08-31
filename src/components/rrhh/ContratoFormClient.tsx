@@ -3,28 +3,38 @@
 import React, { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { createContrato } from '@/app/rrhh_actions';
-import { Plus, X, Loader2, Save } from 'lucide-react';
+import { Plus, X, Loader2, Save, Pencil } from 'lucide-react';
 
 export default function ContratoFormClient({ 
   trabajadorId, 
   cargos, 
-  sucursales 
+  sucursales,
+  initialData,
+  children
 }: { 
   trabajadorId: number, 
   cargos: any[], 
-  sucursales: any[] 
+  sucursales: any[],
+  initialData?: any,
+  children?: React.ReactNode
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const formatDateForInput = (dateStr: string) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0];
+  };
+
   const [formData, setFormData] = useState({
-    cargo_id: '',
-    cod_sucursal: '',
-    fecha_inicio: '',
-    fecha_termino: '',
-    tipo_contrato: 'Plazo Fijo',
-    sueldo_base: ''
+    cargo_id: initialData?.cargo_id?.toString() || '',
+    cod_sucursal: initialData?.cod_sucursal?.toString() || '',
+    fecha_inicio: initialData?.fecha_inicio ? formatDateForInput(initialData.fecha_inicio) : '',
+    fecha_termino: initialData?.fecha_termino ? formatDateForInput(initialData.fecha_termino) : '',
+    tipo_contrato: initialData?.tipo_contrato || 'Plazo Fijo',
+    sueldo_base: initialData?.sueldo_base?.toString() || ''
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -45,17 +55,22 @@ export default function ContratoFormClient({
       sueldo_base: parseFloat(formData.sueldo_base) || 0
     };
 
-    const res = await createContrato(payload);
+    const res = await (initialData?.id 
+      ? import('@/app/rrhh_actions').then(m => m.updateContrato(initialData.id, payload))
+      : import('@/app/rrhh_actions').then(m => m.createContrato(payload)));
+
     if (res.success) {
       setIsOpen(false);
-      setFormData({
-        cargo_id: '',
-        cod_sucursal: '',
-        fecha_inicio: '',
-        fecha_termino: '',
-        tipo_contrato: 'Plazo Fijo',
-        sueldo_base: ''
-      });
+      if (!initialData) {
+        setFormData({
+          cargo_id: '',
+          cod_sucursal: '',
+          fecha_inicio: '',
+          fecha_termino: '',
+          tipo_contrato: 'Plazo Fijo',
+          sueldo_base: ''
+        });
+      }
     } else {
       alert(res.error || 'Error al guardar contrato');
     }
@@ -64,19 +79,25 @@ export default function ContratoFormClient({
 
   return (
     <>
-      <button 
-        onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
-      >
-        <Plus size={16} />
-        Nuevo Contrato
-      </button>
+      {children ? (
+        <div onClick={() => setIsOpen(true)}>
+          {children}
+        </div>
+      ) : (
+        <button 
+          onClick={() => setIsOpen(true)}
+          className="flex items-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+        >
+          <Plus size={16} />
+          Nuevo Contrato
+        </button>
+      )}
 
       {isOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-              <h3 className="font-bold text-slate-800">Registrar Contrato</h3>
+              <h3 className="font-bold text-slate-800">{initialData ? 'Editar Contrato' : 'Registrar Contrato'}</h3>
               <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-slate-600">
                 <X size={20} />
               </button>

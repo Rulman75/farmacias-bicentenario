@@ -132,6 +132,33 @@ export async function createTrabajador(data: any) {
   }
 }
 
+export async function updateTrabajador(id: number, data: any) {
+  const connection = await pool.getConnection();
+  try {
+    const { rut, nombres, apellidos, fecha_nacimiento, direccion, telefono, email, estado_civil, afp_id, salud_id, cargas_familiares } = data;
+    
+    // Verificar RUT si cambió
+    const [exist] = await connection.query('SELECT id FROM rrhh_trabajadores WHERE rut = ? AND id != ?', [rut, id]);
+    if ((exist as any[]).length > 0) {
+      throw new Error("El RUT ingresado ya está registrado en otro trabajador.");
+    }
+
+    await connection.query(`
+      UPDATE rrhh_trabajadores 
+      SET rut=?, nombres=?, apellidos=?, fecha_nacimiento=?, direccion=?, telefono=?, email=?, estado_civil=?, afp_id=?, salud_id=?, cargas_familiares=?
+      WHERE id = ?
+    `, [rut, nombres, apellidos, fecha_nacimiento || null, direccion, telefono, email, estado_civil, afp_id || null, salud_id || null, cargas_familiares || 0, id]);
+    
+    revalidatePath(`/panel/rrhh/${id}`);
+    revalidatePath('/panel/rrhh');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
+
 // -- CONTRATOS --
 export async function createContrato(data: any) {
   const connection = await pool.getConnection();
@@ -145,6 +172,27 @@ export async function createContrato(data: any) {
       INSERT INTO rrhh_contratos (trabajador_id, cargo_id, cod_sucursal, fecha_inicio, fecha_termino, tipo_contrato, sueldo_base)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `, [trabajador_id, cargo_id, cod_sucursal, fecha_inicio, fecha_termino || null, tipo_contrato, sueldo_base]);
+    
+    revalidatePath(`/panel/rrhh/${trabajador_id}`);
+    revalidatePath('/panel/rrhh');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
+
+export async function updateContrato(id: number, data: any) {
+  const connection = await pool.getConnection();
+  try {
+    const { cargo_id, cod_sucursal, fecha_inicio, fecha_termino, tipo_contrato, sueldo_base, trabajador_id } = data;
+
+    await connection.query(`
+      UPDATE rrhh_contratos 
+      SET cargo_id=?, cod_sucursal=?, fecha_inicio=?, fecha_termino=?, tipo_contrato=?, sueldo_base=?
+      WHERE id = ?
+    `, [cargo_id, cod_sucursal || null, fecha_inicio, fecha_termino || null, tipo_contrato, sueldo_base, id]);
     
     revalidatePath(`/panel/rrhh/${trabajador_id}`);
     revalidatePath('/panel/rrhh');

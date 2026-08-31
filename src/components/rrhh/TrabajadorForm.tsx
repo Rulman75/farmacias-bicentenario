@@ -2,26 +2,40 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createTrabajador } from '@/app/rrhh_actions';
+import { createTrabajador, updateTrabajador } from '@/app/rrhh_actions';
 import { Loader2, Save } from 'lucide-react';
 
-export default function TrabajadorForm({ afps, salud }: { afps: any[], salud: any[] }) {
+export default function TrabajadorForm({ 
+  afps, 
+  salud,
+  initialData 
+}: { 
+  afps: any[], 
+  salud: any[],
+  initialData?: any 
+}) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
+  const formatDateForInput = (dateStr: string) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0];
+  };
+
   const [formData, setFormData] = useState({
-    rut: '',
-    nombres: '',
-    apellidos: '',
-    fecha_nacimiento: '',
-    direccion: '',
-    telefono: '',
-    email: '',
-    estado_civil: '',
-    afp_id: '',
-    salud_id: '',
-    cargas_familiares: 0
+    rut: initialData?.rut || '',
+    nombres: initialData?.nombres || '',
+    apellidos: initialData?.apellidos || '',
+    fecha_nacimiento: initialData?.fecha_nacimiento ? formatDateForInput(initialData.fecha_nacimiento) : '',
+    direccion: initialData?.direccion || '',
+    telefono: initialData?.telefono || '',
+    email: initialData?.email || '',
+    estado_civil: initialData?.estado_civil || '',
+    afp_id: initialData?.afp_id?.toString() || '',
+    salud_id: initialData?.salud_id?.toString() || '',
+    cargas_familiares: initialData?.cargas_familiares || 0
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -30,7 +44,6 @@ export default function TrabajadorForm({ afps, salud }: { afps: any[], salud: an
   };
 
   const formatRut = (value: string) => {
-    // Basic rut formatting
     let v = value.replace(/[^0-9Kk]/g, '').toUpperCase();
     if (v.length > 1) {
       v = v.slice(0, -1) + '-' + v.slice(-1);
@@ -54,10 +67,15 @@ export default function TrabajadorForm({ afps, salud }: { afps: any[], salud: an
       cargas_familiares: parseInt(formData.cargas_familiares as any) || 0
     };
 
-    const res = await createTrabajador(payload);
+    let res: any;
+    if (initialData?.id) {
+      res = await updateTrabajador(initialData.id, payload);
+    } else {
+      res = await createTrabajador(payload);
+    }
     
     if (res.success) {
-      router.push(`/panel/rrhh/${res.data?.id}`);
+      router.push(`/panel/rrhh/${initialData?.id || res.data?.id}`);
     } else {
       setError(res.error || 'Ocurrió un error al guardar el trabajador.');
       setLoading(false);
