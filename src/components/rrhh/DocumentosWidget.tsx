@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { uploadDocumento, deleteDocumento } from '@/app/rrhh_actions';
-import { FileText, Plus, X, Loader2, Upload, Trash2, Download } from 'lucide-react';
+import { FileText, Plus, X, Loader2, Upload, Trash2, Download, Save } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
