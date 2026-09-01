@@ -1,8 +1,9 @@
-import { getTrabajadorById, getCargos, getSucursalesRRHH, getAusentismosByTrabajador } from '@/app/rrhh_actions';
+import { getTrabajadorById, getCargos, getSucursalesRRHH, getAusentismosByTrabajador, getDocumentosByTrabajador } from '@/app/rrhh_actions';
 import { User, ChevronRight, Briefcase, FileText, FileSignature, MapPin, CalendarOff } from 'lucide-react';
 import Link from 'next/link';
 import ContratoFormClient from '@/components/rrhh/ContratoFormClient';
 import AusentismoFormClient from '@/components/rrhh/AusentismoFormClient';
+import DocumentosWidget from '@/components/rrhh/DocumentosWidget';
 
 export default async function TrabajadorPerfilPage({ params }: { params: { id: string } }) {
   const { id } = await params;
@@ -18,15 +19,17 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
 
   const t = res.data;
   
-  const [cargosRes, sucRes, ausentismosRes] = await Promise.all([
+  const [cargosRes, sucRes, ausentismosRes, documentosRes] = await Promise.all([
     getCargos(),
     getSucursalesRRHH(),
-    getAusentismosByTrabajador(parseInt(id))
+    getAusentismosByTrabajador(parseInt(id)),
+    getDocumentosByTrabajador(parseInt(id))
   ]);
 
   const cargos = cargosRes.success ? (cargosRes.data as any[]) : [];
   const sucursales = sucRes.success ? (sucRes.data as any[]) : [];
   const ausentismos = ausentismosRes.success ? (ausentismosRes.data as any[]) : [];
+  const documentos = documentosRes.success ? (documentosRes.data as any[]) : [];
 
   const formatoMoneda = (valor: number) => {
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(valor);
@@ -199,6 +202,10 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
               )}
             </div>
           </div>
+          
+          {/* Gestor Documental */}
+          <DocumentosWidget trabajadorId={t.id} documentos={documentos} />
+
         </div>
       </div>
     </div>

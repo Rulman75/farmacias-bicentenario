@@ -279,3 +279,80 @@ export async function createAusentismo(data: any) {
     connection.release();
   }
 }
+
+// -- DOCUMENTOS --
+export async function getDocumentosByTrabajador(trabajador_id: number) {
+  const connection = await pool.getConnection();
+  try {
+    const [rows] = await connection.query(`
+      SELECT * FROM rrhh_documentos 
+      WHERE trabajador_id = ? 
+      ORDER BY fecha_subida DESC
+    `, [trabajador_id]);
+    return { success: true, data: rows as any[] };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
+
+export async function deleteDocumento(id: number, trabajador_id: number) {
+  const connection = await pool.getConnection();
+  try {
+    // Para ser limpio deberiamos borrar el archivo real, pero por ahora solo de DB
+    await connection.query('DELETE FROM rrhh_documentos WHERE id = ?', [id]);
+    revalidatePath(`/panel/rrhh/${trabajador_id}`);
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
+
+import { writeFile, mkdir } from 'fs/promises';
+import path from 'path';
+
+export async function uploadDocumento(formData: FormData) {
+  const file = formData.get('file') as File;
+  const trabajador_id = formData.get('trabajador_id') as string;
+  const nombre = formData.get('nombre') as string;
+  const tipo_documento = formData.get('tipo_documento') as string;
+
+  if (!file || !trabajador_id || !nombre || !tipo_documento) {
+    return { success: false, error: 'Faltan datos requeridos.' };
+  }
+
+  try {
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    // Save in public/uploads/rrhh
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'rrhh');
+    // Ensure dir exists
+    try { await mkdir(uploadDir, { recursive: true }); } catch (e) {}
+
+    const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const filename = `${trabajador_id}_${Date.now()}_${safeName}`;
+    const filepath = path.join(uploadDir, filename);
+
+    await writeFile(filepath, buffer);
+    const archivo_url = `/uploads/rrhh/${filename}`;
+
+    const connection = await pool.getConnection();
+    try {
+      await connection.query(`
+        INSERT INTO rrhh_documentos (trabajador_id, nombre, tipo_documento, archivo_url)
+        VALUES (?, ?, ?, ?)
+      `, [parseInt(trabajador_id), nombre, tipo_documento, archivo_url]);
+    } finally {
+      connection.release();
+    }
+
+    revalidatePath(`/panel/rrhh/${trabajador_id}`);
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
