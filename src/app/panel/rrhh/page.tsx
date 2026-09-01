@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getTrabajadores, getContratosPorVencer } from '@/app/rrhh_actions';
-import { Users, Plus, Search } from 'lucide-react';
+import { Users, Plus, Search, Calculator } from 'lucide-react';
 import RRHHTableClient from '@/components/rrhh/RRHHTableClient';
 import ContratosAlertWidget from '@/components/rrhh/ContratosAlertWidget';
 
@@ -22,24 +22,21 @@ export default async function RRHHPage({
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 pb-20">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div className="flex items-center gap-4">
-          <div className="bg-blue-600 p-3 rounded-xl text-white shadow-lg shadow-blue-600/20">
-            <Users size={28} />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800">Recursos Humanos</h1>
-            <p className="text-slate-500">Directorio del personal y colaboradores</p>
-          </div>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">Recursos Humanos</h1>
+          <p className="text-slate-500">Gestión de personal y contratos</p>
         </div>
-        
-        <Link 
-          href="/panel/rrhh/nuevo" 
-          className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-md"
-        >
-          <Plus size={20} />
-          Nuevo Trabajador
-        </Link>
+        <div className="flex gap-3">
+          <Link href="/panel/rrhh/parametros" className="bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-lg font-medium transition-colors shadow-sm flex items-center gap-2">
+            <Calculator size={18} />
+            <span className="hidden sm:inline">Parámetros</span>
+          </Link>
+          <Link href="/panel/rrhh/nuevo" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm shadow-blue-600/20 flex items-center gap-2">
+            <Plus size={18} />
+            <span className="hidden sm:inline">Nuevo Empleado</span>
+          </Link>
+        </div>
       </div>
 
       <ContratosAlertWidget contratos={contratosVencer} />

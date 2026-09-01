@@ -1,9 +1,10 @@
-import { getTrabajadorById, getCargos, getSucursalesRRHH, getAusentismosByTrabajador, getDocumentosByTrabajador } from '@/app/rrhh_actions';
-import { User, ChevronRight, Briefcase, FileText, FileSignature, MapPin, CalendarOff } from 'lucide-react';
+import { getTrabajadorById, getCargos, getSucursalesRRHH, getAusentismosByTrabajador, getDocumentosByTrabajador, getHaberesFijos } from '@/app/rrhh_actions';
+import { User, ChevronRight, Briefcase, FileText, FileSignature, MapPin, CalendarOff, DollarSign } from 'lucide-react';
 import Link from 'next/link';
 import ContratoFormClient from '@/components/rrhh/ContratoFormClient';
 import AusentismoFormClient from '@/components/rrhh/AusentismoFormClient';
 import DocumentosWidget from '@/components/rrhh/DocumentosWidget';
+import HaberesFijosFormClient from '@/components/rrhh/HaberesFijosFormClient';
 
 export default async function TrabajadorPerfilPage({ params }: { params: { id: string } }) {
   const { id } = await params;
@@ -19,17 +20,19 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
 
   const t = res.data;
   
-  const [cargosRes, sucRes, ausentismosRes, documentosRes] = await Promise.all([
+  const [cargosRes, sucRes, ausentismosRes, documentosRes, haberesRes] = await Promise.all([
     getCargos(),
     getSucursalesRRHH(),
     getAusentismosByTrabajador(parseInt(id)),
-    getDocumentosByTrabajador(parseInt(id))
+    getDocumentosByTrabajador(parseInt(id)),
+    getHaberesFijos(parseInt(id))
   ]);
 
   const cargos = cargosRes.success ? (cargosRes.data as any[]) : [];
   const sucursales = sucRes.success ? (sucRes.data as any[]) : [];
   const ausentismos = ausentismosRes.success ? (ausentismosRes.data as any[]) : [];
   const documentos = documentosRes.success ? (documentosRes.data as any[]) : [];
+  const haberes = haberesRes.success ? haberesRes.data : null;
 
   const formatoMoneda = (valor: number) => {
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(valor);
@@ -83,6 +86,15 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
               </div>
             </div>
           </div>
+
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center gap-2">
+              <DollarSign size={20} className="text-emerald-600" />
+              <h3 className="font-bold text-slate-800">Haberes Fijos</h3>
+            </div>
+            <HaberesFijosFormClient trabajadorId={t.id} initialData={haberes} />
+          </div>
+
         </div>
 
         {/* Columna Derecha: Contratos y Docs */}

@@ -356,3 +356,88 @@ export async function uploadDocumento(formData: FormData) {
     return { success: false, error: error.message };
   }
 }
+
+// -- REMUNERACIONES: PARAMETROS MENSUALES --
+export async function getParametrosMensuales(periodo: string) {
+  const connection = await pool.getConnection();
+  try {
+    const [rows] = await connection.query('SELECT * FROM rrhh_parametros_mensuales WHERE periodo = ?', [periodo]);
+    return { success: true, data: (rows as any[])[0] || null };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
+
+export async function saveParametrosMensuales(data: any) {
+  const connection = await pool.getConnection();
+  try {
+    const { periodo, uf, utm, sueldo_minimo, tope_afp, tope_cesantia } = data;
+    
+    // Check if exists
+    const [exist] = await connection.query('SELECT id FROM rrhh_parametros_mensuales WHERE periodo = ?', [periodo]);
+    
+    if ((exist as any[]).length > 0) {
+      await connection.query(`
+        UPDATE rrhh_parametros_mensuales 
+        SET uf=?, utm=?, sueldo_minimo=?, tope_afp=?, tope_cesantia=? 
+        WHERE periodo=?
+      `, [uf, utm, sueldo_minimo, tope_afp, tope_cesantia, periodo]);
+    } else {
+      await connection.query(`
+        INSERT INTO rrhh_parametros_mensuales (periodo, uf, utm, sueldo_minimo, tope_afp, tope_cesantia) 
+        VALUES (?, ?, ?, ?, ?, ?)
+      `, [periodo, uf, utm, sueldo_minimo, tope_afp, tope_cesantia]);
+    }
+    
+    revalidatePath('/panel/rrhh/parametros');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
+
+// -- REMUNERACIONES: HABERES FIJOS --
+export async function getHaberesFijos(trabajador_id: number) {
+  const connection = await pool.getConnection();
+  try {
+    const [rows] = await connection.query('SELECT * FROM rrhh_haberes_fijos WHERE trabajador_id = ?', [trabajador_id]);
+    return { success: true, data: (rows as any[])[0] || null };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
+
+export async function saveHaberesFijos(trabajador_id: number, data: any) {
+  const connection = await pool.getConnection();
+  try {
+    const { colacion, movilizacion, plan_isapre_uf } = data;
+    
+    const [exist] = await connection.query('SELECT id FROM rrhh_haberes_fijos WHERE trabajador_id = ?', [trabajador_id]);
+    
+    if ((exist as any[]).length > 0) {
+      await connection.query(`
+        UPDATE rrhh_haberes_fijos 
+        SET colacion=?, movilizacion=?, plan_isapre_uf=? 
+        WHERE trabajador_id=?
+      `, [colacion || 0, movilizacion || 0, plan_isapre_uf || 0, trabajador_id]);
+    } else {
+      await connection.query(`
+        INSERT INTO rrhh_haberes_fijos (trabajador_id, colacion, movilizacion, plan_isapre_uf) 
+        VALUES (?, ?, ?, ?)
+      `, [trabajador_id, colacion || 0, movilizacion || 0, plan_isapre_uf || 0]);
+    }
+    
+    revalidatePath(`/panel/rrhh/${trabajador_id}`);
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
