@@ -12,6 +12,11 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean, setIs
   const [comercialOpen, setComercialOpen] = useState(false);
   const [gestionComercialOpen, setGestionComercialOpen] = useState(false);
   const [rrhhOpen, setRrhhOpen] = useState(false);
+  const [personalOpen, setPersonalOpen] = useState(false);
+  const [contratacionOpen, setContratacionOpen] = useState(false);
+  const [remuneracionesOpen, setRemuneracionesOpen] = useState(false);
+  const [reportesRrhhOpen, setReportesRrhhOpen] = useState(false);
+  const [mantenedoresRrhhOpen, setMantenedoresRrhhOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   
   const [user, setUser] = useState<any>(null);
@@ -158,12 +163,108 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean, setIs
             </div>
             {rrhhOpen ? <ChevronDown size={16} className="text-blue-500/50" /> : <ChevronRight size={16} className="text-blue-500/50" />}
           </button>
+          
           {rrhhOpen && (
             <div className="mt-1 ml-4 border-l border-slate-700 pl-3 space-y-1">
-              <Link href="/panel/rrhh" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors group text-sm">
-                <Briefcase size={18} className="text-slate-400 group-hover:text-white" />
-                <span className="font-medium text-slate-400 group-hover:text-white">Directorio Personal</span>
-              </Link>
+              {/* Personal */}
+              <div>
+                <button 
+                  onClick={() => setPersonalOpen(!personalOpen)}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors group text-sm"
+                >
+                  <span className="font-medium text-slate-400 group-hover:text-white">Personal</span>
+                  {personalOpen ? <ChevronDown size={14} className="text-slate-500" /> : <ChevronRight size={14} className="text-slate-500" />}
+                </button>
+                {personalOpen && (
+                  <div className="mt-1 ml-3 border-l border-slate-700 pl-3 space-y-1">
+                    {/* Contratación */}
+                    <div>
+                      <button 
+                        onClick={() => setContratacionOpen(!contratacionOpen)}
+                        className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors group text-sm"
+                      >
+                        <span className="font-medium text-slate-400 group-hover:text-white">Contratación</span>
+                        {contratacionOpen ? <ChevronDown size={14} className="text-slate-500" /> : <ChevronRight size={14} className="text-slate-500" />}
+                      </button>
+                      {contratacionOpen && (
+                        <div className="mt-1 ml-3 border-l border-slate-700 pl-3 space-y-1">
+                          <Link href="/panel/rrhh" className="block px-3 py-1.5 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-400 hover:text-white transition-colors">
+                            Ficha Personal
+                          </Link>
+                          <Link href="/panel/rrhh/pendientes" className="block px-3 py-1.5 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-400 hover:text-white transition-colors">
+                            Contratos Pendientes
+                          </Link>
+                          <Link href="/panel/rrhh/termino" className="block px-3 py-1.5 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-400 hover:text-white transition-colors">
+                            Carta Término
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                    {/* Otros de Personal */}
+                    <Link href="/panel/rrhh/finiquito" className="block px-3 py-2 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-400 hover:text-white transition-colors">Finiquito</Link>
+                    <Link href="/panel/rrhh/licencias" className="block px-3 py-2 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-400 hover:text-white transition-colors">Licencias - Reposo</Link>
+                    <Link href="/panel/rrhh/permisos" className="block px-3 py-2 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-400 hover:text-white transition-colors">Permisos</Link>
+                    <Link href="/panel/rrhh/vacaciones" className="block px-3 py-2 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-400 hover:text-white transition-colors">Vacaciones</Link>
+                    <Link href="/panel/rrhh/bienestar" className="block px-3 py-2 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-400 hover:text-white transition-colors">Bienestar</Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Remuneraciones */}
+              <div>
+                <button 
+                  onClick={() => setRemuneracionesOpen(!remuneracionesOpen)}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors group text-sm"
+                >
+                  <span className="font-medium text-slate-400 group-hover:text-white">Remuneraciones</span>
+                  {remuneracionesOpen ? <ChevronDown size={14} className="text-slate-500" /> : <ChevronRight size={14} className="text-slate-500" />}
+                </button>
+                {remuneracionesOpen && (
+                  <div className="mt-1 ml-3 border-l border-slate-700 pl-3 space-y-1">
+                    <Link href="/panel/rrhh/anticipos" className="block px-3 py-1.5 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-400 hover:text-white transition-colors">Anticipo</Link>
+                    <Link href="/panel/rrhh/periodo" className="block px-3 py-1.5 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-400 hover:text-white transition-colors">Periodo</Link>
+                    <Link href="/panel/rrhh/haberes-descuentos" className="block px-3 py-1.5 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-400 hover:text-white transition-colors">Haberes y Descuentos</Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Reportes */}
+              <div>
+                <button 
+                  onClick={() => setReportesRrhhOpen(!reportesRrhhOpen)}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors group text-sm"
+                >
+                  <span className="font-medium text-slate-400 group-hover:text-white">Reportes</span>
+                  {reportesRrhhOpen ? <ChevronDown size={14} className="text-slate-500" /> : <ChevronRight size={14} className="text-slate-500" />}
+                </button>
+                {reportesRrhhOpen && (
+                  <div className="mt-1 ml-3 border-l border-slate-700 pl-3 space-y-1">
+                    <Link href="/panel/rrhh/reportes/liquidaciones" className="block px-3 py-1.5 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-400 hover:text-white transition-colors">Liquidaciones de Sueldo</Link>
+                    <Link href="/panel/rrhh/reportes/certificados" className="block px-3 py-1.5 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-400 hover:text-white transition-colors">Certificados de Renta</Link>
+                    <Link href="/panel/rrhh/reportes/lre" className="block px-3 py-1.5 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-400 hover:text-white transition-colors">Libro de Remuneraciones</Link>
+                    <Link href="/panel/rrhh/reportes/previred" className="block px-3 py-1.5 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-400 hover:text-white transition-colors">Libro Previred</Link>
+                    <Link href="/panel/rrhh/reportes/resumen" className="block px-3 py-1.5 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-400 hover:text-white transition-colors">Resumen Proceso</Link>
+                    <Link href="/panel/rrhh/reportes/periodo" className="block px-3 py-1.5 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-400 hover:text-white transition-colors">Liq. por Periodo</Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Mantenedores */}
+              <div>
+                <button 
+                  onClick={() => setMantenedoresRrhhOpen(!mantenedoresRrhhOpen)}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors group text-sm"
+                >
+                  <span className="font-medium text-slate-400 group-hover:text-white">Mantenedores</span>
+                  {mantenedoresRrhhOpen ? <ChevronDown size={14} className="text-slate-500" /> : <ChevronRight size={14} className="text-slate-500" />}
+                </button>
+                {mantenedoresRrhhOpen && (
+                  <div className="mt-1 ml-3 border-l border-slate-700 pl-3 space-y-1">
+                    <Link href="/panel/rrhh/parametros" className="block px-3 py-1.5 rounded-lg hover:bg-slate-800 text-sm font-medium text-slate-400 hover:text-white transition-colors">Parámetros</Link>
+                  </div>
+                )}
+              </div>
+
             </div>
           )}
         </div>

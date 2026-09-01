@@ -21,7 +21,7 @@ export default async function RRHHPage({
   const contratosVencer = alertRes.success ? (alertRes.data as any[]) : [];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 pb-20">
+    <div className="w-full mx-auto space-y-6 pb-20">
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-2xl font-bold text-slate-800">Recursos Humanos</h1>

@@ -24,7 +24,7 @@ export default async function LiquidacionPage({ params }: { params: { id: string
   const descuentosLegales = liq.detalles.filter((d: any) => d.tipo === 'DESCUENTO_LEGAL');
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 pb-20">
+    <div className="w-full mx-auto space-y-6 pb-20">
       <div className="flex items-center gap-2 text-sm text-slate-500 mb-6 print:hidden">
         <Link href="/panel/rrhh" className="hover:text-blue-600 transition-colors">RRHH</Link>
         <ChevronRight size={14} />

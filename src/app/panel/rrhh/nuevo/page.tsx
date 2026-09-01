@@ -13,7 +13,7 @@ export default async function NuevoTrabajadorPage() {
   const salud = saludRes.success ? (saludRes.data as any[]) : [];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 pb-20">
+    <div className="w-full mx-auto space-y-6 pb-20">
       <div className="flex items-center gap-2 text-sm text-slate-500 mb-6">
         <Link href="/panel/rrhh" className="hover:text-blue-600 transition-colors">Recursos Humanos</Link>
         <ChevronRight size={14} />
