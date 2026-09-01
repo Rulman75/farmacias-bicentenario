@@ -1,10 +1,12 @@
 import { getTrabajadorById, getCargos, getSucursalesRRHH, getAusentismosByTrabajador, getDocumentosByTrabajador, getHaberesFijos } from '@/app/rrhh_actions';
+import { getLiquidacionesByTrabajador } from '@/app/rrhh_liquidaciones_actions';
 import { User, ChevronRight, Briefcase, FileText, FileSignature, MapPin, CalendarOff, DollarSign } from 'lucide-react';
 import Link from 'next/link';
 import ContratoFormClient from '@/components/rrhh/ContratoFormClient';
 import AusentismoFormClient from '@/components/rrhh/AusentismoFormClient';
 import DocumentosWidget from '@/components/rrhh/DocumentosWidget';
 import HaberesFijosFormClient from '@/components/rrhh/HaberesFijosFormClient';
+import LiquidacionesWidget from '@/components/rrhh/LiquidacionesWidget';
 
 export default async function TrabajadorPerfilPage({ params }: { params: { id: string } }) {
   const { id } = await params;
@@ -20,12 +22,13 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
 
   const t = res.data;
   
-  const [cargosRes, sucRes, ausentismosRes, documentosRes, haberesRes] = await Promise.all([
+  const [cargosRes, sucRes, ausentismosRes, documentosRes, haberesRes, liqRes] = await Promise.all([
     getCargos(),
     getSucursalesRRHH(),
     getAusentismosByTrabajador(parseInt(id)),
     getDocumentosByTrabajador(parseInt(id)),
-    getHaberesFijos(parseInt(id))
+    getHaberesFijos(parseInt(id)),
+    getLiquidacionesByTrabajador(parseInt(id))
   ]);
 
   const cargos = cargosRes.success ? (cargosRes.data as any[]) : [];
@@ -33,6 +36,7 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
   const ausentismos = ausentismosRes.success ? (ausentismosRes.data as any[]) : [];
   const documentos = documentosRes.success ? (documentosRes.data as any[]) : [];
   const haberes = haberesRes.success ? haberesRes.data : null;
+  const liquidaciones = liqRes.success ? (liqRes.data as any[]) : [];
 
   const formatoMoneda = (valor: number) => {
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(valor);
@@ -217,6 +221,9 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
           
           {/* Gestor Documental */}
           <DocumentosWidget trabajadorId={t.id} documentos={documentos} />
+
+          {/* Liquidaciones */}
+          <LiquidacionesWidget trabajadorId={t.id} liquidaciones={liquidaciones} />
 
         </div>
       </div>
