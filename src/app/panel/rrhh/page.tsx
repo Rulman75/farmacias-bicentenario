@@ -40,6 +40,10 @@ export default async function RRHHDashboardPage() {
               <span className="text-slate-600 font-medium group-hover:text-blue-600">Contratos Pendientes</span>
               <ChevronRight size={16} className="text-slate-300 group-hover:text-blue-600" />
             </Link>
+            <Link href="/panel/rrhh/finiquito" className="flex items-center justify-between px-4 py-2 hover:bg-white rounded-lg transition-colors group">
+              <span className="text-slate-600 font-medium group-hover:text-blue-600">Finiquitos</span>
+              <ChevronRight size={16} className="text-slate-300 group-hover:text-blue-600" />
+            </Link>
             <Link href="/panel/rrhh/vacaciones" className="flex items-center justify-between px-4 py-2 hover:bg-white rounded-lg transition-colors group">
               <span className="text-slate-600 font-medium group-hover:text-blue-600">Vacaciones</span>
               <ChevronRight size={16} className="text-slate-300 group-hover:text-blue-600" />
