@@ -62,6 +62,10 @@ export async function generarLiquidacion(trabajador_id: number, periodo: string,
     const [hRows] = await connection.query('SELECT * FROM rrhh_haberes_fijos WHERE trabajador_id = ?', [trabajador_id]);
     const haberesFijos = (hRows as any[])[0] || { colacion: 0, movilizacion: 0, plan_isapre_uf: 0 };
 
+    // 4. Obtener Anticipos del periodo
+    const [antRows] = await connection.query('SELECT SUM(monto) as total_anticipos FROM rrhh_anticipos WHERE trabajador_id = ? AND periodo = ?', [trabajador_id, periodo]);
+    const anticipos = (antRows as any[])[0]?.total_anticipos || 0;
+
     // --- CÁLCULOS MATEMÁTICOS (CÓDIGO DEL TRABAJO CHILE) ---
 
     // A. Haberes Imponibles
@@ -114,7 +118,8 @@ export async function generarLiquidacion(trabajador_id: number, periodo: string,
     const baseTributable = totalImponible - descuentoAfp - descuentoSalud - descuentoCesantia;
     const impuestoUnico = calcularImpuestoUnico(Math.max(0, baseTributable), params.utm);
 
-    const totalDescuentos = descuentoAfp + descuentoSalud + descuentoCesantia + impuestoUnico;
+    const totalDescuentosLegales = descuentoAfp + descuentoSalud + descuentoCesantia + impuestoUnico;
+    const totalDescuentos = totalDescuentosLegales + anticipos;
     
     // D. Líquido a Pagar
     const liquidoPagar = totalImponible + totalNoImponible - totalDescuentos;
@@ -156,6 +161,7 @@ export async function generarLiquidacion(trabajador_id: number, periodo: string,
 
     if (descuentoCesantia > 0) detalles.push([liquidacionId, 'DESCUENTO_LEGAL', 'Seguro de Cesantía (0.6%)', descuentoCesantia]);
     if (impuestoUnico > 0) detalles.push([liquidacionId, 'DESCUENTO_LEGAL', 'Impuesto Único 2da Cat.', impuestoUnico]);
+    if (anticipos > 0) detalles.push([liquidacionId, 'DESCUENTO', 'Anticipo de Sueldo', anticipos]);
 
     for (let d of detalles) {
       await connection.query('INSERT INTO rrhh_liquidaciones_detalle (liquidacion_id, tipo, concepto, monto) VALUES (?, ?, ?, ?)', d);
