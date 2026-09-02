@@ -1,13 +1,11 @@
 import { NextResponse } from 'next/server';
-import mysql from 'mysql2/promise';
+import pool from '@/lib/db';
 
 export async function GET() {
-  let connection;
+  const connection = await pool.getConnection();
   try {
-    connection = await mysql.createConnection(process.env.DATABASE_URL as string);
-    
     // Tabla Anticipos
-    await connection.execute(`
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS rrhh_anticipos (
         id INT AUTO_INCREMENT PRIMARY KEY,
         trabajador_id INT NOT NULL,
@@ -21,7 +19,7 @@ export async function GET() {
     `);
 
     // Tabla Finiquitos
-    await connection.execute(`
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS rrhh_finiquitos (
         id INT AUTO_INCREMENT PRIMARY KEY,
         trabajador_id INT NOT NULL,
@@ -41,12 +39,10 @@ export async function GET() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
-    return NextResponse.json({ success: true, message: 'Fase 6 tables created successfully (Anticipos and Finiquitos)' });
+    return NextResponse.json({ success: true, message: 'Fase 6 tables created successfully using db.ts pool' });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   } finally {
-    if (connection) {
-      await connection.end();
-    }
+    connection.release();
   }
 }
