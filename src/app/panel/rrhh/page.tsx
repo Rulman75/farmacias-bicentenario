@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import Link from 'next/link';
 import { getContratosPorVencer } from '@/app/rrhh_actions';
 import { Users, FileText, Calculator, ChevronRight, Activity, CalendarDays, FileSignature, DollarSign, PieChart, Landmark } from 'lucide-react';

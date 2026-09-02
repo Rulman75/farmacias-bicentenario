@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import Link from 'next/link';
 import { getTrabajadores } from '@/app/rrhh_actions';
 import { Users, Plus, ChevronRight } from 'lucide-react';
