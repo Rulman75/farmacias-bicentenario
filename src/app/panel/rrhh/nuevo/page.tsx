@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { getAfps, getSalud } from '@/app/rrhh_actions';
 import TrabajadorForm from '@/components/rrhh/TrabajadorForm';
 import { Users, ChevronRight } from 'lucide-react';
@@ -36,3 +37,4 @@ export default async function NuevoTrabajadorPage() {
     </div>
   );
 }
+

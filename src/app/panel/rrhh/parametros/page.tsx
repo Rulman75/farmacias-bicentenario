@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { getParametrosMensuales, getAfps } from '@/app/rrhh_actions';
 import { Calculator, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
@@ -55,3 +56,4 @@ export default async function ParametrosPage({ searchParams }: { searchParams: {
     </div>
   );
 }
+

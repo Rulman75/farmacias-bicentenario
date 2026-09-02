@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { getLiquidacionCompleta } from '@/app/rrhh_liquidaciones_actions';
 import { ChevronRight, Printer, Download } from 'lucide-react';
 import Link from 'next/link';
@@ -145,3 +146,4 @@ export default async function LiquidacionPage({ params }: { params: { id: string
     </div>
   );
 }
+

@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { getAfps, getSalud, getTrabajadorById } from '@/app/rrhh_actions';
 import TrabajadorForm from '@/components/rrhh/TrabajadorForm';
 import { UserCog, ChevronRight } from 'lucide-react';
@@ -46,3 +47,4 @@ export default async function EditarTrabajadorPage({ params }: { params: { id: s
     </div>
   );
 }
+

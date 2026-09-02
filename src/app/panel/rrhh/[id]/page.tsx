@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { getTrabajadorById, getCargos, getSucursalesRRHH, getAusentismosByTrabajador, getDocumentosByTrabajador, getHaberesFijos } from '@/app/rrhh_actions';
 import { getLiquidacionesByTrabajador } from '@/app/rrhh_liquidaciones_actions';
 import { User, ChevronRight, Briefcase, FileText, FileSignature, MapPin, CalendarOff, DollarSign } from 'lucide-react';
@@ -230,3 +231,4 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
     </div>
   );
 }
+
