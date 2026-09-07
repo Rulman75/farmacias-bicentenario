@@ -44,7 +44,12 @@ export default function TrabajadorForm({ afps, salud, initialData }: { afps: any
       const checked = (e.target as HTMLInputElement).checked;
       setFormData(prev => ({ ...prev, [name]: checked }));
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      let finalValue = value;
+      // Convert to uppercase for text inputs except email
+      if (type === 'text' && name !== 'email') {
+        finalValue = finalValue.toUpperCase();
+      }
+      setFormData(prev => ({ ...prev, [name]: finalValue }));
     }
   };
 

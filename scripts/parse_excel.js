@@ -88,7 +88,7 @@ try {
     // Contract mapping
     if (sueldoBase > 0) {
       // First ensure cargo exists
-      sqlStatements.push(`INSERT IGNORE INTO rrhh_cargos (nombre, sueldo_base_referencial) VALUES ('${cargoNombre.replace(/'/g, "''")}', ${sueldoBase});`);
+      sqlStatements.push(`INSERT IGNORE INTO rrhh_cargos (nombre) VALUES ('${cargoNombre.replace(/'/g, "''")}');`);
       
       // Update or insert contract
       let qContrato = `
