@@ -56,11 +56,11 @@ export async function getTrabajadores(search?: string, estado = 'ACTIVO') {
     const params: any[] = [estado];
 
     if (search) {
-      query += ` AND (t.rut LIKE ? OR t.nombres LIKE ? OR t.apellidos LIKE ?)`;
-      params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+      query += ` AND (t.rut LIKE ? OR t.nombres LIKE ? OR t.apellido_paterno LIKE ? OR t.apellido_materno LIKE ?)`;
+      params.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
     }
 
-    query += ` ORDER BY t.apellidos ASC, t.nombres ASC`;
+    query += ` ORDER BY t.apellido_paterno ASC, t.nombres ASC`;
 
     const [rows] = await connection.query(query, params);
     return { success: true, data: rows as any[] };
@@ -110,18 +110,30 @@ export async function getTrabajadorById(id: number) {
 export async function createTrabajador(data: any) {
   const connection = await pool.getConnection();
   try {
-    const { rut, nombres, apellidos, fecha_nacimiento, direccion, telefono, email, estado_civil, afp_id, salud_id, cargas_familiares } = data;
+    const { 
+      rut, nombres, apellido_paterno, apellido_materno, nacionalidad, fecha_nacimiento, 
+      direccion, telefono, email, nivel_educacional, estado_civil, afp_id, salud_id, cargas_familiares,
+      banco, tipo_cuenta, numero_cuenta, entrega_riohs, es_representante_legal
+    } = data;
     
     // Check si rut existe
     const [exist] = await connection.query('SELECT id FROM rrhh_trabajadores WHERE rut = ?', [rut]);
     if ((exist as any[]).length > 0) {
-      throw new Error("El RUT ingresado ya está registrado.");
+      return { success: false, error: 'El RUT ya está registrado.' };
     }
 
     const [result] = await connection.query(`
-      INSERT INTO rrhh_trabajadores (rut, nombres, apellidos, fecha_nacimiento, direccion, telefono, email, estado_civil, afp_id, salud_id, cargas_familiares)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `, [rut, nombres, apellidos, fecha_nacimiento || null, direccion, telefono, email, estado_civil, afp_id || null, salud_id || null, cargas_familiares || 0]);
+      INSERT INTO rrhh_trabajadores (
+        rut, nombres, apellido_paterno, apellido_materno, nacionalidad, fecha_nacimiento, 
+        direccion, telefono, email, nivel_educacional, estado_civil, afp_id, salud_id, cargas_familiares,
+        banco, tipo_cuenta, numero_cuenta, entrega_riohs, es_representante_legal
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [
+      rut, nombres, apellido_paterno, apellido_materno || null, nacionalidad || null, fecha_nacimiento || null, 
+      direccion, telefono, email, nivel_educacional || null, estado_civil, afp_id || null, salud_id || null, cargas_familiares || 0,
+      banco || null, tipo_cuenta || null, numero_cuenta || null, entrega_riohs ? 1 : 0, es_representante_legal ? 1 : 0
+    ]);
     
     revalidatePath('/panel/rrhh');
     return { success: true, data: { id: (result as any).insertId } };
@@ -135,19 +147,30 @@ export async function createTrabajador(data: any) {
 export async function updateTrabajador(id: number, data: any) {
   const connection = await pool.getConnection();
   try {
-    const { rut, nombres, apellidos, fecha_nacimiento, direccion, telefono, email, estado_civil, afp_id, salud_id, cargas_familiares } = data;
+    const { 
+      rut, nombres, apellido_paterno, apellido_materno, nacionalidad, fecha_nacimiento, 
+      direccion, telefono, email, nivel_educacional, estado_civil, afp_id, salud_id, cargas_familiares,
+      banco, tipo_cuenta, numero_cuenta, entrega_riohs, es_representante_legal
+    } = data;
     
     // Verificar RUT si cambió
     const [exist] = await connection.query('SELECT id FROM rrhh_trabajadores WHERE rut = ? AND id != ?', [rut, id]);
     if ((exist as any[]).length > 0) {
-      throw new Error("El RUT ingresado ya está registrado en otro trabajador.");
+      return { success: false, error: 'El RUT ya está registrado por otro trabajador.' };
     }
 
     await connection.query(`
       UPDATE rrhh_trabajadores 
-      SET rut=?, nombres=?, apellidos=?, fecha_nacimiento=?, direccion=?, telefono=?, email=?, estado_civil=?, afp_id=?, salud_id=?, cargas_familiares=?
+      SET rut=?, nombres=?, apellido_paterno=?, apellido_materno=?, nacionalidad=?, fecha_nacimiento=?, 
+          direccion=?, telefono=?, email=?, nivel_educacional=?, estado_civil=?, afp_id=?, salud_id=?, cargas_familiares=?,
+          banco=?, tipo_cuenta=?, numero_cuenta=?, entrega_riohs=?, es_representante_legal=?
       WHERE id = ?
-    `, [rut, nombres, apellidos, fecha_nacimiento || null, direccion, telefono, email, estado_civil, afp_id || null, salud_id || null, cargas_familiares || 0, id]);
+    `, [
+      rut, nombres, apellido_paterno, apellido_materno || null, nacionalidad || null, fecha_nacimiento || null, 
+      direccion, telefono, email, nivel_educacional || null, estado_civil, afp_id || null, salud_id || null, cargas_familiares || 0,
+      banco || null, tipo_cuenta || null, numero_cuenta || null, entrega_riohs ? 1 : 0, es_representante_legal ? 1 : 0,
+      id
+    ]);
     
     revalidatePath(`/panel/rrhh/${id}`);
     revalidatePath('/panel/rrhh');
@@ -224,7 +247,7 @@ export async function getContratosPorVencer(dias: number = 30) {
     const [rows] = await connection.query(`
       SELECT 
         c.id, c.fecha_termino, c.tipo_contrato,
-        t.id as trabajador_id, t.rut, t.nombres, t.apellidos,
+        t.id as trabajador_id, t.rut, t.nombres, t.apellido_paterno, t.apellido_materno,
         ca.nombre as cargo,
         DATEDIFF(c.fecha_termino, NOW()) as dias_restantes
       FROM rrhh_contratos c

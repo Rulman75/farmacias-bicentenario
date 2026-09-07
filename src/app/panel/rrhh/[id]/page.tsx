@@ -59,7 +59,7 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
               <div className="w-24 h-24 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4">
                 <User size={48} />
               </div>
-              <h2 className="text-xl font-bold text-slate-800">{t.nombres} {t.apellidos}</h2>
+              <h2 className="text-xl font-bold text-slate-800 text-center">{t.nombres} {t.apellido_paterno} {t.apellido_materno}</h2>
               <p className="text-slate-500 font-mono text-sm mt-1">{t.rut}</p>
               <div className="mt-4 flex gap-2">
                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${t.estado === 'ACTIVO' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
@@ -76,19 +76,43 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
             
             <div className="p-6 space-y-4">
               <div>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Personal</p>
+                <p className="text-sm text-slate-700"><span className="font-medium">Nacionalidad:</span> {t.nacionalidad || 'No registrada'}</p>
+                <p className="text-sm text-slate-700"><span className="font-medium">Educación:</span> {t.nivel_educacional || 'No registrado'}</p>
+                <p className="text-sm text-slate-700"><span className="font-medium">Nacimiento:</span> {t.fecha_nacimiento ? new Date(t.fecha_nacimiento).toLocaleDateString() : 'No registrada'}</p>
+              </div>
+              <div className="pt-4 border-t border-slate-100">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Contacto</p>
                 <p className="text-sm font-medium text-slate-700">{t.email || 'Sin email'}</p>
                 <p className="text-sm text-slate-600">{t.telefono || 'Sin teléfono'}</p>
               </div>
-              <div>
+              <div className="pt-4 border-t border-slate-100">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Dirección</p>
                 <p className="text-sm text-slate-700">{t.direccion || 'No registrada'}</p>
+              </div>
+              <div className="pt-4 border-t border-slate-100">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Datos Bancarios</p>
+                {t.banco ? (
+                  <>
+                    <p className="text-sm text-slate-700 font-medium">{t.banco}</p>
+                    <p className="text-sm text-slate-600">{t.tipo_cuenta}</p>
+                    <p className="text-sm text-slate-600 font-mono mt-1">{t.numero_cuenta}</p>
+                  </>
+                ) : (
+                  <p className="text-sm text-slate-500 italic">No registrados</p>
+                )}
               </div>
               <div className="pt-4 border-t border-slate-100">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Previsión</p>
                 <p className="text-sm text-slate-700 font-medium">AFP: <span className="font-normal">{t.afp_nombre || '-'}</span></p>
                 <p className="text-sm text-slate-700 font-medium mt-1">Salud: <span className="font-normal">{t.salud_nombre || '-'}</span></p>
               </div>
+              {(t.entrega_riohs || t.es_representante_legal) && (
+                <div className="pt-4 border-t border-slate-100 flex flex-col gap-2">
+                  {t.entrega_riohs ? <span className="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-1 rounded w-fit">Recibió RIOHS</span> : null}
+                  {t.es_representante_legal ? <span className="text-xs font-bold bg-amber-50 text-amber-700 px-2 py-1 rounded w-fit">Representante Legal</span> : null}
+                </div>
+              )}
             </div>
           </div>
 
@@ -231,4 +255,5 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
     </div>
   );
 }
+
 

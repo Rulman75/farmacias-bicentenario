@@ -91,18 +91,18 @@ export default function RRHHTableClient({
             <tr className="text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
               <SortableHeader label="RUT" sortKey="rut" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4" />
               <SortableHeader label="Nombres" sortKey="nombres" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4" />
-              <SortableHeader label="Apellidos" sortKey="apellidos" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4" />
+              <SortableHeader label="Apellidos" sortKey="apellido_paterno" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4" />
               <SortableHeader label="Teléfono" sortKey="telefono" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4" />
               <SortableHeader label="Previsión" sortKey="afp_nombre" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4" />
               <SortableHeader label="Salud" sortKey="salud_nombre" currentSort={sortConfig} requestSort={requestSort} className="px-6 py-4" />
               <th className="px-6 py-4 text-right">Acciones</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
+          <tbody className="divide-y divide-slate-200 text-sm text-slate-700">
             {sortedTrabajadores.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-6 py-12 text-center text-slate-500">
-                  No se encontraron trabajadores registrados.
+                  No se encontraron trabajadores con esos filtros.
                 </td>
               </tr>
             ) : (
@@ -110,7 +110,7 @@ export default function RRHHTableClient({
                 <tr key={trabajador.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-6 py-4 font-medium">{trabajador.rut}</td>
                   <td className="px-6 py-4">{trabajador.nombres}</td>
-                  <td className="px-6 py-4 font-medium text-slate-800">{trabajador.apellidos}</td>
+                  <td className="px-6 py-4 font-medium text-slate-800">{trabajador.apellido_paterno} {trabajador.apellido_materno}</td>
                   <td className="px-6 py-4">{trabajador.telefono || '-'}</td>
                   <td className="px-6 py-4">
                     <span className="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-md text-xs font-semibold">
