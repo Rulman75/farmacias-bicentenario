@@ -26,12 +26,18 @@ export default async function RRHHDashboardPage() {
           <div className="bg-blue-100 text-blue-600 p-1.5 rounded-lg"><Users size={20} /></div>
           Gestión de Personal
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <Link href="/panel/rrhh/personal" className="flex flex-col items-center text-center p-6 bg-white border border-slate-200 rounded-2xl hover:border-blue-500 hover:shadow-lg hover:-translate-y-1 transition-all group">
             <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Users size={28} />
             </div>
             <span className="font-bold text-slate-700 text-sm">Ficha Personal</span>
+          </Link>
+          <Link href="/panel/rrhh/asistencia" className="flex flex-col items-center text-center p-6 bg-white border border-slate-200 rounded-2xl hover:border-blue-500 hover:shadow-lg hover:-translate-y-1 transition-all group">
+            <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <CalendarDays size={28} />
+            </div>
+            <span className="font-bold text-slate-700 text-sm">Asistencia</span>
           </Link>
           <Link href="/panel/rrhh/pendientes" className="flex flex-col items-center text-center p-6 bg-white border border-slate-200 rounded-2xl hover:border-blue-500 hover:shadow-lg hover:-translate-y-1 transition-all group">
             <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -49,7 +55,7 @@ export default async function RRHHDashboardPage() {
             <div className="w-14 h-14 bg-sky-50 text-sky-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <CalendarDays size={28} />
             </div>
-            <span className="font-bold text-slate-700 text-sm">Vacaciones</span>
+            <span className="font-bold text-slate-700 text-sm">Ausentismos</span>
           </Link>
         </div>
       </div>
