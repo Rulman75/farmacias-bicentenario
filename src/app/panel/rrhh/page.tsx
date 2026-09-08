@@ -61,7 +61,13 @@ export default async function RRHHDashboardPage() {
             <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Clock size={28} />
             </div>
-            <span className="font-bold text-slate-700 text-sm">Turnos Part-Time</span>
+            <span className="font-bold text-slate-700 text-sm">Catálogo Turnos</span>
+          </Link>
+          <Link href="/panel/rrhh/planificador" className="flex flex-col items-center text-center p-6 bg-white border border-slate-200 rounded-2xl hover:border-indigo-500 hover:shadow-lg hover:-translate-y-1 transition-all group col-span-2 md:col-span-1">
+            <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <CalendarDays size={28} />
+            </div>
+            <span className="font-bold text-slate-700 text-sm">Planificador</span>
           </Link>
         </div>
       </div>
