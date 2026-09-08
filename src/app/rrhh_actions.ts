@@ -1,6 +1,7 @@
 'use server'
 
 import pool from '@/lib/db';
+import { validateRut } from '@/lib/utils';
 import { revalidatePath } from 'next/cache';
 
 // -- CATALOGOS --
@@ -116,6 +117,10 @@ export async function createTrabajador(data: any) {
       banco, tipo_cuenta, numero_cuenta, entrega_riohs, es_representante_legal
     } = data;
     
+    if (rut && !validateRut(rut)) {
+      return { success: false, error: 'El RUT ingresado no es válido (Módulo 11).' };
+    }
+
     // Check si rut existe
     const [exist] = await connection.query('SELECT id FROM rrhh_trabajadores WHERE rut = ?', [rut]);
     if ((exist as any[]).length > 0) {
@@ -153,6 +158,10 @@ export async function updateTrabajador(id: number, data: any) {
       banco, tipo_cuenta, numero_cuenta, entrega_riohs, es_representante_legal
     } = data;
     
+    if (rut && !validateRut(rut)) {
+      return { success: false, error: 'El RUT ingresado no es válido (Módulo 11).' };
+    }
+
     // Verificar RUT si cambió
     const [exist] = await connection.query('SELECT id FROM rrhh_trabajadores WHERE rut = ? AND id != ?', [rut, id]);
     if ((exist as any[]).length > 0) {

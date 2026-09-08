@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createTrabajador, updateTrabajador } from '@/app/rrhh_actions';
 import { Loader2, Save } from 'lucide-react';
+import { validateRut } from '@/lib/utils';
 
 function formatDateForInput(dateStr: string) {
   if (!dateStr) return '';
@@ -71,6 +72,12 @@ export default function TrabajadorForm({ afps, salud, initialData }: { afps: any
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (formData.rut && !validateRut(formData.rut)) {
+      setError('El RUT ingresado no es válido.');
+      return;
+    }
+    
     setLoading(true);
     setError('');
 
