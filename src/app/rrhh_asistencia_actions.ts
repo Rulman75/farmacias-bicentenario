@@ -6,11 +6,15 @@ import { revalidatePath } from 'next/cache';
 export async function getAsistenciaMes(anio: number, mes: number) {
   const connection = await pool.getConnection();
   try {
-    // 1. Obtener trabajadores activos
+    // 1. Obtener trabajadores activos con contrato regular
     const [trabajadores] = await connection.query(`
       SELECT id, rut, nombres, apellido_paterno, apellido_materno 
       FROM rrhh_trabajadores 
       WHERE estado = 'ACTIVO'
+        AND id IN (
+          SELECT trabajador_id FROM rrhh_contratos 
+          WHERE estado = 'ACTIVO' AND tipo_contrato NOT IN ('Honorarios', 'Part-Time')
+        )
       ORDER BY apellido_paterno ASC, nombres ASC
     `);
 

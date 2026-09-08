@@ -149,11 +149,14 @@ export default function ContratoFormClient({
                     <option value="Indefinido">Indefinido</option>
                     <option value="Plazo Fijo">Plazo Fijo</option>
                     <option value="Honorarios">Honorarios</option>
+                    <option value="Part-Time">Part-Time</option>
                     <option value="Práctica">Práctica</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Sueldo Base ($) *</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    {['Honorarios', 'Part-Time'].includes(formData.tipo_contrato) ? 'Valor Hora ($) *' : 'Sueldo Base ($) *'}
+                  </label>
                   <input 
                     type="number" 
                     name="sueldo_base"
