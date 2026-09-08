@@ -25,6 +25,7 @@ function getLetraAusentismo(tipo: string) {
 export default function AsistenciaGridClient() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [enterDirection, setEnterDirection] = useState<'horizontal' | 'vertical'>('vertical');
   
   const hoy = new Date();
   const [mes, setMes] = useState(hoy.getMonth() + 1); // 1-12
@@ -137,6 +138,34 @@ export default function AsistenciaGridClient() {
     setSaving(false);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, rowIndex: number, d: number) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      let nextD = d;
+      let nextRow = rowIndex;
+
+      if (enterDirection === 'horizontal') {
+        nextD += 1;
+        if (nextD > diasEnMes) {
+          nextD = 1;
+          nextRow += 1;
+        }
+      } else {
+        nextRow += 1;
+        if (nextRow >= trabajadores.length) {
+          nextRow = 0;
+          nextD += 1;
+        }
+      }
+
+      const nextInput = document.getElementById(`input-${nextRow}-${nextD}`);
+      if (nextInput) {
+        (nextInput as HTMLInputElement).focus();
+        (nextInput as HTMLInputElement).select();
+      }
+    }
+  };
+
   const getColor = (val: string, bloqueado: boolean) => {
     if (bloqueado) {
       if (val === 'V') return 'bg-sky-100 text-sky-700 cursor-not-allowed';
@@ -192,6 +221,21 @@ export default function AsistenciaGridClient() {
           <div className="flex items-center gap-1"><span className="w-3 h-3 bg-purple-100 rounded"></span> P: Permiso (Auto)</div>
         </div>
       </div>
+      
+      {/* Tools Row */}
+      <div className="px-4 py-2 border-b border-slate-200 bg-white flex items-center justify-between">
+        <div className="flex items-center gap-3 text-sm text-slate-600 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
+          <span className="font-medium">Salto al presionar Enter:</span>
+          <label className="flex items-center gap-1.5 cursor-pointer hover:text-blue-600">
+            <input type="radio" name="enterDirection" checked={enterDirection === 'horizontal'} onChange={() => setEnterDirection('horizontal')} className="accent-blue-600" />
+            ➡️ Derecha
+          </label>
+          <label className="flex items-center gap-1.5 cursor-pointer hover:text-blue-600">
+            <input type="radio" name="enterDirection" checked={enterDirection === 'vertical'} onChange={() => setEnterDirection('vertical')} className="accent-blue-600" />
+            ⬇️ Abajo
+          </label>
+        </div>
+      </div>
 
       {/* Grid Container */}
       <div className="overflow-x-auto w-full relative" style={{ maxHeight: '65vh' }}>
@@ -212,7 +256,7 @@ export default function AsistenciaGridClient() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200">
-            {trabajadores.map(t => {
+            {trabajadores.map((t, rowIndex) => {
               const totales = getTotales(t.id);
               return (
                 <tr key={t.id} className="hover:bg-slate-50 transition-colors">
@@ -229,11 +273,13 @@ export default function AsistenciaGridClient() {
                           </div>
                         ) : (
                           <input 
+                            id={`input-${rowIndex}-${d}`}
                             type="text" 
                             maxLength={1}
                             value={celda.valor}
                             onChange={(e) => handleChange(t.id, d, e.target.value)}
                             onBlur={() => handleBlur(t.id, d)}
+                            onKeyDown={(e) => handleKeyDown(e, rowIndex, d)}
                             className={`w-8 h-8 text-center text-xs font-bold focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors ${getColor(celda.valor, false)}`}
                           />
                         )}
