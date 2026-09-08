@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { getAsistenciaMes, saveAsistenciaDia } from '@/app/rrhh_asistencia_actions';
-import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Loader2, ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import * as XLSX from 'xlsx';
 
 const MESES = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -192,6 +193,27 @@ export default function AsistenciaGridClient() {
     return {t,l,v,p,i};
   };
 
+  const exportToExcel = () => {
+    const data = [];
+    const header = ['Trabajador', ...diasArray, 'Trab.', 'Inasist.', 'Vac.', 'Lic.', 'Perm.'];
+    data.push(header);
+
+    trabajadores.forEach(t => {
+      const row: any[] = [`${t.apellido_paterno} ${t.nombres.split(' ')[0]}`];
+      for(let d=1; d<=diasEnMes; d++) {
+        row.push(matrix[t.id]?.[d]?.valor || '');
+      }
+      const totales = getTotales(t.id);
+      row.push(totales.t, totales.i, totales.v, totales.l, totales.p);
+      data.push(row);
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Asistencia');
+    XLSX.writeFile(wb, `Asistencia_${MESES[mes-1]}_${anio}.xlsx`);
+  };
+
   if (loading && trabajadores.length === 0) {
     return <div className="p-12 flex justify-center text-blue-600"><Loader2 size={32} className="animate-spin" /></div>;
   }
@@ -235,6 +257,10 @@ export default function AsistenciaGridClient() {
             ⬇️ Abajo
           </label>
         </div>
+        <button onClick={exportToExcel} className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-sm font-bold transition-colors">
+          <Download size={16} />
+          Exportar a Excel
+        </button>
       </div>
 
       {/* Grid Container */}
