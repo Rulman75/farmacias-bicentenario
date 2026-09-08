@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 import Link from 'next/link';
 import { getContratosPorVencer } from '@/app/rrhh_actions';
-import { Users, FileText, Calculator, ChevronRight, Activity, CalendarDays, FileSignature, DollarSign, PieChart, Landmark } from 'lucide-react';
+import { Users, FileText, Calculator, ChevronRight, Activity, CalendarDays, FileSignature, DollarSign, PieChart, Landmark, Clock } from 'lucide-react';
 import ContratosAlertWidget from '@/components/rrhh/ContratosAlertWidget';
 
 export default async function RRHHDashboardPage() {
@@ -56,6 +56,12 @@ export default async function RRHHDashboardPage() {
               <CalendarDays size={28} />
             </div>
             <span className="font-bold text-slate-700 text-sm">Ausentismos</span>
+          </Link>
+          <Link href="/panel/rrhh/turnos" className="flex flex-col items-center text-center p-6 bg-white border border-slate-200 rounded-2xl hover:border-indigo-500 hover:shadow-lg hover:-translate-y-1 transition-all group">
+            <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Clock size={28} />
+            </div>
+            <span className="font-bold text-slate-700 text-sm">Turnos Part-Time</span>
           </Link>
         </div>
       </div>
