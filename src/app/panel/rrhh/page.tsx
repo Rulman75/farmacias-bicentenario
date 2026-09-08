@@ -51,7 +51,7 @@ export default async function RRHHDashboardPage() {
             </div>
             <span className="font-bold text-slate-700 text-sm">Finiquitos</span>
           </Link>
-          <Link href="/panel/rrhh/vacaciones" className="flex flex-col items-center text-center p-6 bg-white border border-slate-200 rounded-2xl hover:border-blue-500 hover:shadow-lg hover:-translate-y-1 transition-all group">
+          <Link href="/panel/rrhh/ausentismos" className="flex flex-col items-center text-center p-6 bg-white border border-slate-200 rounded-2xl hover:border-blue-500 hover:shadow-lg hover:-translate-y-1 transition-all group">
             <div className="w-14 h-14 bg-sky-50 text-sky-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <CalendarDays size={28} />
             </div>
