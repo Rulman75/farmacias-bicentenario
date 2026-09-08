@@ -31,13 +31,13 @@ try {
   
   let sqlStatements = [];
   
+  let foreignCounter = 1;
   for (const row of data) {
     if (!row['NOMBRES'] && !row['APELLIDO 1']) continue;
     
     let rutDoc = row['NUMERO'] || '';
     let digito = row['DIGITO'] || '';
-    let rut = rutDoc ? `${rutDoc}-${digito}` : null;
-    if (!rut) continue;
+    let rut = rutDoc ? `${rutDoc}-${digito}` : `EXT-${foreignCounter++}-${Math.floor(Math.random()*1000)}`;
     
     const nombres = row['NOMBRES'] || '';
     const ap1 = row['APELLIDO 1'] || '';

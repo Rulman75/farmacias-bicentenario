@@ -54,6 +54,10 @@ export default function TrabajadorForm({ afps, salud, initialData }: { afps: any
   };
 
   const formatRut = (value: string) => {
+    // Si es un RUT temporal de extranjero
+    if (value.toUpperCase().startsWith('EXT-')) {
+      return value.toUpperCase();
+    }
     let v = value.replace(/[^0-9Kk]/g, '').toUpperCase();
     if (v.length > 1) {
       v = v.slice(0, -1) + '-' + v.slice(-1);
