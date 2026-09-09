@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic';
 import { getLiquidacionCompleta } from '@/app/rrhh_liquidaciones_actions';
-import { ChevronRight, Printer, Download } from 'lucide-react';
+import { ArrowLeft,  ChevronRight, Printer, Download  } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import PrintButton from '@/components/rrhh/PrintButton';
@@ -26,6 +26,12 @@ export default async function LiquidacionPage({ params }: { params: { id: string
 
   return (
     <div className="w-full mx-auto space-y-6 pb-20">
+      <div className="mb-2">
+        <Link href="/panel/rrhh" className="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-blue-600 transition-colors shadow-sm">
+          <ArrowLeft size={16} />
+          <span className="font-medium text-sm">Volver</span>
+        </Link>
+      </div>
       <div className="flex items-center gap-2 text-sm text-slate-500 mb-6 print:hidden">
         <Link href="/panel/rrhh" className="hover:text-blue-600 transition-colors">RRHH</Link>
         <ChevronRight size={14} />

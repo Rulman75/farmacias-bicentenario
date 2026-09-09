@@ -1,5 +1,5 @@
 import AsistenciaGridClient from '@/components/rrhh/AsistenciaGridClient';
-import { CalendarDays } from 'lucide-react';
+import { ArrowLeft,  CalendarDays  } from 'lucide-react';
 
 export default function AsistenciaPage() {
   return (

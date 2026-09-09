@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 import { getTrabajadorById, getCargos, getSucursalesRRHH, getAusentismosByTrabajador, getDocumentosByTrabajador, getHaberesFijos } from '@/app/rrhh_actions';
 import { getLiquidacionesByTrabajador } from '@/app/rrhh_liquidaciones_actions';
-import { User, ChevronRight, Briefcase, FileText, FileSignature, MapPin, CalendarOff, DollarSign } from 'lucide-react';
+import { ArrowLeft, User, ChevronRight, Briefcase, FileText, FileSignature, MapPin, CalendarOff, DollarSign } from 'lucide-react';
 import Link from 'next/link';
 import ContratoFormClient from '@/components/rrhh/ContratoFormClient';
 import AusentismoFormClient from '@/components/rrhh/AusentismoFormClient';
@@ -45,10 +45,18 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
 
   return (
     <div className="w-full mx-auto space-y-6 pb-20">
-      <div className="flex items-center gap-2 text-sm text-slate-500 mb-6">
-        <Link href="/panel/rrhh" className="hover:text-blue-600 transition-colors">Recursos Humanos</Link>
-        <ChevronRight size={14} />
-        <span className="font-medium text-slate-800">Ficha Empleado</span>
+      <div className="flex items-center gap-4 mb-6">
+        <Link href="/panel/rrhh/personal" className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-blue-600 transition-colors shadow-sm">
+          <ArrowLeft size={16} />
+          <span className="font-medium text-sm">Volver</span>
+        </Link>
+        <div className="hidden md:flex items-center gap-2 text-sm text-slate-500">
+          <Link href="/panel/rrhh" className="hover:text-blue-600 transition-colors">Recursos Humanos</Link>
+          <ChevronRight size={14} />
+          <Link href="/panel/rrhh/personal" className="hover:text-blue-600 transition-colors">Personal</Link>
+          <ChevronRight size={14} />
+          <span className="font-medium text-slate-800">Ficha: {t.nombres} {t.apellido_paterno}</span>
+        </div>
       </div>
 
       <div className="flex flex-col md:flex-row gap-6">

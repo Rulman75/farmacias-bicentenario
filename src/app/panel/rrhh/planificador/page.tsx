@@ -3,7 +3,7 @@ import { getPlanificacionMes } from '@/app/rrhh_planificacion_actions';
 import { getTurnos } from '@/app/rrhh_turnos_actions';
 import { getSucursalesRRHH } from '@/app/rrhh_actions';
 import Link from 'next/link';
-import { ChevronRight, CalendarDays } from 'lucide-react';
+import { ArrowLeft,  ChevronRight, CalendarDays  } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 

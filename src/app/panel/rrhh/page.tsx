@@ -17,7 +17,7 @@ export default function RrhhDashboardClient() {
       icon: <Users size={32} />,
       color: 'blue',
       items: [
-        { href: '/panel/rrhh/nuevo', icon: <UserPlus size={28} />, title: 'Nuevo Contrato', color: 'blue' },
+        { href: '/panel/rrhh/nuevo', icon: <UserPlus size={28} />, title: 'Nuevo Empleado', color: 'blue' },
         { href: '/panel/rrhh/personal', icon: <Users size={28} />, title: 'Fichas del Personal', color: 'blue' },
         { href: '/panel/rrhh/pendientes', icon: <FileSignature size={28} />, title: 'Contratos', color: 'blue' },
         { href: '/panel/rrhh/finiquito', icon: <FileText size={28} />, title: 'Finiquitos', color: 'rose' },

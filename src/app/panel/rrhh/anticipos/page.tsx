@@ -1,7 +1,7 @@
 
 export const dynamic = 'force-dynamic';
 import Link from 'next/link';
-import { ChevronRight, Banknote } from 'lucide-react';
+import { ArrowLeft,  ChevronRight, Banknote  } from 'lucide-react';
 import AnticiposFormClient from '@/components/rrhh/AnticiposFormClient';
 import { getTrabajadores } from '@/app/rrhh_actions';
 import { getAnticiposByPeriodo } from '@/app/rrhh_anticipos_actions';
@@ -20,10 +20,16 @@ export default async function AnticiposPage() {
 
   return (
     <div className="w-full mx-auto space-y-6 pb-20">
-      <div className="flex items-center gap-2 text-sm text-slate-500 mb-6">
+      <div className="flex items-center gap-4 mb-6">
+        <Link href="/panel/rrhh" className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-blue-600 transition-colors shadow-sm">
+          <ArrowLeft size={16} />
+          <span className="font-medium text-sm">Volver</span>
+        </Link>
+        <div className="hidden md:flex items-center gap-2 text-sm text-slate-500">
         <Link href="/panel/rrhh" className="hover:text-emerald-600 transition-colors">RRHH</Link>
         <ChevronRight size={14} />
         <span className="font-medium text-slate-800">Anticipos de Sueldo</span>
+        </div>
       </div>
 
       <div className="flex items-center gap-4 mb-6">
