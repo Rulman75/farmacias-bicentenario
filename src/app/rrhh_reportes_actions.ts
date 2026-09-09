@@ -215,13 +215,14 @@ export async function generarPlanillaContador(periodo: string) {
         c.fecha_inicio, c.cargo_id, cg.nombre as cargo_nombre, c.tipo_contrato,
         a.nombre as afp_nombre,
         s.nombre as salud_nombre,
-        t.salud_monto_uf
+        hf.plan_isapre_uf as salud_monto_uf
       FROM rrhh_liquidaciones l
       JOIN rrhh_trabajadores t ON l.trabajador_id = t.id
       JOIN rrhh_contratos c ON c.trabajador_id = t.id AND c.estado = 'ACTIVO'
       LEFT JOIN rrhh_cargos cg ON c.cargo_id = cg.id
       LEFT JOIN rrhh_afp a ON t.afp_id = a.id
       LEFT JOIN rrhh_salud s ON t.salud_id = s.id
+      LEFT JOIN rrhh_haberes_fijos hf ON hf.trabajador_id = t.id
       WHERE l.periodo = ?
     `, [periodo]);
 
