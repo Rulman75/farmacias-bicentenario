@@ -8,6 +8,7 @@ import AusentismoFormClient from '@/components/rrhh/AusentismoFormClient';
 import DocumentosWidget from '@/components/rrhh/DocumentosWidget';
 import HaberesFijosFormClient from '@/components/rrhh/HaberesFijosFormClient';
 import LiquidacionesWidget from '@/components/rrhh/LiquidacionesWidget';
+import CartolaVacacionesClient from '@/components/rrhh/CartolaVacacionesClient';
 
 export default async function TrabajadorPerfilPage({ params }: { params: { id: string } }) {
   const { id } = await params;
@@ -205,6 +206,12 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
               )}
             </div>
           </div>
+
+          <CartolaVacacionesClient 
+            trabajadorId={t.id} 
+            nombreCompleto={`${t.nombres} ${t.apellido_paterno} ${t.apellido_materno || ''}`} 
+            rut={t.rut} 
+          />
 
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
