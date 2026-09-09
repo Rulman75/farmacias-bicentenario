@@ -212,7 +212,7 @@ export async function generarPlanillaContador(periodo: string) {
       SELECT 
         l.*,
         t.rut, t.nombres, t.apellido_paterno, t.apellido_materno, t.nacionalidad,
-        c.fecha_inicio, c.horas_semanales, c.cargo_id, cg.nombre as cargo_nombre, c.tipo_contrato,
+        c.fecha_inicio, c.cargo_id, cg.nombre as cargo_nombre, c.tipo_contrato,
         a.nombre as afp_nombre,
         s.nombre as salud_nombre,
         t.salud_monto_uf
