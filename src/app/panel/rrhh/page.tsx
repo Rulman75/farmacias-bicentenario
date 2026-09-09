@@ -44,6 +44,7 @@ export default function RrhhDashboardClient() {
       items: [
         { href: '/panel/rrhh/reportes/lre', icon: <FileText size={28} />, title: 'Libro de Remuneraciones (LRE)', color: 'purple' },
         { href: '/panel/rrhh/reportes/previred', icon: <PieChart size={28} />, title: 'Archivo Previred', color: 'purple' },
+        { href: '/panel/rrhh/reportes/contador', icon: <FileText size={28} />, title: 'Planilla Contador', color: 'orange' },
       ]
     },
     configuracion: {
@@ -61,6 +62,7 @@ export default function RrhhDashboardClient() {
     emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600', border: 'border-slate-200', hoverBorder: 'hover:border-emerald-500', hoverText: 'group-hover:text-emerald-500' },
     purple: { bg: 'bg-purple-50', text: 'text-purple-600', border: 'border-slate-200', hoverBorder: 'hover:border-purple-500', hoverText: 'group-hover:text-purple-500' },
     amber: { bg: 'bg-amber-50', text: 'text-amber-600', border: 'border-slate-200', hoverBorder: 'hover:border-amber-500', hoverText: 'group-hover:text-amber-500' },
+    orange: { bg: 'bg-orange-50', text: 'text-orange-600', border: 'border-slate-200', hoverBorder: 'hover:border-orange-500', hoverText: 'group-hover:text-orange-500' },
     rose: { bg: 'bg-rose-50', text: 'text-rose-600', border: 'border-slate-200', hoverBorder: 'hover:border-rose-500', hoverText: 'group-hover:text-rose-500' },
     sky: { bg: 'bg-sky-50', text: 'text-sky-600', border: 'border-slate-200', hoverBorder: 'hover:border-sky-500', hoverText: 'group-hover:text-sky-500' },
     indigo: { bg: 'bg-indigo-50', text: 'text-indigo-600', border: 'border-slate-200', hoverBorder: 'hover:border-indigo-500', hoverText: 'group-hover:text-indigo-500' }
