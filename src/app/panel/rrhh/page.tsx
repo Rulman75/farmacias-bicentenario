@@ -32,6 +32,7 @@ export default function RrhhDashboardClient() {
       icon: <DollarSign size={32} />,
       color: 'emerald',
       items: [
+        { href: '/panel/rrhh/reportes/liquidaciones', icon: <FileText size={28} />, title: 'Liquidaciones', color: 'emerald' },
         { href: '/panel/rrhh/periodo', icon: <Activity size={28} />, title: 'Proceso Mensual', color: 'emerald' },
         { href: '/panel/rrhh/haberes-descuentos', icon: <Calculator size={28} />, title: 'Haberes y Descuentos', color: 'emerald' },
         { href: '/panel/rrhh/anticipos', icon: <DollarSign size={28} />, title: 'Anticipos de Sueldo', color: 'emerald' },
