@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getNominaMasiva, generarNominaMasiva, enviarNominaMasiva } from '@/app/rrhh_liquidaciones_actions';
-import { FileText, Loader2, Send, CheckCircle, RefreshCcw, Search, Eye } from 'lucide-react';
+import { getNominaMasiva, generarNominaMasiva, enviarNominaMasiva, eliminarNominaMasiva } from '@/app/rrhh_liquidaciones_actions';
+import { FileText, Loader2, Send, CheckCircle, RefreshCcw, Search, Eye, Trash2 } from 'lucide-react';
 
 const formatoMoneda = (valor: number) => {
   return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(valor);
@@ -57,6 +57,25 @@ export default function ProcesoLiquidacionesClient() {
     setActionLoading(false);
   };
 
+  const handleEliminar = async () => {
+    if (!confirm(`⚠️ ¡ATENCIÓN! ¿Estás seguro de que deseas eliminar TODAS las liquidaciones generadas en el período ${periodo}?\n\nEsto te permitirá reprocesarlas si cometiste algún error o faltó registrar una inasistencia.`)) return;
+    
+    setActionLoading(true);
+    setMessage(null);
+    try {
+      const res = await eliminarNominaMasiva(periodo);
+      if (res.success) {
+        setMessage({ type: 'success', text: `Se han eliminado ${res.eliminadas} liquidaciones del período. Ahora puedes volver a procesarlas.` });
+        await loadData();
+      } else {
+        setMessage({ type: 'error', text: res.error || 'Error al eliminar liquidaciones.' });
+      }
+    } catch (e: any) {
+      setMessage({ type: 'error', text: e.message });
+    }
+    setActionLoading(false);
+  };
+
   const handleEnviar = async () => {
     if (data.length === 0) {
       setMessage({ type: 'error', text: 'No hay liquidaciones para enviar en este período.' });
@@ -101,7 +120,7 @@ export default function ProcesoLiquidacionesClient() {
           />
         </div>
         
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <button
             onClick={handleGenerar}
             disabled={actionLoading || loading}
@@ -119,6 +138,18 @@ export default function ProcesoLiquidacionesClient() {
             <Send size={16} />
             2. Aprobar y Enviar ({data.length})
           </button>
+
+          {data.length > 0 && (
+            <button
+              onClick={handleEliminar}
+              disabled={actionLoading || loading}
+              className="flex items-center gap-2 px-4 py-2 bg-rose-50 text-rose-600 font-medium rounded-lg hover:bg-rose-100 hover:text-rose-700 transition-colors border border-rose-200 disabled:opacity-50"
+              title="Eliminar nómina para reprocesar"
+            >
+              <Trash2 size={16} />
+              Deshacer Nómina
+            </button>
+          )}
         </div>
       </div>
 

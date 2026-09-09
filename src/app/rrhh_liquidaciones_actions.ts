@@ -327,3 +327,16 @@ export async function enviarNominaMasiva(periodo: string) {
   await new Promise(resolve => setTimeout(resolve, 2000));
   return { success: true, message: 'Se han enviado todas las liquidaciones exitosamente por correo electrónico.' };
 }
+
+export async function eliminarNominaMasiva(periodo: string) {
+  const connection = await pool.getConnection();
+  try {
+    const [result] = await connection.query("DELETE FROM rrhh_liquidaciones WHERE periodo = ?", [periodo]);
+    revalidatePath('/panel/rrhh/reportes/liquidaciones');
+    return { success: true, eliminadas: (result as any).affectedRows };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
