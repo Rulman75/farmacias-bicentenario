@@ -1,6 +1,7 @@
 
-import { ArrowLeft,  ChevronRight  } from 'lucide-react';
+import { ArrowLeft,  ChevronRight, Calculator  } from 'lucide-react';
 import Link from 'next/link';
+import ProcesoLiquidacionesClient from '@/components/rrhh/ProcesoLiquidacionesClient';
 
 export default function Page() {
   return (
@@ -13,14 +14,21 @@ export default function Page() {
         <div className="hidden md:flex items-center gap-2 text-sm text-slate-500">
         <Link href="/panel/rrhh" className="hover:text-blue-600 transition-colors">RRHH</Link>
         <ChevronRight size={14} />
-        <span className="font-medium text-slate-800">Liquidaciones</span>
+        <span className="font-medium text-slate-800">Centro de Nómina</span>
         </div>
       </div>
 
-      <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200 text-center">
-        <h1 className="text-2xl font-bold text-slate-800 mb-4">Módulo: Liquidaciones</h1>
-        <p className="text-slate-500">Esta sección está en construcción.</p>
+      <div className="flex items-center gap-4 mb-6">
+        <div className="bg-emerald-600 p-3 rounded-xl text-white shadow-lg shadow-emerald-600/20">
+          <Calculator size={28} />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">Centro de Nómina y Liquidaciones</h1>
+          <p className="text-slate-500">Generación masiva, revisión de cuadratura y envío por correo</p>
+        </div>
       </div>
+
+      <ProcesoLiquidacionesClient />
     </div>
   );
 }
