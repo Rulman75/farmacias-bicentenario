@@ -113,7 +113,7 @@ export default function IngresoVencimientos() {
     }
   };
 
-  const FormContent = () => (
+  const formContentNode = (
     <>
       {message && (
         <div className={`p-4 rounded-lg flex items-center gap-3 ${message.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
@@ -184,10 +184,10 @@ export default function IngresoVencimientos() {
           <label className="text-sm font-bold text-slate-700">Cantidad (Unidades)</label>
           <input 
             type="number" 
-            inputMode="decimal"
+            inputMode="numeric"
             ref={cantidadRef}
-            min="0.01"
-            step="0.01"
+            min="1"
+            step="1"
             value={cantidad}
             onChange={(e) => setCantidad(e.target.value)}
             placeholder="Ej. 50"
@@ -222,7 +222,7 @@ export default function IngresoVencimientos() {
 
   const { items: sortedRecentScans, requestSort: requestSortRecent, sortConfig: sortRecent } = useSortableData(recentScans);
 
-  const RecentScansGrid = () => (
+  const recentScansGridNode = (
     <div className="mt-6 border-t border-slate-200 pt-6">
       <h3 className="text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider">Últimos Ingresos</h3>
       {recentScans.length === 0 ? (
@@ -269,11 +269,11 @@ export default function IngresoVencimientos() {
         <div className="p-4 flex-1 max-w-lg w-full mx-auto">
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-6">
             <form onSubmit={handleSubmit} className="p-5 space-y-5">
-              <FormContent />
+              {formContentNode}
             </form>
           </div>
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-            <RecentScansGrid />
+            {recentScansGridNode}
           </div>
         </div>
         {showScanner && (
@@ -321,12 +321,12 @@ export default function IngresoVencimientos() {
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
-          <FormContent />
+          {formContentNode}
         </form>
       </div>
       
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-        <RecentScansGrid />
+        {recentScansGridNode}
       </div>
 
       {showScanner && (
