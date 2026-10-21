@@ -4,6 +4,7 @@ import { getLiquidacionesByTrabajador } from '@/app/rrhh_liquidaciones_actions';
 import { ArrowLeft, User, ChevronRight, Briefcase, FileText, FileSignature, MapPin, CalendarOff, DollarSign } from 'lucide-react';
 import Link from 'next/link';
 import ContratoFormClient from '@/components/rrhh/ContratoFormClient';
+import GenerarContratoModal from '@/components/rrhh/GenerarContratoModal';
 import AusentismoFormClient from '@/components/rrhh/AusentismoFormClient';
 import DocumentosWidget from '@/components/rrhh/DocumentosWidget';
 import HaberesFijosFormClient from '@/components/rrhh/HaberesFijosFormClient';
@@ -182,7 +183,12 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
                           {c.fecha_termino && <p>Hasta: {new Date(c.fecha_termino).toLocaleDateString()}</p>}
                         </div>
                         {c.estado === 'ACTIVO' && (
-                          <div className="mt-3 flex justify-end">
+                          <div className="mt-3 flex items-center justify-end gap-3">
+                            <GenerarContratoModal
+                              trabajadorId={t.id}
+                              contratoId={c.id}
+                              variant="small"
+                            />
                             <ContratoFormClient 
                               trabajadorId={t.id} 
                               cargos={cargos} 
@@ -270,5 +276,3 @@ export default async function TrabajadorPerfilPage({ params }: { params: { id: s
     </div>
   );
 }
-
-

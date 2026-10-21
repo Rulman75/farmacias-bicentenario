@@ -12,6 +12,9 @@ export default function TransferModal({ isOpen, onClose, data, sucursales }: { i
   if (!isOpen) return null;
 
   const validSucursales = sucursales.filter(s => s.cod_sucursal !== data.cod_sucursal_origen);
+  const propuestasVigentes = data.propuestas || [];
+  const totalYaPropuesto = data.cantidad_propuesta || 0;
+  const maxProponible = Math.max(1, data.cantidad_disponible - totalYaPropuesto);
 
   const handleSave = () => {
     if (!destino || cantidad <= 0 || cantidad > data.cantidad_disponible) return;
@@ -39,7 +42,7 @@ export default function TransferModal({ isOpen, onClose, data, sucursales }: { i
         <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50">
           <div className="flex items-center gap-2 text-slate-800">
             <ArrowRightLeft size={20} className="text-fuchsia-600" />
-            <h2 className="font-bold text-lg">Nuevo Traspaso</h2>
+            <h2 className="font-bold text-lg">Nueva Propuesta de Traspaso</h2>
           </div>
           <button onClick={onClose} className="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-lg transition-colors">
             <X size={20} />
@@ -52,8 +55,24 @@ export default function TransferModal({ isOpen, onClose, data, sucursales }: { i
             <div className="font-bold text-slate-800">{data.descripcion} <span className="text-slate-400 font-mono text-sm ml-2">({data.cod_art})</span></div>
             <div className="flex justify-between items-center pt-2 mt-2 border-t border-slate-200">
               <span className="text-sm text-slate-500">Origen: <span className="font-semibold text-slate-700">{data.sucursal_origen}</span></span>
-              <span className="text-sm text-slate-500">Disponible: <span className="font-bold text-fuchsia-600">{data.cantidad_disponible} un.</span></span>
+              <span className="text-sm text-slate-500">Por vencer: <span className="font-bold text-fuchsia-600">{data.cantidad_disponible} un.</span></span>
             </div>
+
+            {propuestasVigentes.length > 0 && (
+              <div className="pt-2 mt-2 border-t border-indigo-200 bg-indigo-50/70 -mx-2 px-3 py-2 rounded-lg">
+                <div className="text-xs font-bold text-indigo-700 mb-1">
+                  En propuesta de traspaso vigente ({totalYaPropuesto} un.):
+                </div>
+                <ul className="text-xs text-indigo-600 space-y-0.5">
+                  {propuestasVigentes.map((p: any, idx: number) => (
+                    <li key={idx} className="flex justify-between">
+                      <span>➔ Hacia <b>{p.sucursal_destino}</b> {p.en_carrito ? '(en borrador)' : `(${p.correlativo})`}</span>
+                      <span className="font-bold">{p.cantidad} un.</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -71,11 +90,16 @@ export default function TransferModal({ isOpen, onClose, data, sucursales }: { i
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-700">Cantidad a Traspasar</label>
+            <div className="flex justify-between items-center">
+              <label className="block text-sm font-medium text-slate-700">Cantidad Propuesta</label>
+              {totalYaPropuesto > 0 && (
+                <span className="text-xs text-slate-500">Libre sin proponer: <b>{ Math.max(0, data.cantidad_disponible - totalYaPropuesto) } un.</b></span>
+              )}
+            </div>
             <input 
               type="number" 
               min="1" 
-              max={data.cantidad_disponible}
+              max={maxProponible}
               value={cantidad}
               onChange={e => setCantidad(Number(e.target.value))}
               className="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
@@ -92,7 +116,7 @@ export default function TransferModal({ isOpen, onClose, data, sucursales }: { i
             disabled={!destino || cantidad <= 0 || cantidad > data.cantidad_disponible}
             className="px-6 py-2 bg-fuchsia-600 text-white font-medium rounded-lg hover:bg-fuchsia-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Agregar a Traspasos
+            Agregar Propuesta
           </button>
         </div>
       </div>

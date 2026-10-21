@@ -13,7 +13,7 @@ export async function login(rut: string, password: string) {
 
   const connection = await pool.getConnection();
   try {
-    const [rows] = await connection.query('SELECT * FROM usuarioCatalogo WHERE rut = ?', [rut]);
+    const [rows] = await connection.query('SELECT * FROM usuariocatalogo WHERE rut = ?', [rut]);
     if ((rows as any[]).length === 0) return { success: false, error: 'Credenciales incorrectas' };
 
     const user = (rows as any[])[0];
@@ -77,7 +77,7 @@ export async function updatePassword(rut: string, currentPassword: string, newPa
 
   const connection = await pool.getConnection();
   try {
-    const [rows] = await connection.query('SELECT * FROM usuarioCatalogo WHERE rut = ?', [rut]);
+    const [rows] = await connection.query('SELECT * FROM usuariocatalogo WHERE rut = ?', [rut]);
     if ((rows as any[]).length === 0) return { success: false, error: 'Usuario no encontrado' };
 
     const user = (rows as any[])[0];
@@ -88,7 +88,7 @@ export async function updatePassword(rut: string, currentPassword: string, newPa
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
     
     await connection.query(
-      'UPDATE usuarioCatalogo SET password_hash = ?, debe_cambiar_pass = 0 WHERE rut = ?',
+      'UPDATE usuariocatalogo SET password_hash = ?, debe_cambiar_pass = 0 WHERE rut = ?',
       [hashedNewPassword, rut]
     );
 

@@ -28,7 +28,7 @@ export default function RRHHTableClient({
       const params = new URLSearchParams();
       if (searchTerm) params.set('search', searchTerm);
       if (estado !== 'ACTIVO') params.set('estado', estado);
-      router.push(`/panel/rrhh?${params.toString()}`);
+      router.push(`/panel/rrhh/personal?${params.toString()}`);
     });
   };
 
@@ -38,7 +38,7 @@ export default function RRHHTableClient({
       const params = new URLSearchParams();
       if (searchTerm) params.set('search', searchTerm);
       if (val !== 'ACTIVO') params.set('estado', val);
-      router.push(`/panel/rrhh?${params.toString()}`);
+      router.push(`/panel/rrhh/personal?${params.toString()}`);
     });
   };
 

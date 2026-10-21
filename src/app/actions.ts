@@ -2,6 +2,7 @@
 
 import pool from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+import { getCurrentUser } from '@/app/auth/actions';
 
 export async function getSucursales() {
   const connection = await pool.getConnection();
@@ -57,14 +58,14 @@ export async function searchProducto(codigo: string) {
   }
 }
 
-export async function checkIngresoExistente(cod_sucursal: number, cod_art: number) {
+export async function checkIngresoExistente(cod_sucursal: number, cod_art: number, fecha_vencimiento: string) {
   const connection = await pool.getConnection();
   try {
     const [rows] = await connection.query(`
       SELECT id, cantidad, fecha_vencimiento 
       FROM ingreso_vencimientos 
-      WHERE cod_sucursal = ? AND cod_art = ?
-    `, [cod_sucursal, cod_art]);
+      WHERE cod_sucursal = ? AND cod_art = ? AND fecha_vencimiento = ?
+    `, [cod_sucursal, cod_art, fecha_vencimiento]);
     return { success: true, exists: (rows as any[]).length > 0, data: (rows as any[])[0] };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -74,12 +75,13 @@ export async function checkIngresoExistente(cod_sucursal: number, cod_art: numbe
 }
 
 export async function registrarIngreso(formData: FormData) {
+  const currentUser = await getCurrentUser();
   const cod_sucursal = formData.get('cod_sucursal');
   const codigo_ingresado = formData.get('codigo_ingresado');
   const cod_art = formData.get('cod_art');
   const cantidad = formData.get('cantidad');
   const fecha_vencimiento = formData.get('fecha_vencimiento');
-  const usuario_registro = formData.get('usuario_registro') || 'Admin Farmacia'; 
+  const usuario_registro = (currentUser?.nombre as string) || (formData.get('usuario_registro') as string) || 'Admin Farmacia'; 
 
   if (!cod_sucursal || !codigo_ingresado || !cod_art || !cantidad || !fecha_vencimiento) {
     return { success: false, error: "Todos los campos son obligatorios" };
@@ -92,9 +94,9 @@ export async function registrarIngreso(formData: FormData) {
     if (isUpdate) {
       await connection.query(`
         UPDATE ingreso_vencimientos 
-        SET cantidad = ?, fecha_vencimiento = ?, codigo_ingresado = ?, usuario_registro = ?
-        WHERE cod_sucursal = ? AND cod_art = ?
-      `, [cantidad, fecha_vencimiento, codigo_ingresado, usuario_registro, cod_sucursal, cod_art]);
+        SET cantidad = ?, codigo_ingresado = ?, usuario_registro = ?
+        WHERE cod_sucursal = ? AND cod_art = ? AND fecha_vencimiento = ?
+      `, [cantidad, codigo_ingresado, usuario_registro, cod_sucursal, cod_art, fecha_vencimiento]);
     } else {
       await connection.query(`
         INSERT INTO ingreso_vencimientos 
@@ -114,10 +116,13 @@ export async function registrarIngreso(formData: FormData) {
 }
 
 
-// TRASPASOS
-export async function guardarTraspasosDB(items: any[]) {
-  if (!items || items.length === 0) return { success: false, error: "No hay items para procesar" };
+// PROPUESTAS DE TRASPASO (No mueve stock hasta que se cierra la línea en Proposición de Traspasos)
+export async function guardarTraspasosDB(items: any[], usuario?: string) {
+  if (!items || items.length === 0) return { success: false, error: "No hay propuestas para procesar" };
   
+  const currentUser = await getCurrentUser();
+  const usuarioReal = (currentUser?.nombre as string) || (usuario && usuario !== 'SISTEMA_TRASPASOS' ? usuario : '') || 'SISTEMA';
+
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
@@ -125,14 +130,14 @@ export async function guardarTraspasosDB(items: any[]) {
     // Generate Correlativo
     const correlativo = `TR-${new Date().toISOString().slice(0,10).replace(/-/g, '')}-${Math.floor(Math.random()*10000).toString().padStart(4, '0')}`;
 
-    // 1. Insert Cabecera
+    // 1. Insert Cabecera (Propuesta)
     const [cabResult] = await connection.query(
-      'INSERT INTO traspasos_cabecera (correlativo, estado) VALUES (?, ?)',
-      [correlativo, 'GENERADO']
+      'INSERT INTO traspasos_cabecera (correlativo, estado, usuario_registro) VALUES (?, ?, ?)',
+      [correlativo, 'GENERADO', usuarioReal]
     );
     const id_traspaso = (cabResult as any).insertId;
 
-    // 2. Process Items
+    // 2. Insertar cada línea como propuesta pendiente (SIN descontar ni mover stock todavía)
     for (const item of items) {
       const fechaVencDate = new Date(item.fecha_vencimiento);
       const yyyy = fechaVencDate.getFullYear();
@@ -140,73 +145,24 @@ export async function guardarTraspasosDB(items: any[]) {
       const dd = String(fechaVencDate.getDate()).padStart(2, '0');
       const formattedFecha = `${yyyy}-${mm}-${dd}`;
 
-      // a. Insert Detalle
       await connection.query(
         `INSERT INTO traspasos_detalle 
-         (id_traspaso, cod_sucursal_origen, cod_sucursal_destino, cod_art, cantidad, fecha_vencimiento) 
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [id_traspaso, item.cod_sucursal_origen, item.cod_sucursal_destino, item.cod_art, item.cantidad, formattedFecha]
+         (id_traspaso, cod_sucursal_origen, cod_sucursal_destino, cod_art, cantidad, cantidad_aceptada, estado_linea, fecha_vencimiento) 
+         VALUES (?, ?, ?, ?, ?, ?, 'PENDIENTE', ?)`,
+        [id_traspaso, item.cod_sucursal_origen, item.cod_sucursal_destino, item.cod_art, item.cantidad, item.cantidad, formattedFecha]
       );
-
-      // b. Descontar de Origen
-      const [origenCurrent] = await connection.query(`SELECT cantidad FROM ingreso_vencimientos WHERE cod_sucursal = ? AND cod_art = ? AND DATE(fecha_vencimiento) = ? LIMIT 1`, [item.cod_sucursal_origen, item.cod_art, formattedFecha]);
-      let cantOrigenAnt = 0;
-      if ((origenCurrent as any[]).length > 0) cantOrigenAnt = (origenCurrent as any[])[0].cantidad;
-
-      await connection.query(
-        `UPDATE ingreso_vencimientos 
-         SET cantidad = cantidad - ? 
-         WHERE cod_sucursal = ? AND cod_art = ? AND DATE(fecha_vencimiento) = ?
-         LIMIT 1`,
-        [item.cantidad, item.cod_sucursal_origen, item.cod_art, formattedFecha]
-      );
-      
-      // Log origen
-      try {
-        await connection.query(`INSERT INTO movimientos_inventario (cod_sucursal, cod_art, tipo_movimiento, cantidad_anterior, cantidad_nueva, id_referencia, usuario, observacion) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [item.cod_sucursal_origen, item.cod_art, 'TRASPASO_SALIDA', cantOrigenAnt, cantOrigenAnt - item.cantidad, correlativo, 'SISTEMA_TRASPASOS', `Traspaso a ${item.cod_sucursal_destino}`]);
-      } catch(e) {}
-
-      // c. Aumentar en Destino
-      const [existDestino] = await connection.query(
-        `SELECT id, cantidad FROM ingreso_vencimientos 
-         WHERE cod_sucursal = ? AND cod_art = ? AND DATE(fecha_vencimiento) = ? LIMIT 1`,
-        [item.cod_sucursal_destino, item.cod_art, formattedFecha]
-      );
-
-      let cantDestinoAnt = 0;
-      if ((existDestino as any[]).length > 0) {
-        cantDestinoAnt = (existDestino as any[])[0].cantidad;
-        await connection.query(
-          `UPDATE ingreso_vencimientos 
-           SET cantidad = cantidad + ? 
-           WHERE id = ?`,
-          [item.cantidad, (existDestino as any[])[0].id]
-        );
-      } else {
-        await connection.query(
-          `INSERT INTO ingreso_vencimientos (cod_sucursal, cod_art, codigo_ingresado, cantidad, fecha_vencimiento, usuario_registro)
-           VALUES (?, ?, ?, ?, ?, ?)`,
-          [item.cod_sucursal_destino, item.cod_art, item.cod_art, item.cantidad, formattedFecha, 'SISTEMA_TRASPASOS']
-        );
-      }
-      
-      // Log destino
-      try {
-        await connection.query(`INSERT INTO movimientos_inventario (cod_sucursal, cod_art, tipo_movimiento, cantidad_anterior, cantidad_nueva, id_referencia, usuario, observacion) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [item.cod_sucursal_destino, item.cod_art, 'TRASPASO_ENTRADA', cantDestinoAnt, cantDestinoAnt + item.cantidad, correlativo, 'SISTEMA_TRASPASOS', `Recepción de ${item.cod_sucursal_origen}`]);
-      } catch(e) {}
     }
 
     await connection.commit();
-    revalidatePath('/agrupado');
-    revalidatePath('/vencidos');
-    revalidatePath('/');
+    revalidatePath('/panel/agrupado');
+    revalidatePath('/panel/proposicion-traspasos');
+    revalidatePath('/panel/vencidos');
+    revalidatePath('/panel');
     
     return { success: true, correlativo };
   } catch (error: any) {
     await connection.rollback();
-    console.error("Error procesando traspaso:", error);
+    console.error("Error guardando propuesta de traspaso:", error);
     return { success: false, error: error.message };
   } finally {
     connection.release();
@@ -673,3 +629,258 @@ export async function getProductoParaSugerencia(query: string) {
     connection.release();
   }
 }
+
+export async function getProposicionesTraspaso() {
+  const connection = await pool.getConnection();
+  try {
+    const [rows] = await connection.query(`
+      SELECT 
+        c.id_traspaso, c.correlativo, c.fecha, c.estado, c.usuario_registro,
+        d.id_detalle, d.cod_art, p.descripcion,
+        d.cantidad, COALESCE(d.cantidad_aceptada, d.cantidad) as cantidad_aceptada,
+        d.observacion, COALESCE(d.estado_linea, 'PENDIENTE') as estado_linea,
+        d.fecha_vencimiento,
+        d.cod_sucursal_origen, d.cod_sucursal_destino,
+        (SELECT MAX(nombre) FROM sucursales WHERE cod_sucursal = d.cod_sucursal_origen AND cod_empresa = 1) as nombre_origen,
+        (SELECT MAX(nombre) FROM sucursales WHERE cod_sucursal = d.cod_sucursal_destino AND cod_empresa = 1) as nombre_destino,
+        (SELECT cantidad FROM ingreso_vencimientos iv WHERE iv.cod_sucursal = d.cod_sucursal_origen AND iv.cod_art = d.cod_art AND DATE(iv.fecha_vencimiento) = DATE(d.fecha_vencimiento) LIMIT 1) as stock_origen
+      FROM traspasos_cabecera c
+      JOIN traspasos_detalle d ON c.id_traspaso = d.id_traspaso
+      LEFT JOIN productos p ON d.cod_art = p.cod_art
+      WHERE COALESCE(d.estado_linea, 'PENDIENTE') = 'PENDIENTE'
+        AND c.estado NOT IN ('ANULADO', 'NO_EJECUTADO')
+      ORDER BY c.fecha DESC, d.id_detalle ASC
+    `);
+    return { success: true, data: rows as any[] };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
+
+export async function guardarLineaProposicion(
+  id_detalle: number,
+  cantidad_propuesta: number,
+  cantidad_aceptada: number,
+  observacion: string
+) {
+  if (cantidad_propuesta < 0 || cantidad_aceptada < 0) {
+    return { success: false, error: "Las cantidades no pueden ser negativas" };
+  }
+  const connection = await pool.getConnection();
+  try {
+    await connection.query(
+      `UPDATE traspasos_detalle 
+       SET cantidad = ?, cantidad_aceptada = ?, observacion = ?
+       WHERE id_detalle = ? AND COALESCE(estado_linea, 'PENDIENTE') = 'PENDIENTE'`,
+      [cantidad_propuesta, cantidad_aceptada, observacion || null, id_detalle]
+    );
+    revalidatePath('/panel/proposicion-traspasos');
+    revalidatePath('/panel/agrupado');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
+
+export async function cerrarLineaProposicion(
+  id_detalle: number,
+  cantidad_propuesta: number,
+  cantidad_aceptada: number,
+  observacion: string
+) {
+  if (cantidad_propuesta < 0 || cantidad_aceptada < 0) {
+    return { success: false, error: "Las cantidades no pueden ser negativas" };
+  }
+
+  const currentUser = await getCurrentUser();
+  const usuarioReal = (currentUser?.nombre as string) || 'SISTEMA';
+
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    const [detRows] = await connection.query(
+      `SELECT d.*, c.correlativo 
+       FROM traspasos_detalle d
+       JOIN traspasos_cabecera c ON d.id_traspaso = c.id_traspaso
+       WHERE d.id_detalle = ? FOR UPDATE`,
+      [id_detalle]
+    );
+
+    if ((detRows as any[]).length === 0) {
+      throw new Error("Registro de propuesta no encontrado");
+    }
+
+    const item = (detRows as any[])[0];
+    if (item.estado_linea && item.estado_linea !== 'PENDIENTE') {
+      throw new Error("Esta propuesta ya fue cerrada anteriormente");
+    }
+
+    const fechaVencDate = new Date(item.fecha_vencimiento);
+    const yyyy = fechaVencDate.getFullYear();
+    const mm = String(fechaVencDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(fechaVencDate.getDate()).padStart(2, '0');
+    const formattedFecha = `${yyyy}-${mm}-${dd}`;
+
+    // 1. Actualizar la línea a PROCESADO y guardar cantidades y observación
+    await connection.query(
+      `UPDATE traspasos_detalle 
+       SET cantidad = ?, cantidad_aceptada = ?, observacion = ?, estado_linea = 'PROCESADO', usuario_cierre = ?, fecha_cierre = NOW()
+       WHERE id_detalle = ?`,
+      [cantidad_propuesta, cantidad_aceptada, observacion || null, usuarioReal, id_detalle]
+    );
+
+    // 2. Mover stock en ingreso_vencimientos recién al cerrar la propuesta (según cantidad_aceptada)
+    if (cantidad_aceptada > 0) {
+      // a. Descontar de sucursal origen
+      const [origenCurrent] = await connection.query(
+        `SELECT id, cantidad FROM ingreso_vencimientos 
+         WHERE cod_sucursal = ? AND cod_art = ? AND DATE(fecha_vencimiento) = ? LIMIT 1`,
+        [item.cod_sucursal_origen, item.cod_art, formattedFecha]
+      );
+
+      let cantOrigenAnt = 0;
+      if ((origenCurrent as any[]).length > 0) {
+        const origRow = (origenCurrent as any[])[0];
+        cantOrigenAnt = origRow.cantidad;
+        const nuevaCantOrigen = cantOrigenAnt - cantidad_aceptada;
+
+        if (nuevaCantOrigen <= 0) {
+          await connection.query(`DELETE FROM ingreso_vencimientos WHERE id = ?`, [origRow.id]);
+        } else {
+          await connection.query(
+            `UPDATE ingreso_vencimientos SET cantidad = ? WHERE id = ?`,
+            [nuevaCantOrigen, origRow.id]
+          );
+        }
+      }
+
+      // Log movimiento salida
+      try {
+        await connection.query(
+          `INSERT INTO movimientos_inventario (cod_sucursal, cod_art, tipo_movimiento, cantidad_anterior, cantidad_nueva, id_referencia, usuario, observacion)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            item.cod_sucursal_origen,
+            item.cod_art,
+            'TRASPASO_SALIDA',
+            cantOrigenAnt,
+            Math.max(0, cantOrigenAnt - cantidad_aceptada),
+            item.correlativo,
+            usuarioReal,
+            observacion ? `Traspaso a suc. ${item.cod_sucursal_destino}: ${observacion}` : `Traspaso a suc. ${item.cod_sucursal_destino}`
+          ]
+        );
+      } catch (e) {}
+
+      // b. Aumentar en sucursal destino
+      const [existDestino] = await connection.query(
+        `SELECT id, cantidad FROM ingreso_vencimientos 
+         WHERE cod_sucursal = ? AND cod_art = ? AND DATE(fecha_vencimiento) = ? LIMIT 1`,
+        [item.cod_sucursal_destino, item.cod_art, formattedFecha]
+      );
+
+      let cantDestinoAnt = 0;
+      if ((existDestino as any[]).length > 0) {
+        cantDestinoAnt = (existDestino as any[])[0].cantidad;
+        await connection.query(
+          `UPDATE ingreso_vencimientos SET cantidad = cantidad + ? WHERE id = ?`,
+          [cantidad_aceptada, (existDestino as any[])[0].id]
+        );
+      } else {
+        await connection.query(
+          `INSERT INTO ingreso_vencimientos (cod_sucursal, cod_art, codigo_ingresado, cantidad, fecha_vencimiento, usuario_registro)
+           VALUES (?, ?, ?, ?, ?, ?)`,
+          [item.cod_sucursal_destino, item.cod_art, item.cod_art, cantidad_aceptada, formattedFecha, usuarioReal]
+        );
+      }
+
+      // Log movimiento entrada
+      try {
+        await connection.query(
+          `INSERT INTO movimientos_inventario (cod_sucursal, cod_art, tipo_movimiento, cantidad_anterior, cantidad_nueva, id_referencia, usuario, observacion)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            item.cod_sucursal_destino,
+            item.cod_art,
+            'TRASPASO_ENTRADA',
+            cantDestinoAnt,
+            cantDestinoAnt + cantidad_aceptada,
+            item.correlativo,
+            usuarioReal,
+            observacion ? `Recepción desde suc. ${item.cod_sucursal_origen}: ${observacion}` : `Recepción desde suc. ${item.cod_sucursal_origen}`
+          ]
+        );
+      } catch (e) {}
+    }
+
+    // 3. Verificar si quedan líneas pendientes en esta cabecera
+    const [pendientes] = await connection.query(
+      `SELECT COUNT(*) as cnt FROM traspasos_detalle WHERE id_traspaso = ? AND COALESCE(estado_linea, 'PENDIENTE') = 'PENDIENTE'`,
+      [item.id_traspaso]
+    );
+    if ((pendientes as any[])[0].cnt === 0) {
+      await connection.query(
+        `UPDATE traspasos_cabecera SET estado = 'PROCESADO' WHERE id_traspaso = ?`,
+        [item.id_traspaso]
+      );
+    }
+
+    await connection.commit();
+    revalidatePath('/panel/proposicion-traspasos');
+    revalidatePath('/panel/agrupado');
+    revalidatePath('/panel/historial-traspasos');
+    revalidatePath('/panel');
+    return { success: true };
+  } catch (error: any) {
+    await connection.rollback();
+    console.error("Error cerrando línea de propuesta:", error);
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
+
+export async function descartarLineaProposicion(id_detalle: number, observacion: string = '') {
+  const currentUser = await getCurrentUser();
+  const usuarioReal = (currentUser?.nombre as string) || 'SISTEMA';
+
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    const [detRows] = await connection.query(`SELECT id_traspaso FROM traspasos_detalle WHERE id_detalle = ?`, [id_detalle]);
+    if ((detRows as any[]).length === 0) throw new Error("Línea no encontrada");
+    const id_traspaso = (detRows as any[])[0].id_traspaso;
+
+    await connection.query(
+      `UPDATE traspasos_detalle 
+       SET estado_linea = 'RECHAZADO', cantidad_aceptada = 0, observacion = COALESCE(NULLIF(?, ''), observacion), usuario_cierre = ?, fecha_cierre = NOW()
+       WHERE id_detalle = ?`,
+      [observacion, usuarioReal, id_detalle]
+    );
+
+    const [pendientes] = await connection.query(
+      `SELECT COUNT(*) as cnt FROM traspasos_detalle WHERE id_traspaso = ? AND COALESCE(estado_linea, 'PENDIENTE') = 'PENDIENTE'`,
+      [id_traspaso]
+    );
+    if ((pendientes as any[])[0].cnt === 0) {
+      await connection.query(`UPDATE traspasos_cabecera SET estado = 'PROCESADO' WHERE id_traspaso = ?`, [id_traspaso]);
+    }
+
+    await connection.commit();
+    revalidatePath('/panel/proposicion-traspasos');
+    revalidatePath('/panel/agrupado');
+    return { success: true };
+  } catch (error: any) {
+    await connection.rollback();
+    return { success: false, error: error.message };
+  } finally {
+    connection.release();
+  }
+}
+

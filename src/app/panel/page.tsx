@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import pool from '@/lib/db';
-import { AlertCircle, AlertTriangle, CheckCircle, XCircle, Layers, FileText, ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { AlertCircle, AlertTriangle, CheckCircle, XCircle, Layers, FileText, ChevronLeft, ChevronRight, Download, FileStack } from 'lucide-react';
 import SucursalFilter from '@/components/dashboard/SucursalFilter';
 import LotesTableClient from '@/components/dashboard/LotesTableClient';
 import FilterLink from '@/components/dashboard/FilterLink';
 
-async function getLotes(sucursalId: number, estado: string, page: number) {
+async function getLotes(sucursalId: number, estado: string, page: number, sortKey: string = 'fecha_vencimiento', sortDirection: string = 'asc') {
   const connection = await pool.getConnection();
   try {
     const limit = 50;
@@ -39,6 +39,18 @@ async function getLotes(sucursalId: number, estado: string, page: number) {
     const [countResult] = await connection.query(`SELECT COUNT(*) as total ${baseQuery}`, params);
     const total = (countResult as any[])[0].total;
 
+    const allowedSortKeys: Record<string, string> = {
+      'sucursal_nombre': 's.nombre',
+      'cod_art': 'iv.cod_art',
+      'cod_barra': 'cod_barra',
+      'descripcion': 'p.descripcion',
+      'cantidad': 'iv.cantidad',
+      'fecha_vencimiento': 'iv.fecha_vencimiento',
+      'dias_restantes': 'DATEDIFF(iv.fecha_vencimiento, NOW())'
+    };
+    const orderByColumn = allowedSortKeys[sortKey] || 'iv.fecha_vencimiento';
+    const orderDir = sortDirection.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+
     const dataQuery = `
       SELECT 
         iv.id,
@@ -50,7 +62,7 @@ async function getLotes(sucursalId: number, estado: string, page: number) {
         s.nombre as sucursal_nombre,
         DATEDIFF(iv.fecha_vencimiento, NOW()) as dias_restantes
       ${baseQuery}
-      ORDER BY iv.fecha_vencimiento ASC
+      ORDER BY ${orderByColumn} ${orderDir}
       LIMIT ? OFFSET ?
     `;
     
@@ -122,14 +134,16 @@ async function getKpis(sucursalId: number) {
   }
 }
 
-export default async function Dashboard({ searchParams }: { searchParams: Promise<{ sucursal?: string, estado?: string, page?: string }> }) {
+export default async function Dashboard({ searchParams }: { searchParams: Promise<{ sucursal?: string, estado?: string, page?: string, sort?: string, order?: string }> }) {
   const sp = await searchParams;
   const sucursalId = sp.sucursal ? parseInt(sp.sucursal) : 0;
   const estado = sp.estado || 'todos';
   const page = sp.page ? parseInt(sp.page) : 1;
+  const sortKey = sp.sort || 'fecha_vencimiento';
+  const sortDirection = sp.order || 'asc';
 
   const [{ data: lotes, total, totalPages }, sucursales, kpis] = await Promise.all([
-    getLotes(sucursalId, estado, page),
+    getLotes(sucursalId, estado, page, sortKey, sortDirection),
     getSucursales(),
     getKpis(sucursalId)
   ]);
@@ -219,6 +233,10 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             <Link href="/panel/agrupado" className="text-sm font-medium text-fuchsia-600 hover:text-fuchsia-700 bg-fuchsia-50 hover:bg-fuchsia-100 px-4 py-2.5 rounded-lg transition-colors flex items-center gap-2 shadow-sm border border-fuchsia-100">
               <Layers size={18} /> Agrupar
             </Link>
+
+            <Link href="/panel/proposicion-traspasos" className="text-sm font-medium text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-4 py-2.5 rounded-lg transition-colors flex items-center gap-2 shadow-sm border border-emerald-100">
+              <FileStack size={18} /> Proposiciones
+            </Link>
             
             <Link href="/panel/vencidos" className="text-sm font-medium text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-4 py-2.5 rounded-lg transition-colors flex items-center gap-2 shadow-sm border border-red-100">
               <AlertCircle size={18} /> Vencidos
@@ -234,7 +252,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
           </div>
         </div>
         
-        <LotesTableClient initialLotes={lotes} />
+        <LotesTableClient initialLotes={lotes} currentSort={{ key: sortKey, direction: sortDirection }} />
 
         {/* Pagination */}
         {totalPages > 1 && (

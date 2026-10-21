@@ -5,6 +5,7 @@ import { useTransferStore } from '@/store/transferStore';
 import { ArrowLeft, ArrowRightLeft, FileDown, Trash2, CheckCircle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { guardarTraspasosDB } from '@/app/actions';
+import { getCurrentUser } from '@/app/auth/actions';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useSortableData } from '@/hooks/useSortableData';
@@ -53,6 +54,11 @@ export default function TraspasosPage() {
   const [procesando, setProcesando] = useState(false);
   const [completado, setCompletado] = useState(false);
   const [correlativo, setCorrelativo] = useState('');
+  const [user, setUser] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    getCurrentUser().then(u => setUser(u));
+  }, []);
 
   // Agrupar por Origen -> Destino
   const groups = items.reduce((acc: any, item: any) => {
@@ -66,13 +72,13 @@ export default function TraspasosPage() {
     if (items.length === 0) return;
     setProcesando(true);
     
-    const result = await guardarTraspasosDB(items);
+    const result = await guardarTraspasosDB(items, user?.nombre || 'SISTEMA');
     
     if (result.success) {
       setCorrelativo(result.correlativo || '');
       setCompletado(true);
     } else {
-      alert("Error al procesar traspasos: " + result.error);
+      alert("Error al procesar propuestas de traspaso: " + result.error);
     }
     
     setProcesando(false);
@@ -84,7 +90,7 @@ export default function TraspasosPage() {
     
     await applyCorporateHeader(
       doc, 
-      "Informe de Traspasos de Inventario", 
+      "Propuesta de Traspasos de Inventario", 
       correlativo || 'BORRADOR', 
       formatDate(new Date())
     );
@@ -113,7 +119,7 @@ export default function TraspasosPage() {
 
       autoTable(doc, {
         startY: currentY,
-        head: [['Cód.', 'Medicamento', 'Vencimiento', 'Cant.']],
+        head: [['Cód.', 'Medicamento', 'Vencimiento', 'Cant. Propuesta']],
         body: tableData,
         headStyles: { 
           fillColor: [241, 245, 249], // slate-100
@@ -150,7 +156,7 @@ export default function TraspasosPage() {
 
     applyCorporateFooter(doc);
 
-    doc.save(`Traspasos_${correlativo || 'BORRADOR'}.pdf`);
+    doc.save(`Propuesta_Traspasos_${correlativo || 'BORRADOR'}.pdf`);
   };
 
   return (
@@ -163,8 +169,8 @@ export default function TraspasosPage() {
           <ArrowRightLeft size={28} />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Finalizar Traspasos</h1>
-          <p className="text-slate-500">Verifica los movimientos antes de procesarlos</p>
+          <h1 className="text-2xl font-bold text-slate-800">Procesar Propuestas de Traspaso</h1>
+          <p className="text-slate-500">Verifica las propuestas antes de guardarlas (esta etapa solo genera la propuesta, sin descontar stock)</p>
         </div>
       </div>
 
@@ -173,16 +179,21 @@ export default function TraspasosPage() {
           <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle size={40} />
           </div>
-          <h2 className="text-2xl font-bold text-slate-800 mb-2">¡Traspasos Procesados Exitosamente!</h2>
-          <p className="text-slate-500 mb-8">El inventario ha sido modificado y los traspasos registrados bajo el correlativo <span className="font-mono font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded">{correlativo}</span>.</p>
+          <h2 className="text-2xl font-bold text-slate-800 mb-2">¡Propuestas de Traspaso Guardadas!</h2>
+          <p className="text-slate-500 mb-8">
+            Las propuestas han sido registradas bajo el correlativo <span className="font-mono font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded">{correlativo}</span>. El stock se moverá recién cuando se cierre cada propuesta en la pantalla de Proposición de Traspasos.
+          </p>
           
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-4">
             <button onClick={generarPDF} className="bg-fuchsia-600 text-white font-medium px-6 py-3 rounded-xl hover:bg-fuchsia-700 transition-colors flex items-center gap-2">
               <FileDown size={20} />
-              Descargar Informe PDF
+              Descargar PDF Propuesta
             </button>
+            <Link href="/panel/proposicion-traspasos" onClick={() => clearCart()} className="bg-emerald-600 text-white font-medium px-6 py-3 rounded-xl hover:bg-emerald-700 transition-colors">
+              Ir a Proposición de Traspasos
+            </Link>
             <Link href="/panel/agrupado" onClick={() => clearCart()} className="bg-slate-100 text-slate-700 font-medium px-6 py-3 rounded-xl hover:bg-slate-200 transition-colors">
-              Volver a Agrupación
+              Volver a Vista Agrupada
             </Link>
           </div>
         </div>
@@ -190,7 +201,7 @@ export default function TraspasosPage() {
         <>
           {items.length === 0 ? (
             <div className="bg-white rounded-2xl p-10 text-center shadow-sm border border-slate-200 text-slate-500">
-              No tienes artículos seleccionados para traspaso.
+              No tienes artículos seleccionados en propuesta de traspaso.
             </div>
           ) : (
             <div className="space-y-8">
@@ -217,9 +228,9 @@ export default function TraspasosPage() {
                   className="bg-fuchsia-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-fuchsia-700 transition-colors shadow-lg shadow-fuchsia-600/30 flex items-center gap-2"
                 >
                   {procesando ? (
-                    <><Loader2 className="animate-spin" size={20} /> Procesando...</>
+                    <><Loader2 className="animate-spin" size={20} /> Guardando...</>
                   ) : (
-                    <><CheckCircle size={20} /> Procesar Traspasos y Guardar</>
+                    <><CheckCircle size={20} /> Procesar Propuestas de Traspaso</>
                   )}
                 </button>
               </div>

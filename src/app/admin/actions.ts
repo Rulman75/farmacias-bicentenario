@@ -9,7 +9,7 @@ export async function getUsuarios() {
   try {
     const [rows] = await connection.query(`
       SELECT u.rut, u.nombre, u.id_perfil, u.cod_sucursal, p.Descripcion as perfil_desc, u.debe_cambiar_pass, u.created_at, s.nombre as sucursal_nombre
-      FROM usuarioCatalogo u 
+      FROM usuariocatalogo u 
       LEFT JOIN perfiles p ON u.id_perfil = p.Id_Perfil 
       LEFT JOIN sucursales s ON u.cod_sucursal = s.cod_sucursal
       ORDER BY u.created_at DESC
@@ -29,7 +29,7 @@ export async function crearUsuario(data: { rut: string, nombre: string, id_perfi
     const hash = await bcrypt.hash(passPorDefecto, 10);
     
     await connection.query(
-      'INSERT INTO usuarioCatalogo (rut, nombre, password_hash, debe_cambiar_pass, id_perfil, cod_sucursal) VALUES (?, ?, ?, TRUE, ?, ?)',
+      'INSERT INTO usuariocatalogo (rut, nombre, password_hash, debe_cambiar_pass, id_perfil, cod_sucursal) VALUES (?, ?, ?, TRUE, ?, ?)',
       [data.rut, data.nombre, hash, data.id_perfil, data.cod_sucursal]
     );
     
@@ -50,12 +50,12 @@ export async function actualizarUsuario(rut: string, data: { nombre: string, id_
       const passPorDefecto = rut.substring(0, 4);
       const hash = await bcrypt.hash(passPorDefecto, 10);
       await connection.query(
-        'UPDATE usuarioCatalogo SET nombre = ?, id_perfil = ?, cod_sucursal = ?, password_hash = ?, debe_cambiar_pass = TRUE WHERE rut = ?',
+        'UPDATE usuariocatalogo SET nombre = ?, id_perfil = ?, cod_sucursal = ?, password_hash = ?, debe_cambiar_pass = TRUE WHERE rut = ?',
         [data.nombre, data.id_perfil, data.cod_sucursal, hash, rut]
       );
     } else {
       await connection.query(
-        'UPDATE usuarioCatalogo SET nombre = ?, id_perfil = ?, cod_sucursal = ? WHERE rut = ?',
+        'UPDATE usuariocatalogo SET nombre = ?, id_perfil = ?, cod_sucursal = ? WHERE rut = ?',
         [data.nombre, data.id_perfil, data.cod_sucursal, rut]
       );
     }
@@ -72,7 +72,7 @@ export async function actualizarUsuario(rut: string, data: { nombre: string, id_
 export async function eliminarUsuario(rut: string) {
   const connection = await pool.getConnection();
   try {
-    await connection.query('DELETE FROM usuarioCatalogo WHERE rut = ?', [rut]);
+    await connection.query('DELETE FROM usuariocatalogo WHERE rut = ?', [rut]);
     revalidatePath('/admin/usuarios');
     return { success: true };
   } catch (error: any) {

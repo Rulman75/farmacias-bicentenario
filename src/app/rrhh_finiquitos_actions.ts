@@ -7,7 +7,7 @@ export async function getFiniquitos() {
   const connection = await pool.getConnection();
   try {
     const [rows] = await connection.query(`
-      SELECT f.*, t.nombres, t.apellidos, t.rut 
+      SELECT f.*, t.nombres, CONCAT(t.apellido_paterno, ' ', COALESCE(t.apellido_materno, '')) as apellidos, t.apellido_paterno, t.apellido_materno, t.rut 
       FROM rrhh_finiquitos f
       JOIN rrhh_trabajadores t ON f.trabajador_id = t.id
       ORDER BY f.fecha_emision DESC

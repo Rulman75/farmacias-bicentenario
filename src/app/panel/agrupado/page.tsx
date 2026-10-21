@@ -37,7 +37,8 @@ async function getTodosLosProductos(searchQuery: string, estado: string) {
     const [rows] = await connection.query(`
       SELECT 
         iv.cod_art,
-        iv.fecha_vencimiento, 
+        iv.fecha_vencimiento,
+        DATE_FORMAT(iv.fecha_vencimiento, '%Y-%m-%d') as fecha_ymd,
         iv.cantidad, 
         iv.cod_sucursal,
         p.descripcion,
@@ -54,14 +55,44 @@ async function getTodosLosProductos(searchQuery: string, estado: string) {
   }
 }
 
+async function getPropuestasVigentes() {
+  const connection = await pool.getConnection();
+  try {
+    const [rows] = await connection.query(`
+      SELECT 
+        d.id_detalle,
+        d.cod_art,
+        d.cod_sucursal_origen,
+        d.cod_sucursal_destino,
+        (SELECT MAX(nombre) FROM sucursales WHERE cod_sucursal = d.cod_sucursal_destino AND cod_empresa = 1) as sucursal_destino,
+        d.cantidad,
+        COALESCE(d.cantidad_aceptada, d.cantidad) as cantidad_aceptada,
+        DATE_FORMAT(d.fecha_vencimiento, '%Y-%m-%d') as fecha_ymd,
+        c.correlativo,
+        c.usuario_registro
+      FROM traspasos_detalle d
+      JOIN traspasos_cabecera c ON d.id_traspaso = c.id_traspaso
+      WHERE COALESCE(d.estado_linea, 'PENDIENTE') = 'PENDIENTE'
+        AND c.estado NOT IN ('ANULADO', 'NO_EJECUTADO')
+    `);
+    return rows as any[];
+  } catch (error) {
+    console.error("Error consultando propuestas vigentes:", error);
+    return [];
+  } finally {
+    connection.release();
+  }
+}
+
 export default async function AgrupadoPage({ searchParams }: { searchParams: Promise<{ query?: string, estado?: string }> }) {
   const sp = await searchParams;
   const searchQuery = sp.query || '';
   const estadoFilter = sp.estado || 'todos';
 
-  const [lotes, sucursalesRes] = await Promise.all([
+  const [lotes, sucursalesRes, propuestasVigentes] = await Promise.all([
     getTodosLosProductos(searchQuery, estadoFilter),
-    getSucursales()
+    getSucursales(),
+    getPropuestasVigentes()
   ]);
   
   const sucursales = sucursalesRes.success ? (sucursalesRes.data || []) : [];
@@ -83,12 +114,27 @@ export default async function AgrupadoPage({ searchParams }: { searchParams: Pro
     const year = dt.getFullYear();
     const fechaStr = `${month}-${year}`;
 
-    productsMap.get(lote.cod_art).sucursalData[lote.cod_sucursal] = {
+    if (!productsMap.get(lote.cod_art).sucursalData[lote.cod_sucursal]) {
+      productsMap.get(lote.cod_art).sucursalData[lote.cod_sucursal] = [];
+    }
+
+    // Buscar si este lote tiene propuestas de traspaso vigentes
+    const propuestasLote = propuestasVigentes.filter(
+      p => String(p.cod_art) === String(lote.cod_art) &&
+           Number(p.cod_sucursal_origen) === Number(lote.cod_sucursal) &&
+           p.fecha_ymd === lote.fecha_ymd
+    );
+    const cantidadPropuestaTotal = propuestasLote.reduce((sum, p) => sum + Number(p.cantidad || 0), 0);
+
+    productsMap.get(lote.cod_art).sucursalData[lote.cod_sucursal].push({
       cantidad: lote.cantidad,
       fechaStr: fechaStr,
       fecha_completa: lote.fecha_vencimiento,
-      dias_restantes: lote.dias_restantes
-    };
+      fecha_ymd: lote.fecha_ymd,
+      dias_restantes: lote.dias_restantes,
+      propuestas: propuestasLote,
+      cantidad_propuesta: cantidadPropuestaTotal
+    });
   }
 
   const productsList = Array.from(productsMap.values()).sort((a, b) => a.descripcion.localeCompare(b.descripcion));

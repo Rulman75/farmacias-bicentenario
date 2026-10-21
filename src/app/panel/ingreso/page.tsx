@@ -70,11 +70,12 @@ export default function IngresoVencimientos() {
 
     setLoading(true);
 
-    const checkRes = await checkIngresoExistente(Number(codSucursal), productoData.cod_art);
+    const formattedFecha = `${fechaVencimiento}-01`;
+    const checkRes = await checkIngresoExistente(Number(codSucursal), productoData.cod_art, formattedFecha);
     const isUpdate = checkRes.success && checkRes.exists;
 
     if (isUpdate) {
-      const confirmUpdate = window.confirm('Este producto ya está ingresado en esta sucursal.\\n\\n¿Desea actualizar su cantidad y fecha de vencimiento?');
+      const confirmUpdate = window.confirm('Ya existe un vencimiento registrado para este producto con esta misma fecha.\\n\\n¿Desea actualizar su cantidad?');
       if (!confirmUpdate) {
         setLoading(false);
         return;

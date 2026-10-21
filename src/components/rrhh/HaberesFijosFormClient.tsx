@@ -16,9 +16,11 @@ export default function HaberesFijosFormClient({
   const router = useRouter();
 
   const [formData, setFormData] = useState({
-    colacion: initialData?.colacion || 0,
-    movilizacion: initialData?.movilizacion || 0,
-    plan_isapre_uf: initialData?.plan_isapre_uf || 0
+    colacion: initialData?.colacion ?? 0,
+    movilizacion: initialData?.movilizacion ?? 0,
+    bono_cumplimiento: initialData?.bono_cumplimiento ?? 100000,
+    bono_responsabilidad: initialData?.bono_responsabilidad ?? 300000,
+    plan_isapre_uf: initialData?.plan_isapre_uf ?? 0
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,6 +34,8 @@ export default function HaberesFijosFormClient({
     const payload = {
       colacion: parseInt(formData.colacion as any) || 0,
       movilizacion: parseInt(formData.movilizacion as any) || 0,
+      bono_cumplimiento: parseInt(formData.bono_cumplimiento as any) || 0,
+      bono_responsabilidad: parseInt(formData.bono_responsabilidad as any) || 0,
       plan_isapre_uf: parseFloat(formData.plan_isapre_uf as any) || 0
     };
 
@@ -66,6 +70,24 @@ export default function HaberesFijosFormClient({
           />
         </div>
         <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">Bono Cumplimiento Pactado ($)</label>
+          <input 
+            type="number" name="bono_cumplimiento"
+            value={formData.bono_cumplimiento} onChange={handleChange}
+            className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <p className="text-xs text-slate-500 mt-1">Usado en etiqueta {'{bono_cumplimiento}'} del contrato.</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">Bono Responsabilidad Q.F. ($)</label>
+          <input 
+            type="number" name="bono_responsabilidad"
+            value={formData.bono_responsabilidad} onChange={handleChange}
+            className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <p className="text-xs text-slate-500 mt-1">Usado en etiqueta {'{bono_responsabilidad}'} del contrato Q.F.</p>
+        </div>
+        <div className="md:col-span-2">
           <label className="block text-sm font-medium text-slate-700 mb-1">Plan Isapre Pactado (UF)</label>
           <input 
             type="number" step="0.0001" name="plan_isapre_uf"

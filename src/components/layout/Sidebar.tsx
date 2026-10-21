@@ -5,7 +5,7 @@ import { getCurrentUser } from '@/app/auth/actions';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LayoutDashboard, Pill, LogOut, ChevronDown, ChevronRight, Clock, ArrowRightLeft, Tag, TrendingUp, Users, ShoppingCart, Briefcase, ShieldAlert, Home, X, CheckCircle } from 'lucide-react';
+import { LayoutDashboard, Pill, LogOut, ChevronDown, ChevronRight, Clock, ArrowRightLeft, Tag, TrendingUp, Users, ShoppingCart, Briefcase, ShieldAlert, Home, X, CheckCircle, FileStack, FileSignature, CalendarDays, Calculator, Landmark, PieChart } from 'lucide-react';
 import { logout } from '@/app/auth/actions';
 
 export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean, setIsOpen?: (v: boolean) => void }) {
@@ -13,6 +13,7 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean, setIs
   const [vencimientoOpen, setVencimientoOpen] = useState(false);
   const [comercialOpen, setComercialOpen] = useState(false);
   const [gestionComercialOpen, setGestionComercialOpen] = useState(false);
+  const [rrhhOpen, setRrhhOpen] = useState(pathname?.startsWith('/panel/rrhh') || false);
   const [adminOpen, setAdminOpen] = useState(false);
   
   const [user, setUser] = useState<any>(null);
@@ -78,13 +79,13 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean, setIs
                 <Pill size={18} className="text-slate-400 group-hover:text-white" />
                 <span className="font-medium text-slate-400 group-hover:text-white">Registrar Ingreso</span>
               </Link>
+              <Link href="/panel/proposicion-traspasos" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors group text-sm">
+                <FileStack size={18} className="text-slate-400 group-hover:text-emerald-400" />
+                <span className="font-medium text-slate-400 group-hover:text-white">Proposición de Traspaso</span>
+              </Link>
               <Link href="/panel/historial-traspasos" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors group text-sm">
                 <ArrowRightLeft size={18} className="text-slate-400 group-hover:text-white" />
                 <span className="font-medium text-slate-400 group-hover:text-white">Historial Traspasos</span>
-              </Link>
-              <Link href="/panel/recepcion-traspasos" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors group text-sm">
-                <CheckCircle size={18} className="text-slate-400 group-hover:text-teal-400" />
-                <span className="font-medium text-slate-400 group-hover:text-white">Recepción Traspasos</span>
               </Link>
             </div>
           )}
@@ -148,15 +149,50 @@ export default function Sidebar({ isOpen, setIsOpen }: { isOpen?: boolean, setIs
         )}
 
         {/* Menu Recursos Humanos */}
-        <Link 
-          href="/panel/rrhh" 
-          className={`w-full flex items-center justify-between px-3 py-3 rounded-lg transition-colors group ${pathname === '/panel/rrhh' || pathname.startsWith('/panel/rrhh/') ? 'bg-slate-800' : 'hover:bg-slate-800'}`}
-        >
-          <div className="flex items-center gap-3">
-            <Users size={20} className={`transition-colors ${pathname === '/panel/rrhh' || pathname.startsWith('/panel/rrhh/') ? 'text-blue-400' : 'text-blue-500 group-hover:text-blue-400'}`} />
-            <span className={`font-medium transition-colors ${pathname === '/panel/rrhh' || pathname.startsWith('/panel/rrhh/') ? 'text-white' : 'text-blue-500 group-hover:text-blue-400'}`}>Recursos Humanos</span>
-          </div>
-        </Link>
+        <div>
+          <button 
+            onClick={() => setRrhhOpen(!rrhhOpen)}
+            className={`w-full flex items-center justify-between px-3 py-3 rounded-lg transition-colors group ${pathname === '/panel/rrhh' || pathname.startsWith('/panel/rrhh/') ? 'bg-slate-800' : 'hover:bg-slate-800'}`}
+          >
+            <div className="flex items-center gap-3">
+              <Users size={20} className={`transition-colors ${pathname === '/panel/rrhh' || pathname.startsWith('/panel/rrhh/') ? 'text-blue-400' : 'text-blue-500 group-hover:text-blue-400'}`} />
+              <span className={`font-medium transition-colors ${pathname === '/panel/rrhh' || pathname.startsWith('/panel/rrhh/') ? 'text-white' : 'text-blue-500 group-hover:text-blue-400'}`}>Recursos Humanos</span>
+            </div>
+            {rrhhOpen ? <ChevronDown size={16} className="text-slate-500" /> : <ChevronRight size={16} className="text-slate-500" />}
+          </button>
+          {rrhhOpen && (
+            <div className="mt-1 ml-4 border-l border-slate-700 pl-3 space-y-1">
+              <Link href="/panel/rrhh" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors group text-sm">
+                <LayoutDashboard size={17} className="text-slate-400 group-hover:text-blue-400" />
+                <span className="font-medium text-slate-400 group-hover:text-white">Panel Flujo RRHH</span>
+              </Link>
+              <Link href="/panel/rrhh/personal" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors group text-sm">
+                <Users size={17} className="text-slate-400 group-hover:text-blue-400" />
+                <span className="font-medium text-slate-400 group-hover:text-white">1. Fichas Personal</span>
+              </Link>
+              <Link href="/panel/rrhh/pendientes" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors group text-sm">
+                <FileSignature size={17} className="text-slate-400 group-hover:text-blue-400" />
+                <span className="font-medium text-slate-400 group-hover:text-white">2. Contratos y Alertas</span>
+              </Link>
+              <Link href="/panel/rrhh/asistencia" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors group text-sm">
+                <CalendarDays size={17} className="text-slate-400 group-hover:text-sky-400" />
+                <span className="font-medium text-slate-400 group-hover:text-white">3. Asistencia y Turnos</span>
+              </Link>
+              <Link href="/panel/rrhh/parametros" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors group text-sm">
+                <Landmark size={17} className="text-slate-400 group-hover:text-amber-400" />
+                <span className="font-medium text-slate-400 group-hover:text-white">4. Indicadores Mes</span>
+              </Link>
+              <Link href="/panel/rrhh/haberes-descuentos" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors group text-sm">
+                <Calculator size={17} className="text-slate-400 group-hover:text-emerald-400" />
+                <span className="font-medium text-slate-400 group-hover:text-white">5. Haberes y Descuentos</span>
+              </Link>
+              <Link href="/panel/rrhh/periodo" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors group text-sm">
+                <PieChart size={17} className="text-slate-400 group-hover:text-emerald-400" />
+                <span className="font-medium text-slate-400 group-hover:text-white">6. Emitir Liquidaciones</span>
+              </Link>
+            </div>
+          )}
+        </div>
 
         {/* Menu Administracion */}
         {(user?.rutas_apli?.includes('/admin/usuarios') || user?.rutas_apli?.includes('/admin/perfiles') || user?.rutas_apli?.includes('/admin/aplicaciones')) && (

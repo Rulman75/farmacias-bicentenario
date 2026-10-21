@@ -47,7 +47,7 @@ export async function getHistorialSugerencias() {
       SELECT c.*, u.nombre as nombre_usuario, 
       (SELECT COUNT(*) FROM sugerencias_detalle d WHERE d.id_sugerencia = c.id_sugerencia) as total_items
       FROM sugerencias_cabecera c
-      LEFT JOIN usuarioCatalogo u ON c.rut_usuario = u.rut
+      LEFT JOIN usuariocatalogo u ON c.rut_usuario = u.rut
       ORDER BY c.fecha DESC
     `);
     return { success: true, data: rows as any[] };
